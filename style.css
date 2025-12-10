@@ -73,3 +73,36 @@ section.active {
 #scoreTable th {
   background: #e6d5c3;
 }
+
+.intro {
+  margin: 20px auto;
+  max-width: 600px;
+  font-size: 16px;
+  line-height: 1.6;
+  background: #fff8f0;
+  padding: 15px;
+  border-radius: 10px;
+  color: #4a3f35;
+}
+
+#articleList {
+  list-style: none;
+  padding: 0;
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: left;
+}
+
+#articleList li {
+  margin: 10px 0;
+}
+
+#articleList a {
+  text-decoration: none;
+  color: #6b4226;
+  font-size: 16px;
+}
+
+#articleList a:hover {
+  color: #a67c52;
+}

@@ -177,3 +177,25 @@ function calculateResult() {
 
   showPage("result");
 }
+
+function loadArticles() {
+  fetch("articles.json")
+    .then(response => response.json())
+    .then(data => {
+      const list = document.getElementById("articleList");
+      list.innerHTML = "";
+      data.forEach(item => {
+        const li = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = item.url;
+        link.target = "_blank";
+        link.innerText = item.topic;
+        li.appendChild(link);
+        list.appendChild(li);
+      });
+      showPage("articles");
+    })
+    .catch(err => {
+      console.error("Error loading articles:", err);
+    });
+}

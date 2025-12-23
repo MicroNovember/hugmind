@@ -87,6 +87,16 @@
         <div class="assess-icon bo">🔥</div>
         <span>ภาวะหมดไฟ</span>
     </div>
+
+
+    <div class="assess-card" onclick="loadArticles()">
+        <div class="assess-icon bo" style="background: #e3f2fd; color: #1976d2;">📚</div>
+        <span>บทความสุขภาพใจ</span>
+        </div>
+    </div>
+
+
+</div>
 </div>
                 </div>
             </div>
@@ -128,6 +138,8 @@
             </div>
         </div>
 
+
+
     </div>
     <button class="btn-ghost" onclick="showPage('home')">กลับหน้าหลัก</button>
 </section>
@@ -154,14 +166,39 @@
             </div>
         </section>
 
-        <section id="screening">
-            <div class="glass-card">
-                <h2 id="qTitle"></h2>
-                <p id="qNumber"></p>
-                <h3 id="qText" style="margin: 20px 0;"></h3>
-                <div id="qOptions"></div>
+<section id="screening">
+    <div class="glass-card quiz-card">
+        
+        <h2 id="qTitle" class="text-center" style="margin-bottom: 20px;"></h2>
+
+        <div id="qIntro" class="quiz-intro">
+            <div class="instruction-box">
+                <h4 style="margin-bottom: 10px;">📝 คำแนะนำก่อนเริ่ม</h4>
+                <p id="qInstructionText" style="font-size: 0.95rem; color: #444; line-height: 1.5;"></p>
+                <ul class="instruction-list" style="margin-top: 15px; font-size: 0.85rem; color: #666;">
+                    <li>ใช้เวลาทำประมาณ 1-3 นาที</li>
+                    <li>ข้อมูลของคุณจะเป็นความลับและอยู่แค่ในเครื่องนี้</li>
+                    <li>ผลลัพธ์นี้ไม่ใช่การวินิจฉัยโดยแพทย์</li>
+                </ul>
             </div>
-        </section>
+            <button class="btn-primary" onclick="startQuizNow()" style="width: 100%; margin-top: 10px;">ฉันพร้อมแล้ว เริ่มเลย</button>
+            <button class="btn-text" onclick="showPage('home')" style="width: 100%; margin-top: 10px; color: #888;">ไว้วันหลังนะ</button>
+        </div>
+
+        <div id="qContent" class="hidden">
+            <div class="progress-container-mini">
+                <div id="qProgressBar" class="progress-bar-mini"></div>
+            </div>
+            
+            <p id="qNumber" class="text-mute" style="font-size: 0.85rem; margin-bottom: 10px;"></p>
+            <h3 id="qText" style="margin-bottom: 25px; line-height: 1.4;"></h3>
+            
+            <div id="qOptions" class="options-grid">
+                </div>
+        </div>
+
+    </div>
+</section>
 
 <section id="result">
     <div class="glass-card result-card" id="printableArea">
@@ -227,7 +264,7 @@
     <div class="sticky-player glass-card">
         <div class="player-info">
             <span class="music-note">🎵</span>
-            <marquee behavior="scroll" direction="left" id="musicStatus">พร้อมฟังเพลงผ่อนคลายไหม?</marquee>
+            <marquee behavior="scroll" direction="left" id="musicStatus" scrollamount="2" >พร้อมฟังเพลงผ่อนคลายไหม?</marquee>
         </div>
         <div class="player-controls">
             <button onclick="prevTrack()" class="p-btn">⏮</button>

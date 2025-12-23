@@ -393,3 +393,55 @@ textarea {
         print-color-adjust: exact !important;
     }
 }
+
+/* --- สไตล์สำหรับหน้าคำแนะนำแบบทดสอบ --- */
+
+/* กล่องคำแนะนำ */
+.instruction-box {
+    background: #f8fbff; /* สีฟ้าอ่อนสบายตา */
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    text-align: left;
+    border: 1px solid #e1efff;
+}
+
+.instruction-box h4 {
+    margin-top: 0;
+    color: var(--primary-dark);
+    font-size: 1.1rem;
+}
+
+.instruction-list {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+/* แถบความคืบหน้าเล็กๆ ด้านบนตัวคำถาม (Progress Bar) */
+.progress-container-mini {
+    height: 6px;
+    background: #eee;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.progress-bar-mini {
+    height: 100%;
+    background: var(--primary);
+    width: 0%; /* จะเพิ่มขึ้นตามข้อที่ทำ */
+    transition: width 0.4s ease;
+}
+
+/* คลาสสำหรับซ่อนองค์ประกอบ */
+.hidden {
+    display: none !important;
+}
+
+/* ปรับแต่งปุ่มในหน้า Intro ให้ดูเด่น */
+.quiz-intro .btn-primary {
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+}

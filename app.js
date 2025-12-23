@@ -149,23 +149,51 @@ function startTest(set) {
     startScreening(set);
 }
 
+// 1. ฟังก์ชันเรียกหน้าคำแนะนำ (แทนที่ startScreening เดิม)
 function startScreening(set) {
-    if (typeof QUESTIONS === 'undefined' || !QUESTIONS[set]) {
-        return alert("ไม่พบข้อมูลชุดคำถาม กรุณาตรวจสอบการเชื่อมต่อไฟล์ questions.js");
-    }
+    if (typeof QUESTIONS === 'undefined' || !QUESTIONS[set]) return;
+
     currentSet = set;
     currentQuestions = QUESTIONS[set].questions;
     currentIndex = 0;
     answers = [];
-    updateQuestionUI();
+
+    // กำหนดข้อความคำแนะนำให้เหมาะกับแต่ละชุด
+    const instructions = {
+        'PHQ9': 'โปรดตอบตามความรู้สึกของคุณ "ในช่วง 2 สัปดาห์ที่ผ่านมา" จนถึงปัจจุบัน',
+        'ST5': 'โปรดตอบตามความรู้สึกของคุณ "ในช่วง 1 เดือนที่ผ่านมา"',
+        'BURNOUT': 'โปรดตอบตามความรู้สึกของคุณที่มีต่อ "การทำงานหรือการเรียน" ในช่วงที่ผ่านมา',
+        'WHO5': 'โปรดตอบตามความรู้สึกของคุณ "ในช่วง 2 สัปดาห์ที่ผ่านมา"',
+        'PHQ2': 'เป็นการคัดกรองเบื้องต้น โปรดตอบตามความรู้สึก ณ ปัจจุบันของคุณ'
+    };
+
+    // แสดงหัวข้อ และ ข้อความคำแนะนำ
+    document.getElementById("qTitle").innerText = QUESTIONS[set].title;
+    document.getElementById("qInstructionText").innerText = instructions[set] || 'โปรดตอบคำถามตามความรู้สึกจริงของคุณ';
+    
+    // สลับหน้า: แสดงหน้า Intro และซ่อนหน้าคำถามไว้ก่อน
+    document.getElementById("qIntro").classList.remove("hidden");
+    document.getElementById("qContent").classList.add("hidden");
+    
     showPage('screening');
 }
 
+// 2. ฟังก์ชันเริ่มทำคำถาม (เรียกเมื่อกดปุ่ม "ฉันพร้อมแล้ว เริ่มเลย")
+function startQuizNow() {
+    document.getElementById("qIntro").classList.add("hidden");
+    document.getElementById("qContent").classList.remove("hidden");
+    updateQuestionUI();
+}
+
+// 3. ปรับปรุงการแสดงผลคำถามและ Progress Bar
 function updateQuestionUI() {
-    document.getElementById("qTitle").innerText = QUESTIONS[currentSet].title;
     document.getElementById("qNumber").innerText = `ข้อที่ ${currentIndex + 1} / ${currentQuestions.length}`;
     document.getElementById("qText").innerText = currentQuestions[currentIndex];
     
+    // อัปเดตแถบความคืบหน้าด้านบน (Progress Bar Mini)
+    const progress = ((currentIndex + 1) / currentQuestions.length) * 100;
+    document.getElementById("qProgressBar").style.width = `${progress}%`;
+
     const options = OPTIONS[currentSet];
     document.getElementById("qOptions").innerHTML = options.map(opt => `
         <button class="option-btn" onclick="handleAnswer(${opt.score})">

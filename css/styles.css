@@ -1,0 +1,240 @@
+/* Custom CSS for MindBloom */
+
+:root {
+    --primary: #6D9F71;
+    --primary-light: #8FBC8F;
+    --primary-dark: #4A7C59;
+    --secondary: #FFB6C1;
+    --accent: #FFD166;
+    
+    --happy: #FFEAA7;
+    --calm: #A7E6FF;
+    --sad: #D8C3FF;
+    --anxious: #FFB8B8;
+    --energetic: #C5FFB8;
+    --neutral: #F0F0F0;
+}
+
+* {
+    font-family: 'Anuphan', 'Noto Sans Thai', sans-serif;
+}
+
+.animate-breathe {
+    animation: breathe 8s infinite ease-in-out;
+}
+
+@keyframes breathe {
+    0%, 100% { transform: scale(0.8); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+.scrollbar-thin {
+    scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+    background: #2d3748;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #4a5568;
+}
+
+.tree-transition {
+    transition: all 0.5s ease;
+}
+
+/* Custom line clamp utilities */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+/* Custom prose styles for article content */
+.prose {
+    color: #374151;
+    max-width: 65ch;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+    color: #111827;
+    font-weight: 600;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.prose p {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    line-height: 1.75;
+}
+
+.prose ul, .prose ol {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-left: 1.5em;
+}
+
+.prose li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.dark .prose {
+    color: #d1d5db;
+}
+
+.dark .prose h1, .dark .prose h2, .dark .prose h3, .dark .prose h4 {
+    color: #f9fafb;
+}
+
+/* Mood button hover effects */
+.mood-btn-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Card hover effects */
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Assessment result color coding */
+.result-low {
+    background-color: #34d399; /* Green */
+}
+
+.result-medium {
+    background-color: #fbbf24; /* Yellow */
+}
+
+.result-high {
+    background-color: #f87171; /* Red */
+}
+
+/* Loading animations */
+@keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Fade in animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Slide in animations */
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.slide-in-up {
+    animation: slideInUp 0.3s ease-out;
+}
+
+/* Custom focus styles */
+.focus-ring:focus {
+    outline: none;
+    ring-width: 2px;
+    ring-color: var(--primary);
+    ring-offset-width: 2px;
+}
+
+/* Custom button styles */
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    color: #374151;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #ff9eb0;
+    transform: translateY(-1px);
+}
+
+.btn-accent {
+    background-color: var(--accent);
+    color: #374151;
+    transition: all 0.2s;
+}
+
+.btn-accent:hover {
+    background-color: #ffc043;
+    transform: translateY(-1px);
+}
+
+/* Responsive text sizes */
+@media (max-width: 640px) {
+    .text-responsive {
+        font-size: 0.875rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-only {
+        display: block !important;
+    }
+}

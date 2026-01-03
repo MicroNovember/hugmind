@@ -1,280 +1,1172 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" x-data="mindbloomApp()" x-init="init()" :class="{ 'dark': darkMode }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สุขใจ 🌿 พื้นที่ปลอดภัยของคุณ</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>MindBloom - จิตใจเบิกบาน</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <script>
+        // กำหนดค่า Tailwind
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6D9F71',
+                        'primary-light': '#8FBC8F',
+                        'primary-dark': '#4A7C59',
+                        secondary: '#FFB6C1',
+                        accent: '#FFD166',
+                        happy: '#FFEAA7',
+                        calm: '#A7E6FF',
+                        sad: '#D8C3FF',
+                        anxious: '#FFB8B8',
+                        energetic: '#C5FFB8',
+                        neutral: '#F0F0F0',
+                    },
+                    fontFamily: {
+                        'sans': ['Anuphan', 'Noto Sans Thai', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="earth-tone">
-
-    <nav id="menu" class="menu-overlay hidden">
-        <div class="menu-content">
-            <a href="#" onclick="showPage('home')">🏠 หน้าหลัก</a>
-            <a href="#" onclick="showPage('testMenu')">📝 แบบทดสอบ</a>
-            <a href="#" onclick="showPage('history')">📜 ประวัติบันทึกใจ</a>
-            <a href="#" onclick="showPage('guide')">💡 คำแนะนำ</a> <a href="#" onclick="showPage('about')">🌿 เกี่ยวกับเรา</a> <button class="btn-close-menu" onclick="toggleMenu()">ปิดเมนู</button>
-        </div>
-    </nav>
-
-    <header>
-        <div class="header-container">
-            <div class="logo" onclick="showPage('home')">
-                <span class="logo-icon">🌿</span> สุขใจ
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="text-2xl text-primary">🌱</div>
+                    <h1 class="text-xl font-bold text-primary">MindBloom</h1>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-600 dark:text-gray-300" aria-label="เมนู">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="#" @click="currentPage = 'home'" :class="currentPage === 'home' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                        <i class="fas fa-home mr-2"></i>หน้าหลัก
+                    </a>
+                    <a href="#" @click="currentPage = 'journal'" :class="currentPage === 'journal' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                        <i class="fas fa-book mr-2"></i>สมุดบันทึก
+                    </a>
+                    <a href="#" @click="currentPage = 'music'" :class="currentPage === 'music' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                        <i class="fas fa-music mr-2"></i>เพลงและพอดแคสต์
+                    </a>
+                    <a href="#" @click="currentPage = 'articles'" :class="currentPage === 'articles' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                        <i class="fas fa-newspaper mr-2"></i>บทความ
+                    </a>
+                    <a href="#" @click="currentPage = 'assessments'" :class="currentPage === 'assessments' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                        <i class="fas fa-clipboard-check mr-2"></i>แบบทดสอบ
+                    </a>
+                    <a href="#" @click="currentPage = 'growth'" :class="currentPage === 'growth' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                        <i class="fas fa-seedling mr-2"></i>สวนแห่งใจ
+                    </a>
+                    <a href="#" @click="navigateTo('tools')" class="px-3 py-2 rounded-lg font-medium text-gray-600 dark:text-gray-300 hover:bg-primary-light hover:text-white transition-colors">
+                        <i class="fas fa-wind mr-2"></i>เครื่องมือผ่อนคลาย
+                    </a>
+                    
+                    <!-- Theme Toggle -->
+                    <button @click="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="สลับธีม">
+                        <i :class="darkMode ? 'fas fa-sun' : 'fas fa-moon'" class="text-lg"></i>
+                    </button>
+                </nav>
             </div>
-            <div class="hamburger" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
+            
+            <!-- Mobile Navigation -->
+            <div x-show="mobileMenuOpen" x-transition class="md:hidden mt-4 space-y-2">
+                <a href="#" @click="currentPage = 'home'; mobileMenuOpen = false" :class="currentPage === 'home' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="block px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                    <i class="fas fa-home mr-2"></i>หน้าหลัก
+                </a>
+                <a href="#" @click="currentPage = 'journal'; mobileMenuOpen = false" :class="currentPage === 'journal' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="block px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                    <i class="fas fa-book mr-2"></i>สมุดบันทึก
+                </a>
+                <a href="#" @click="currentPage = 'music'; mobileMenuOpen = false" :class="currentPage === 'music' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="block px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                    <i class="fas fa-music mr-2"></i>เพลงและพอดแคสต์
+                </a>
+                <a href="#" @click="currentPage = 'articles'; mobileMenuOpen = false" :class="currentPage === 'articles' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="block px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                    <i class="fas fa-newspaper mr-2"></i>บทความ
+                </a>
+                <a href="#" @click="currentPage = 'assessments'; mobileMenuOpen = false" :class="currentPage === 'assessments' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="block px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                    <i class="fas fa-clipboard-check mr-2"></i>แบบทดสอบ
+                </a>
+                <a href="#" @click="currentPage = 'growth'; mobileMenuOpen = false" :class="currentPage === 'growth' ? 'bg-primary-light text-white' : 'text-gray-600 dark:text-gray-300'" class="block px-3 py-2 rounded-lg font-medium hover:bg-primary-light hover:text-white transition-colors">
+                    <i class="fas fa-seedling mr-2"></i>สวนแห่งใจ
+                </a>
+                <a href="#" @click="navigateTo('tools'); mobileMenuOpen = false" class="block px-3 py-2 rounded-lg font-medium text-gray-600 dark:text-gray-300 hover:bg-primary-light hover:text-white transition-colors">
+                    <i class="fas fa-wind mr-2"></i>เครื่องมือผ่อนคลาย
+                </a>
             </div>
         </div>
     </header>
 
-    <main class="container">
-        
-        <section id="home" class="active">
-            <div class="hero-section">
-                <div class="greeting-content">
-                    <h3 id="greetingText">สวัสดีค่ะ ✨</h3>
-                    <div class="quote-box-modern">
-                        <h2 id="quoteText">"วันนี้เป็นวันที่ดีนะ.."</h2>
-                        <small id="quoteAuthor">- สุขใจ</small>
-                    </div>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Home Page -->
+        <div x-show="currentPage === 'home'" x-transition class="space-y-8">
+            <!-- Welcome Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-primary mb-4">สวัสดี! วันนี้คุณเป็นอย่างไรบ้าง?</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">เลือกอารมณ์ของคุณในวันนี้ แล้วเราจะช่วยให้คุณรู้สึกดีขึ้น</p>
+                
+                <!-- Mood Selector -->
+                <div class="flex flex-wrap justify-center gap-4 md:gap-6 my-8">
+                    <template x-for="(mood, index) in moods" :key="mood.id">
+                        <button 
+                            @click="selectMood(mood)" 
+                            :class="{ 'ring-4 ring-primary scale-105': selectedMood === mood.id }" 
+                            class="w-16 h-16 md:w-20 md:h-20 rounded-full flex flex-col items-center justify-center transition-all duration-300" 
+                            :style="`background-color: ${mood.color}`"
+                            :id="`mood-${mood.id}`"
+                            :name="`mood-${mood.id}`"
+                            :aria-label="`อารมณ์: ${mood.label}`"
+                        >
+                            <span class="text-2xl md:text-3xl" x-text="mood.emoji"></span>
+                            <span class="text-xs md:text-sm font-medium mt-1" x-text="mood.label"></span>
+                        </button>
+                    </template>
                 </div>
-            </div>
-
-            <div class="dashboard-grid">
-                <div class="glass-card mood-card">
-                    <h3>วันนี้ใจเป็นอย่างไร?</h3>
-                    <div class="mood-selector-modern">
-                        <div class="mood-item" onclick="selectMood('มีความสุข', '😆')">
-                            <span class="emoji">😆</span><span>สุข</span>
+                
+                <!-- Mood Response -->
+                <div class="mt-8 p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
+                    <template x-if="selectedMood">
+                        <div>
+                            <p class="font-semibold text-lg mb-2" x-text="moodResponses[selectedMood].message"></p>
+                            <p class="text-gray-600 dark:text-gray-300" x-text="moodResponses[selectedMood].suggestion"></p>
                         </div>
-                        <div class="mood-item" onclick="selectMood('โอเค', '😐')">
-                            <span class="emoji">😐</span><span>โอเค</span>
-                        </div>
-                        <div class="mood-item" onclick="selectMood('เครียด', '😠')">
-                            <span class="emoji">😠</span><span>เครียด</span>
-                        </div>
-                        <div class="mood-item" onclick="selectMood('เศร้า', '😫')">
-                            <span class="emoji">😫</span><span>เศร้า</span>
-                        </div>
-                    </div>
-                    <div id="noteSection" class="hidden">
-                        <p id="selectedMoodText"></p>
-                        <textarea id="moodNote" placeholder="ระบายความในใจออกมาได้เลย..."></textarea>
-                        <button class="btn-primary" onclick="saveMoodAndNote()">บันทึกความทรงจำ</button>
-                    </div>
+                    </template>
+                    <template x-if="!selectedMood">
+                        <p class="text-gray-600 dark:text-gray-300">เลือกอารมณ์เพื่อดูคำแนะนำพิเศษสำหรับคุณ</p>
+                    </template>
                 </div>
-
-                <div class="quick-check-card">
-                    <h3>เช็คสุขภาพใจด่วน</h3>
-                    <div class="assessment-grid-modern">
-        <div class="assess-card" onclick="startPreScreening('PHQ2')">
-        <div class="assess-icon phq">💧</div>
-        <span>ภาวะซึมเศร้า</span>
-    </div>
-    <div class="assess-card" onclick="startTest('WHO5')">
-        <div class="assess-icon st" style="background: #e8f5e9; color: #2e7d32;">🌈</div>
-        <span>ดัชนีความสุข</span>
-    </div>
-    <div class="assess-card" onclick="startTest('ST5')">
-        <div class="assess-icon bo" style="background: #fff3e0; color: #ef6c00;">🌪️</div>
-        <span>ความเครียด</span>
-    </div>
-    <div class="assess-card" onclick="startTest('BURNOUT')">
-        <div class="assess-icon bo">🔥</div>
-        <span>ภาวะหมดไฟ</span>
-    </div>
-
-
-    <div class="assess-card" onclick="loadArticles()">
-        <div class="assess-icon bo" style="background: #e3f2fd; color: #1976d2;">📚</div>
-        <span>บทความสุขภาพใจ</span>
-        </div>
-    </div>
-
-
-</div>
-</div>
-                </div>
-            </div>
-        </section>
-
-<section id="testMenu">
-    <div class="section-header"><h2>คลังแบบทดสอบ 📝</h2></div>
-    <div class="test-list-modern">
-        
-        <div class="glass-card test-row" onclick="startPreScreening('PHQ2')">
-            <div class="test-icon-box">💧</div>
-            <div class="test-text">
-                <h4>ภาวะซึมเศร้า</h4>
-                <p>คัดกรองเบื้องต้น (2Q + PHQ-9)</p>
-            </div>
-        </div>
-
-        <div class="glass-card test-row" onclick="startTest('WHO5')">
-            <div class="test-icon-box">🌈</div>
-            <div class="test-text">
-                <h4>ดัชนีความสุข</h4>
-                <p>แบบวัดความสุขสากล (WHO-5)</p>
-            </div>
-        </div>
-
-        <div class="glass-card test-row" onclick="startTest('ST5')">
-            <div class="test-icon-box">🌪️</div>
-            <div class="test-text">
-                <h4>ระดับความเครียด</h4>
-                <p>แบบประเมินความเครียด (ST-5)</p>
-            </div>
-        </div>
-
-        <div class="glass-card test-row" onclick="startTest('BURNOUT')">
-            <div class="test-icon-box">🔥</div>
-            <div class="test-text">
-                <h4>ภาวะหมดไฟ</h4>
-                <p>แบบประเมิน Burnout ในการทำงาน</p>
-            </div>
-        </div>
-
-
-
-    </div>
-    <button class="btn-ghost" onclick="showPage('home')">กลับหน้าหลัก</button>
-</section>
-
-        <section id="guide">
-            <div class="glass-card">
-                <h2>💡 คำแนะนำในการดูแลใจ</h2>
-                <ul style="text-align: left; line-height: 2;">
-                    <li>หมั่นสำรวจอารมณ์ตัวเองอย่างสม่ำเสมอ</li>
-                    <li>หากเครียดเกินไป ลองฟังเพลงผ่อนคลายในแอปของเรา</li>
-                    <li>การทำแบบทดสอบเป็นเพียงการคัดกรองเบื้องต้น</li>
-                    <li>หากรู้สึกไม่ไหว ควรปรึกษาผู้เชี่ยวชาญหรือสายด่วน 1323</li>
-                </ul>
-                <button class="btn-primary" onclick="showPage('home')">รับทราบ</button>
-            </div>
-        </section>
-
-        <section id="about">
-            <div class="glass-card text-center">
-                <h2>🌿 เกี่ยวกับ สุขใจ</h2>
-                <p>เราตั้งใจสร้างพื้นที่ปลอดภัยเล็กๆ เพื่อให้ทุกคนได้กลับมาดูแลใจของตัวเองในทุกวัน</p>
-                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">เวอร์ชัน 1.0.0</p>
-                <button class="btn-ghost" onclick="showPage('home')">กลับหน้าหลัก</button>
-            </div>
-        </section>
-
-<section id="screening">
-    <div class="glass-card quiz-card">
-        
-        <h2 id="qTitle" class="text-center" style="margin-bottom: 20px;"></h2>
-
-        <div id="qIntro" class="quiz-intro">
-            <div class="instruction-box">
-                <h4 style="margin-bottom: 10px;">📝 คำแนะนำก่อนเริ่ม</h4>
-                <p id="qInstructionText" style="font-size: 0.95rem; color: #444; line-height: 1.5;"></p>
-                <ul class="instruction-list" style="margin-top: 15px; font-size: 0.85rem; color: #666;">
-                    <li>ใช้เวลาทำประมาณ 1-3 นาที</li>
-                    <li>ข้อมูลของคุณจะเป็นความลับและอยู่แค่ในเครื่องนี้</li>
-                    <li>ผลลัพธ์นี้ไม่ใช่การวินิจฉัยโดยแพทย์</li>
-                </ul>
-            </div>
-            <button class="btn-primary" onclick="startQuizNow()" style="width: 100%; margin-top: 10px;">ฉันพร้อมแล้ว เริ่มเลย</button>
-            <button class="btn-text" onclick="showPage('home')" style="width: 100%; margin-top: 10px; color: #888;">ไว้วันหลังนะ</button>
-        </div>
-
-        <div id="qContent" class="hidden">
-            <div class="progress-container-mini">
-                <div id="qProgressBar" class="progress-bar-mini"></div>
             </div>
             
-            <p id="qNumber" class="text-mute" style="font-size: 0.85rem; margin-bottom: 10px;"></p>
-            <h3 id="qText" style="margin-bottom: 25px; line-height: 1.4;"></h3>
-            
-            <div id="qOptions" class="options-grid">
+            <!-- Daily Quote -->
+            <div class="bg-gradient-to-r from-primary to-primary-light text-white rounded-2xl shadow-lg p-6 md:p-8">
+                <div class="text-center">
+                    <i class="fas fa-quote-left text-2xl opacity-70 mb-4"></i>
+                    <p class="text-xl md:text-2xl italic mb-4" x-text="dailyQuote.text"></p>
+                    <p class="opacity-90" x-text="`- ${dailyQuote.author}`"></p>
                 </div>
+            </div>
+            
+            <!-- Features Grid -->
+            <div>
+                <h3 class="text-2xl font-bold text-primary mb-6 flex items-center">
+                    <i class="fas fa-magic mr-3"></i>ฟีเจอร์เพื่อสุขภาพใจ
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="(feature, index) in features" :key="feature.id">
+                        <a 
+                            href="#" 
+                            @click="navigateToFeature(feature)" 
+                            class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 block cursor-pointer"
+                            :id="`feature-${feature.id}`"
+                            :aria-label="`ไปยัง ${feature.title}`"
+                        >
+                            <div class="text-4xl mb-4" x-text="feature.icon"></div>
+                            <h4 class="text-xl font-bold text-primary mb-2" x-text="feature.title"></h4>
+                            <p class="text-gray-600 dark:text-gray-300" x-text="feature.description"></p>
+                        </a>
+                    </template>
+                </div>
+            </div>
         </div>
 
-    </div>
-</section>
-
-<section id="result">
-    <div class="glass-card result-card" id="printableArea">
-        
-        <div id="resultHeader" class="result-status-banner">
-            <h3 style="margin:0; opacity: 0.8; font-weight: 300; font-size: 0.9rem;">Mental Health Report</h3>
-            <h2 id="resLevel" style="margin: 5px 0;">ระดับคะแนน: กำลังคำนวณ</h2>
-            <p id="resDate" style="font-size: 0.75rem; margin: 0; opacity: 0.9;"></p>
-        </div>
-
-        <div class="stats-section" style="padding: 20px;">
-            <h4 style="margin: 0 0 10px 0; font-size: 1rem;"><i class="icon">📊</i> แนวโน้มสภาวะจิตใจ</h4>
-            <div class="mini-chart-container">
-                <div id="historyBars" class="history-bars">
+        <!-- Journal Page -->
+        <div x-show="currentPage === 'journal'" x-transition class="space-y-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-primary mb-6 flex items-center">
+                <i class="fas fa-book mr-3"></i>สมุดบันทึก
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Journal Form -->
+                <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                    <form @submit.prevent="saveJournalEntry()" id="journalForm" name="journalForm">
+                        <div class="space-y-6">
+                            <!-- Date -->
+                            <div>
+                                <label for="journalDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">วันที่</label>
+                                <input 
+                                    type="date" 
+                                    x-model="journalForm.date" 
+                                    id="journalDate" 
+                                    name="journalDate"
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                >
+                            </div>
+                            
+                            <!-- Mood -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">อารมณ์วันนี้</label>
+                                <div class="flex flex-wrap gap-3">
+                                    <template x-for="(mood, index) in moods" :key="mood.id">
+                                        <button 
+                                            type="button" 
+                                            @click="journalForm.mood = mood.id" 
+                                            :class="{ 'ring-2 ring-primary': journalForm.mood === mood.id }" 
+                                            class="w-12 h-12 rounded-full flex items-center justify-center transition-all" 
+                                            :style="`background-color: ${mood.color}`"
+                                            :id="`journal-mood-${mood.id}`"
+                                            :name="`journalMood`"
+                                            :value="mood.id"
+                                            :aria-label="`อารมณ์: ${mood.label}`"
+                                        >
+                                            <span class="text-xl" x-text="mood.emoji"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                                <input type="hidden" x-model="journalForm.mood" id="selectedMood" name="selectedMood">
+                            </div>
+                            
+                            <!-- Journal Entry -->
+                            <div>
+                                <label for="journalEntry" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">บันทึกความรู้สึก</label>
+                                <textarea 
+                                    x-model="journalForm.entry" 
+                                    id="journalEntry" 
+                                    name="journalEntry"
+                                    rows="5" 
+                                    placeholder="วันนี้คุณรู้สึกอย่างไร? มีเรื่องอะไรที่อยากระบายหรือบันทึกไว้?" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                ></textarea>
+                            </div>
+                            
+                            <!-- Gratitude -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">3 สิ่งที่ฉันรู้สึกขอบคุณวันนี้</label>
+                                <div class="space-y-3">
+                                    <input 
+                                        type="text" 
+                                        x-model="journalForm.gratitude[0]" 
+                                        id="gratitude1" 
+                                        name="gratitude1"
+                                        placeholder="สิ่งแรกที่รู้สึกขอบคุณ" 
+                                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                    <input 
+                                        type="text" 
+                                        x-model="journalForm.gratitude[1]" 
+                                        id="gratitude2" 
+                                        name="gratitude2"
+                                        placeholder="สิ่งที่สองที่รู้สึกขอบคุณ" 
+                                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                    <input 
+                                        type="text" 
+                                        x-model="journalForm.gratitude[2]" 
+                                        id="gratitude3" 
+                                        name="gratitude3"
+                                        placeholder="สิ่งที่สามที่รู้สึกขอบคุณ" 
+                                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                </div>
+                            </div>
+                            
+                            <!-- Daily Goal -->
+                            <div>
+                                <label for="dailyGoal" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">เป้าหมายเล็กๆ สำหรับวันนี้</label>
+                                <input 
+                                    type="text" 
+                                    x-model="journalForm.dailyGoal" 
+                                    id="dailyGoal" 
+                                    name="dailyGoal"
+                                    placeholder="เช่น ออกไปเดินเล่น 10 นาที" 
+                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                >
+                            </div>
+                            
+                            <!-- Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                                <button 
+                                    type="submit" 
+                                    id="saveJournalBtn" 
+                                    name="saveJournalBtn"
+                                    class="flex-1 bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+                                >
+                                    <i class="fas fa-save mr-2"></i>บันทึก
+                                </button>
+                                <button 
+                                    type="button" 
+                                    @click="downloadJournal()" 
+                                    id="downloadJournalBtn" 
+                                    name="downloadJournalBtn"
+                                    class="flex-1 bg-secondary hover:bg-pink-400 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+                                >
+                                    <i class="fas fa-download mr-2"></i>ดาวน์โหลดบันทึก
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Recent Entries -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-primary mb-4">กิจกรรมล่าสุด</h3>
+                        
+                        <template x-if="journalEntries.length === 0">
+                            <div class="text-center py-8">
+                                <i class="fas fa-pen text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                                <p class="text-gray-500 dark:text-gray-400">ยังไม่มีบันทึก ลองเขียนบันทึกแรกของคุณสิ</p>
+                            </div>
+                        </template>
+                        
+                        <div class="space-y-4">
+                            <template x-for="(entry, index) in journalEntries.slice(0, 3)" :key="entry.id">
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-semibold" x-text="formatDate(entry.date)"></span>
+                                        <span class="text-2xl" x-text="getMoodEmoji(entry.mood)"></span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 truncate" x-text="entry.entry || 'ไม่มีข้อความ'"></p>
+                                </div>
+                            </template>
+                        </div>
                     </div>
-            </div>
-            <p style="font-size: 0.7rem; color: #888; text-align: center; margin-top: 5px;">เปรียบเทียบผลการทดสอบ 3 ครั้งล่าสุด</p>
-        </div>
-
-        <div class="score-visual" style="padding: 0 20px 20px;">
-            <div class="progress-container">
-                <div id="resBar" class="progress-bar"></div>
-            </div>
-            <div class="score-label" style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                <span>คะแนนของคุณ: <strong id="resScore">0</strong></span>
-                <span id="maxScoreLabel"></span>
-            </div>
-        </div>
-
-        <div class="analysis-section" style="padding: 0 20px 20px;">
-            <div class="advice-card highlight" style="background: #fdf8f2; padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary);">
-                <h4 style="margin: 0 0 8px 0; color: var(--primary-dark);"><i class="icon">💡</i> บทวิเคราะห์เฉพาะคุณ</h4>
-                <p id="resAdvice" style="margin: 0; font-size: 0.9rem; line-height: 1.5; color: #444;"></p>
-            </div>
-
-            <div id="medicalAdvice" class="medical-box hidden" style="margin-top: 15px; background: #fff0f0; border: 1px solid #ffcccc; padding: 15px; border-radius: 12px;">
-                <h4 style="margin: 0 0 8px 0; color: #d9534f;"><i class="icon">🏥</i> ข้อแนะนำทางการแพทย์</h4>
-                <p style="font-size: 0.85rem; margin-bottom: 8px;">ควรปรึกษาผู้เชี่ยวชาญเพื่อรับคำแนะนำที่ถูกต้อง:</p>
-                <ul style="padding-left: 20px; font-size: 0.85rem; color: #555;">
-                    <li>โทรสายด่วนสุขภาพจิต <strong>1323</strong> (ฟรี 24 ชม.)</li>
-                    <li>ปรึกษาห้องพยาบาล หรือแผนกจิตเวช รพ.ใกล้บ้าน</li>
-                    <li>ลองจดบันทึกอาการที่เกิดขึ้นบ่อยๆ เพื่อแจ้งแพทย์</li>
-                </ul>
+                    
+                    <!-- Tree Progress -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                        <div class="text-center">
+                            <div class="text-6xl mb-4 tree-transition" :class="tree.animation" x-text="tree.icon"></div>
+                            <h4 class="text-xl font-bold text-primary mb-2" x-text="tree.name"></h4>
+                            <p class="text-gray-600 dark:text-gray-300" x-text="`บันทึกอีก ${7 - tree.progress} ครั้งเพื่อให้ต้นไม้เติบโต!`"></p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="result-actions no-print" style="padding: 20px; display: flex; flex-direction: column; gap: 10px;">
-        <button class="btn-primary" onclick="window.print()" style="width: 100%;"><i class="icon">🖨️</i> พิมพ์หรือบันทึกเป็น PDF</button>
-        <button class="btn-ghost" onclick="shareResult()" style="width: 100%;"><i class="icon">🔗</i> แชร์ให้เพื่อนหรือคนใกล้ชิด</button>
-        <button class="btn-text" onclick="showPage('home')" style="width: 100%; text-align: center; color: #666; cursor: pointer; padding: 10px;">กลับหน้าหลัก</button>
-    </div>
-</section>
+        <!-- Music & Podcast Page -->
+        <div x-show="currentPage === 'music'" x-transition class="space-y-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-primary mb-6 flex items-center">
+                <i class="fas fa-music mr-3"></i>เพลงและพอดแคสต์
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Player -->
+                <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-primary mb-2" x-text="currentTrack.title || 'เลือกเพลงหรือพอดแคสต์'"></h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6" x-text="currentTrack.description || 'เลือกรายการจากด้านขวาเพื่อเริ่มฟัง'"></p>
+                    
+                    <div class="rounded-xl overflow-hidden">
+                        <template x-if="currentTrack.spotifyUrl">
+                            <iframe 
+                                :src="currentTrack.spotifyUrl" 
+                                width="100%" 
+                                height="352" 
+                                frameborder="0" 
+                                allowfullscreen="" 
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                                loading="lazy" 
+                                class="rounded-lg"
+                                :title="currentTrack.title"
+                            ></iframe>
+                        </template>
+                        <template x-if="!currentTrack.spotifyUrl">
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-12 text-center">
+                                <i class="fas fa-headphones text-6xl text-gray-300 dark:text-gray-600 mb-6"></i>
+                                <p class="text-gray-500 dark:text-gray-400">ยังไม่ได้เลือกเพลงหรือพอดแคสต์</p>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <h4 class="font-bold text-primary mb-2">คำแนะนำการฟัง</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">ฟังเพลงผ่อนคลายอย่างน้อย 15-30 นาทีต่อวัน สามารถช่วยลดความเครียดและความวิตกกังวลได้</p>
+                    </div>
+                </div>
+                
+                <!-- Playlist -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-h-[600px] overflow-y-auto scrollbar-thin">
+                    <!-- Tabs -->
+                    <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+                        <button 
+                            @click="musicTab = 'music'" 
+                            :class="{ 'border-b-2 border-primary text-primary': musicTab === 'music' }" 
+                            class="flex-1 py-3 font-medium text-center"
+                            id="musicTab"
+                            name="musicTab"
+                            value="music"
+                        >
+                            <i class="fas fa-music mr-2"></i>เพลงผ่อนคลาย
+                        </button>
+                        <button 
+                            @click="musicTab = 'podcast'" 
+                            :class="{ 'border-b-2 border-primary text-primary': musicTab === 'podcast' }" 
+                            class="flex-1 py-3 font-medium text-center"
+                            id="podcastTab"
+                            name="musicTab"
+                            value="podcast"
+                        >
+                            <i class="fas fa-podcast mr-2"></i>พอดแคสต์
+                        </button>
+                        <button 
+                            @click="musicTab = 'playlist'" 
+                            :class="{ 'border-b-2 border-primary text-primary': musicTab === 'playlist' }" 
+                            class="flex-1 py-3 font-medium text-center"
+                            id="playlistTab"
+                            name="musicTab"
+                            value="playlist"
+                        >
+                            <i class="fas fa-list mr-2"></i>เพลย์ลิสต์
+                        </button>
+                    </div>
+                    
+                    <!-- Music List -->
+                    <div x-show="musicTab === 'music'" class="space-y-3">
+                        <template x-for="(track, index) in musicData.music" :key="track.id">
+                            <button 
+                                @click="playTrack(track)" 
+                                :class="{ 'bg-primary bg-opacity-10 border-l-4 border-primary': currentTrack.id === track.id }" 
+                                class="w-full flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                :id="`track-${track.id}`"
+                                :name="`musicTrack`"
+                                :value="track.id"
+                            >
+                                <img :src="track.image" :alt="track.title" class="w-12 h-12 rounded-lg object-cover">
+                                <div class="ml-4 text-left flex-1">
+                                    <h4 class="font-semibold truncate" x-text="track.title"></h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate" x-text="`${track.artist} • ${track.duration}`"></p>
+                                </div>
+                            </button>
+                        </template>
+                    </div>
+                    
+                    <!-- Podcast List -->
+                    <div x-show="musicTab === 'podcast'" class="space-y-3">
+                        <template x-for="(track, index) in musicData.podcasts" :key="track.id">
+                            <button 
+                                @click="playTrack(track)" 
+                                :class="{ 'bg-primary bg-opacity-10 border-l-4 border-primary': currentTrack.id === track.id }" 
+                                class="w-full flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                :id="`podcast-${track.id}`"
+                                :name="`podcastTrack`"
+                                :value="track.id"
+                            >
+                                <img :src="track.image" :alt="track.title" class="w-12 h-12 rounded-lg object-cover">
+                                <div class="ml-4 text-left flex-1">
+                                    <h4 class="font-semibold truncate" x-text="track.title"></h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate" x-text="`${track.artist} • ${track.duration}`"></p>
+                                </div>
+                            </button>
+                        </template>
+                    </div>
+                    
+                    <!-- Playlist List -->
+                    <div x-show="musicTab === 'playlist'" class="space-y-3">
+                        <template x-for="(track, index) in musicData.playlists" :key="track.id">
+                            <button 
+                                @click="playTrack(track)" 
+                                :class="{ 'bg-primary bg-opacity-10 border-l-4 border-primary': currentTrack.id === track.id }" 
+                                class="w-full flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                :id="`playlist-${track.id}`"
+                                :name="`playlistTrack`"
+                                :value="track.id"
+                            >
+                                <img :src="track.image" :alt="track.title" class="w-12 h-12 rounded-lg object-cover">
+                                <div class="ml-4 text-left flex-1">
+                                    <h4 class="font-semibold truncate" x-text="track.title"></h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate" x-text="`${track.artist} • ${track.duration}`"></p>
+                                </div>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <section id="history">
-            <div class="section-header"><h2>ประวัติบันทึกใจ 📜</h2></div>
-            <div id="historyList"></div>
-            <button class="btn-ghost" onclick="showPage('home')">กลับหน้าหลัก</button>
-        </section>
+        <!-- Articles Page -->
+        <div x-show="currentPage === 'articles'" x-transition class="space-y-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-primary mb-6 flex items-center">
+                <i class="fas fa-newspaper mr-3"></i>บทความสุขภาพจิต
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="(article, index) in articlesData.articles" :key="article.id">
+                    <div 
+                        @click="openArticleModal(article)" 
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                        :id="`article-${article.id}`"
+                        tabindex="0"
+                        @keydown.enter="openArticleModal(article)"
+                        role="button"
+                        aria-label="อ่านบทความ: {{ article.title }}"
+                    >
+                        <img :src="article.image" :alt="article.title" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <span class="inline-block bg-primary bg-opacity-10 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-3" x-text="article.category"></span>
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3 line-clamp-2" x-text="article.title"></h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3" x-text="article.excerpt"></p>
+                            <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400">
+                                <span x-text="article.readTime"></span>
+                                <span x-text="article.date"></span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
 
+        <!-- Assessments Page -->
+        <div x-show="currentPage === 'assessments'" x-transition class="space-y-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-primary mb-6 flex items-center">
+                <i class="fas fa-clipboard-check mr-3"></i>แบบทดสอบสุขภาพจิต
+            </h2>
+            
+            <p class="text-gray-600 dark:text-gray-300 mb-8">เลือกรูปแบบการประเมินที่คุณต้องการทำ แบบทดสอบเหล่านี้ช่วยให้คุณเข้าใจตนเองและสุขภาพจิตของคุณดีขึ้น</p>
+            
+            <!-- Tabs for Mental Health and Personality Tests -->
+            <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+                <button 
+                    @click="assessmentTab = 'mental'" 
+                    :class="{ 'border-b-2 border-primary text-primary': assessmentTab === 'mental' }" 
+                    class="flex-1 py-3 font-medium text-center"
+                    id="mentalTab"
+                    name="assessmentTab"
+                    value="mental"
+                >
+                    <i class="fas fa-brain mr-2"></i>สุขภาพจิต
+                </button>
+                <button 
+                    @click="assessmentTab = 'personality'" 
+                    :class="{ 'border-b-2 border-primary text-primary': assessmentTab === 'personality' }" 
+                    class="flex-1 py-3 font-medium text-center"
+                    id="personalityTab"
+                    name="assessmentTab"
+                    value="personality"
+                >
+                    <i class="fas fa-user mr-2"></i>บุคลิกภาพ
+                </button>
+            </div>
+            
+            <!-- Mental Health Tests -->
+            <div x-show="assessmentTab === 'mental'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="(assessment, index) in mentalAssessments" :key="assessment.id">
+                    <div 
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer" 
+                        @click="startAssessment(assessment)"
+                        :id="`assessment-${assessment.id}`"
+                        tabindex="0"
+                        @keydown.enter="startAssessment(assessment)"
+                        role="button"
+                        aria-label="เริ่มแบบทดสอบ: {{ assessment.title }}"
+                    >
+                        <div class="text-5xl mb-4" x-text="getAssessmentIcon(assessment.id)"></div>
+                        <h3 class="text-xl font-bold text-primary mb-3" x-text="assessment.title"></h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm" x-text="assessment.desc"></p>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                            <span x-text="assessment.questions.length + ' คำถาม'"></span>
+                        </div>
+                        <div class="flex justify-center">
+                            <span class="inline-block bg-primary bg-opacity-10 text-primary text-xs font-semibold px-3 py-1 rounded-full">
+                                <span x-text="getAssessmentCategory(assessment.type)"></span>
+                            </span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
+            <!-- Personality Tests -->
+            <div x-show="assessmentTab === 'personality'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="(assessment, index) in personalityAssessments" :key="assessment.id">
+                    <div 
+                        class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer" 
+                        @click="startAssessment(assessment)"
+                        :id="`assessment-${assessment.id}`"
+                        tabindex="0"
+                        @keydown.enter="startAssessment(assessment)"
+                        role="button"
+                        aria-label="เริ่มแบบทดสอบ: {{ assessment.title }}"
+                    >
+                        <div class="text-5xl mb-4" x-text="getAssessmentIcon(assessment.id)"></div>
+                        <h3 class="text-xl font-bold text-primary mb-3" x-text="assessment.title"></h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm" x-text="assessment.desc"></p>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                            <span x-text="assessment.questions.length + ' คำถาม'"></span>
+                        </div>
+                        <div class="flex justify-center">
+                            <span class="inline-block bg-accent bg-opacity-10 text-accent text-xs font-semibold px-3 py-1 rounded-full">
+                                <span x-text="getAssessmentCategory(assessment.type)"></span>
+                            </span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Quiz Page -->
+        <div x-show="currentPage === 'quiz'" x-transition>
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
+                    <!-- Assessment Info -->
+                    <div class="mb-8 text-center">
+                        <div class="text-4xl mb-4" x-text="getAssessmentIcon(currentQuiz.id)"></div>
+                        <h2 class="text-2xl font-bold text-primary mb-2" x-text="currentQuiz.title"></h2>
+                        <p class="text-gray-600 dark:text-gray-300" x-text="currentQuiz.desc"></p>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mb-8">
+                        <div class="flex justify-between text-sm text-gray-600 dark:text-gray-300 mb-2">
+                            <span>คำถามที่ <span x-text="currentQuestionIndex + 1"></span> จาก <span x-text="currentQuiz.questions.length"></span></span>
+                            <span x-text="`${Math.round(((currentQuestionIndex + 1) / currentQuiz.questions.length) * 100)}%`"></span>
+                        </div>
+                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary transition-all duration-300" :style="`width: ${((currentQuestionIndex + 1) / currentQuiz.questions.length) * 100}%`"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Question -->
+                    <h3 class="text-xl md:text-2xl font-bold text-center mb-8" x-text="currentQuiz.questions[currentQuestionIndex].text"></h3>
+                    
+                    <!-- Options -->
+                    <div class="space-y-4 mb-8">
+                        <template x-for="(option, index) in currentQuiz.questions[currentQuestionIndex].options" :key="index">
+                            <button 
+                                @click="selectQuizAnswer(option.val)" 
+                                :class="{ 'ring-2 ring-primary bg-primary bg-opacity-10': quizAnswers[currentQuestionIndex] === option.val }" 
+                                class="w-full p-4 text-left rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                :id="`quiz-option-${currentQuestionIndex}-${index}`"
+                                :name="`question-${currentQuestionIndex}`"
+                                :value="option.val"
+                            >
+                                <span x-text="option.text"></span>
+                            </button>
+                        </template>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <div class="flex justify-between">
+                        <button 
+                            @click="prevQuestion()" 
+                            :disabled="currentQuestionIndex === 0" 
+                            :class="{ 'opacity-50 cursor-not-allowed': currentQuestionIndex === 0 }" 
+                            class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-3 px-6 rounded-lg transition-colors flex items-center"
+                            id="prevQuestionBtn"
+                            name="prevQuestionBtn"
+                        >
+                            <i class="fas fa-arrow-left mr-2"></i>ก่อนหน้า
+                        </button>
+                        
+                        <button 
+                            @click="nextQuestion()" 
+                            :disabled="quizAnswers[currentQuestionIndex] === undefined" 
+                            :class="{ 'opacity-50 cursor-not-allowed': quizAnswers[currentQuestionIndex] === undefined }" 
+                            class="bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center"
+                            id="nextQuestionBtn"
+                            name="nextQuestionBtn"
+                        >
+                            <template x-if="currentQuestionIndex < currentQuiz.questions.length - 1">
+                                <span>ถัดไป <i class="fas fa-arrow-right ml-2"></i></span>
+                            </template>
+                            <template x-if="currentQuestionIndex === currentQuiz.questions.length - 1">
+                                <span>ส่งคำตอบ <i class="fas fa-check ml-2"></i></span>
+                            </template>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Page -->
+        <div x-show="currentPage === 'results'" x-transition>
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8 text-center">
+                    <div class="text-6xl mb-6" x-text="getAssessmentIcon(currentQuiz.id)"></div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-primary mb-4" x-text="currentQuiz.title"></h2>
+                    
+                    <div class="my-8">
+                        <div class="text-5xl font-bold text-primary mb-2" x-text="quizScore + ' คะแนน'"></div>
+                        <div class="text-xl font-semibold mb-1" x-text="quizResult.title"></div>
+                        <div class="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto" x-text="quizResult.advice"></div>
+                    </div>
+                    
+                    <!-- Score Interpretation -->
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-8">
+                        <h4 class="font-bold text-primary mb-4">ตีความผลคะแนน</h4>
+                        <div class="space-y-3">
+                            <template x-for="(result, index) in currentQuiz.results" :key="result.min">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 rounded-full mr-3" :class="getResultColor(result)"></div>
+                                    <div class="flex-1 text-left">
+                                        <div class="flex justify-between">
+                                            <span class="font-medium" x-text="result.title"></span>
+                                            <span class="text-sm text-gray-500" x-text="`${result.min}-${result.max} คะแนน`"></span>
+                                        </div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-300 mt-1" x-text="result.advice"></div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <!-- Recommendations -->
+                    <div class="bg-gradient-to-r from-primary-light to-primary text-white rounded-lg p-6 mb-8">
+                        <h4 class="font-bold text-white mb-4">คำแนะนำเพิ่มเติมจาก MindBloom</h4>
+                        <div class="text-left space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-heart mt-1 mr-3"></i>
+                                <span>ทำแบบทดสอบนี้ซ้ำได้ทุก 2-4 สัปดาห์ เพื่อติดตามพัฒนาการ</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-book mt-1 mr-3"></i>
+                                <span>ลองอ่านบทความเกี่ยวกับ <span x-text="getRelatedTopic(currentQuiz.id)"></span> ในหมวดบทความ</span>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-music mt-1 mr-3"></i>
+                                <span>ฟังเพลย์ลิสต์ <span x-text="getMusicRecommendation(currentQuiz.id)"></span> เพื่อผ่อนคลาย</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button 
+                            @click="retakeQuiz()" 
+                            class="flex-1 bg-secondary hover:bg-pink-400 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+                            id="retakeQuizBtn"
+                            name="retakeQuizBtn"
+                        >
+                            <i class="fas fa-redo mr-2"></i>ทำแบบทดสอบอีกครั้ง
+                        </button>
+                        <button 
+                            @click="saveAssessmentResult()" 
+                            class="flex-1 bg-accent hover:bg-yellow-500 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+                            id="saveResultBtn"
+                            name="saveResultBtn"
+                        >
+                            <i class="fas fa-save mr-2"></i>บันทึกผล
+                        </button>
+                        <button 
+                            @click="currentPage = 'assessments'" 
+                            class="flex-1 bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+                            id="backToAssessmentsBtn"
+                            name="backToAssessmentsBtn"
+                        >
+                            <i class="fas fa-list mr-2"></i>แบบทดสอบทั้งหมด
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Growth Page -->
+        <div x-show="currentPage === 'growth'" x-transition class="space-y-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-primary mb-6 flex items-center">
+                <i class="fas fa-seedling mr-3"></i>สวนแห่งใจ
+            </h2>
+            
+            <!-- Tree Stats -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
+                <div class="text-center mb-8">
+                    <div class="text-8xl mb-6 tree-transition animate-pulse-slow" :class="tree.animation" x-text="tree.icon"></div>
+                    <h3 class="text-2xl font-bold text-primary mb-2" x-text="tree.name"></h3>
+                    <p class="text-gray-600 dark:text-gray-300" x-text="`บันทึกอีก ${7 - tree.progress} ครั้งเพื่อให้ต้นไม้เติบโต!`"></p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                        <div class="text-3xl text-primary mb-2">🔥</div>
+                        <div class="font-bold mb-1">Streak</div>
+                        <div class="text-2xl" x-text="`${tree.streak} วัน`"></div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                        <div class="text-3xl text-primary mb-2">⭐</div>
+                        <div class="font-bold mb-1">คะแนน</div>
+                        <div class="text-2xl" x-text="`${tree.points} คะแนน`"></div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                        <div class="text-3xl text-primary mb-2">🏆</div>
+                        <div class="font-bold mb-1">Badge</div>
+                        <div class="text-2xl" x-text="`${tree.badges} อัน`"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Badges -->
+            <div>
+                <h3 class="text-xl font-bold text-primary mb-6 flex items-center">
+                    <i class="fas fa-award mr-3"></i>Badge ของคุณ
+                </h3>
+                
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                    <template x-for="(badge, index) in badges" :key="badge.id">
+                        <div 
+                            :class="{ 'ring-4 ring-accent scale-105': badge.earned }" 
+                            class="w-20 h-20 rounded-full flex items-center justify-center text-3xl bg-gray-100 dark:bg-gray-700 transition-all"
+                            :id="`badge-${badge.id}`"
+                            :aria-label="badge.earned ? 'ได้รับ badge นี้แล้ว' : 'ยังไม่ได้รับ badge นี้'"
+                        >
+                            <i :class="badge.icon"></i>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <div class="sticky-player glass-card">
-        <div class="player-info">
-            <span class="music-note">🎵</span>
-            <marquee behavior="scroll" direction="left" id="musicStatus" scrollamount="2" >พร้อมฟังเพลงผ่อนคลายไหม?</marquee>
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col items-center space-y-6">
+                <div class="flex items-center space-x-2">
+                    <div class="text-2xl text-primary">🌱</div>
+                    <h2 class="text-xl font-bold text-primary">MindBloom</h2>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 text-center">"พื้นที่พักใจที่คนอยากกลับมาใช้ทุกวัน"</p>
+                
+                <div class="flex flex-wrap justify-center gap-6">
+                    <button 
+                        @click="openModal('crisis')" 
+                        class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light transition-colors"
+                        id="crisisBtn"
+                        name="crisisBtn"
+                    >
+                        แหล่งช่วยเหลือ
+                    </button>
+                    <button 
+                        @click="openModal('privacy')" 
+                        class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light transition-colors"
+                        id="privacyBtn"
+                        name="privacyBtn"
+                    >
+                        ความเป็นส่วนตัว
+                    </button>
+                    <button 
+                        @click="openModal('about')" 
+                        class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light transition-colors"
+                        id="aboutBtn"
+                        name="aboutBtn"
+                    >
+                        เกี่ยวกับเรา
+                    </button>
+                </div>
+                
+                <p class="text-gray-500 dark:text-gray-400 text-sm">© 2023 MindBloom. พัฒนาด้วยความห่วงใย</p>
+            </div>
         </div>
-        <div class="player-controls">
-            <button onclick="prevTrack()" class="p-btn">⏮</button>
-            <button onclick="toggleMusic()" id="playPauseBtn" class="p-btn play-btn">▶</button>
-            <button onclick="nextTrack()" class="p-btn">⏭</button>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Crisis Resources Modal -->
+    <div x-show="modalOpen === 'crisis'" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-primary">แหล่งช่วยเหลือในภาวะวิกฤต</h3>
+                    <button 
+                        @click="closeModal()" 
+                        class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        id="closeCrisisModalBtn"
+                        name="closeCrisisModalBtn"
+                    >
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <p>หากคุณหรือคนใกล้ตัวรู้สึกไม่ปลอดภัยหรือต้องการความช่วยเหลือทันที:</p>
+                    
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                        <h4 class="font-bold text-primary mb-2">สายด่วนสุขภาพจิต 1323</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">บริการให้คำปรึกษาด้านสุขภาพจิต ฟรี ตลอด 24 ชั่วโมง</p>
+                    </div>
+                    
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                        <h4 class="font-bold text-primary mb-2">ศูนย์ช่วยเหลือผู้ได้รับผลกระทบจากภัยพิบัติและวิกฤต</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">โทร 02-141-1100 หรือ 02-141-1122</p>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <p class="font-bold mb-2">โปรดติดต่อผู้เชี่ยวชาญหากคุณ:</p>
+                        <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                            <li>มีความคิดทำร้ายตัวเองหรือผู้อื่น</li>
+                            <li>รู้สึกสิ้นหวังหรือทนทุกข์มาก</li>
+                            <li>ต้องการการช่วยเหลือเร่งด่วน</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button 
+                    @click="closeModal()" 
+                    class="w-full mt-6 bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                    id="closeCrisisBtn"
+                    name="closeCrisisBtn"
+                >
+                    ปิด
+                </button>
+            </div>
         </div>
-        <audio id="bgMusic"></audio>
     </div>
 
-    <script src="questions.js"></script>
-    <script src="app.js"></script>
+    <!-- About Modal -->
+    <div x-show="modalOpen === 'about'" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-primary">เกี่ยวกับ MindBloom</h3>
+                    <button 
+                        @click="closeModal()" 
+                        class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        id="closeAboutModalBtn"
+                        name="closeAboutModalBtn"
+                    >
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <p>MindBloom เป็นพื้นที่ปลอดภัยสำหรับการดูแลสุขภาพจิตเบื้องต้น เราเชื่อว่าทุกคนควรมีพื้นที่พักใจและเครื่องมือที่จะช่วยให้จิตใจเบิกบานขึ้นในแต่ละวัน</p>
+                    
+                    <div>
+                        <h4 class="font-bold text-primary mb-2">สิ่งที่เรามีให้</h4>
+                        <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                            <li>พื้นที่บันทึกความรู้สึกอย่างปลอดภัย</li>
+                            <li>เครื่องมือติดตามและเข้าใจอารมณ์</li>
+                            <li>กิจกรรมและแบบทดสอบเพื่อการรู้จักตัวเอง</li>
+                            <li>แหล่งความรู้เกี่ยวกับการดูแลสุขภาพจิต</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-primary mb-2">ข้อมูลส่วนตัวของคุณ</h4>
+                        <p class="text-gray-600 dark:text-gray-300">ข้อมูลทั้งหมดของคุณจะถูกเก็บไว้ในอุปกรณ์ของคุณ (localStorage) เราไม่มีเซิร์ฟเวอร์หรือฐานข้อมูลส่วนกลางที่เก็บข้อมูลของคุณ</p>
+                    </div>
+                    
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 italic">
+                        <p>"การเดินทางของจิตใจที่เบิกบาน เริ่มต้นจากความใส่ใจในวันนี้"</p>
+                    </div>
+                </div>
+                
+                <button 
+                    @click="closeModal()" 
+                    class="w-full mt-6 bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                    id="closeAboutBtn"
+                    name="closeAboutBtn"
+                >
+                    ปิด
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Modal -->
+    <div x-show="modalOpen === 'privacy'" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-primary">ความเป็นส่วนตัว</h3>
+                    <button 
+                        @click="closeModal()" 
+                        class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        id="closePrivacyModalBtn"
+                        name="closePrivacyModalBtn"
+                    >
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-6">
+                    <p>เราให้ความสำคัญกับความเป็นส่วนตัวของคุณ นี่คือนโยบายข้อมูลของเรา:</p>
+                    
+                    <div>
+                        <h4 class="font-bold text-primary mb-2">ข้อมูลที่เก็บ</h4>
+                        <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                            <li>ข้อมูลบันทึกประจำวัน (เก็บใน localStorage ของเบราว์เซอร์คุณ)</li>
+                            <li>การตั้งค่าการใช้งาน (เช่น โหมดสี, ขนาดตัวอักษร)</li>
+                            <li>ความคืบหน้าในกิจกรรมต่างๆ</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-primary mb-2">ข้อมูลที่ไม่เก็บ</h4>
+                        <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                            <li>ชื่อ, อีเมล, เบอร์โทรศัพท์</li>
+                            <li>ที่อยู่หรือข้อมูลติดต่อใดๆ</li>
+                            <li>ข้อมูลบนเซิร์ฟเวอร์ภายนอก (เราไม่มีเซิร์ฟเวอร์เก็บข้อมูล)</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-primary mb-2">การควบคุมข้อมูลของคุณ</h4>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">คุณสามารถล้างข้อมูลทั้งหมดได้โดยคลิกปุ่มด้านล่าง ข้อมูลทั้งหมดจะถูกลบออกจากอุปกรณ์ของคุณ</p>
+                        
+                        <div class="space-y-3">
+                            <button 
+                                @click="exportData()" 
+                                class="w-full bg-secondary hover:bg-pink-400 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+                                id="exportDataBtn"
+                                name="exportDataBtn"
+                            >
+                                <i class="fas fa-download mr-2"></i>ดาวน์โหลดข้อมูลทั้งหมด (JSON)
+                            </button>
+                            
+                            <button 
+                                @click="clearData()" 
+                                class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center"
+                                id="clearDataBtn"
+                                name="clearDataBtn"
+                            >
+                                <i class="fas fa-trash mr-2"></i>ล้างข้อมูลทั้งหมด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button 
+                    @click="closeModal()" 
+                    class="w-full mt-6 bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                    id="closePrivacyBtn"
+                    name="closePrivacyBtn"
+                >
+                    ปิด
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Modal -->
+    <div x-show="modalOpen === 'article'" x-transition class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-primary" x-text="currentArticle.title"></h3>
+                    <button 
+                        @click="closeModal()" 
+                        class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        id="closeArticleModalBtn"
+                        name="closeArticleModalBtn"
+                    >
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="prose dark:prose-invert max-w-none" x-html="currentArticle.content"></div>
+                
+                <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <span x-text="currentArticle.author"></span> • <span x-text="currentArticle.date"></span>
+                    </div>
+                    <button 
+                        @click="closeModal()" 
+                        class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg transition-colors"
+                        id="closeArticleBtn"
+                        name="closeArticleBtn"
+                    >
+                        ปิด
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility Button -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <button 
+            @click="accessibilityOpen = !accessibilityOpen" 
+            class="w-12 h-12 bg-primary text-white rounded-full shadow-lg flex items-center justify-center"
+            id="accessibilityBtn"
+            name="accessibilityBtn"
+            aria-label="การตั้งค่าการเข้าถึง"
+        >
+            <i class="fas fa-universal-access text-xl"></i>
+        </button>
+        
+        <div x-show="accessibilityOpen" x-transition class="absolute bottom-14 right-0 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
+            <div class="space-y-4">
+                <div>
+                    <label for="fontSizeSmall" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ขนาดตัวอักษร</label>
+                    <div class="flex gap-2">
+                        <button 
+                            @click="setFontSize('small')" 
+                            :class="{ 'bg-primary text-white': fontSize === 'small' }" 
+                            class="flex-1 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded"
+                            id="fontSizeSmall"
+                            name="fontSize"
+                            value="small"
+                        >
+                            ก
+                        </button>
+                        <button 
+                            @click="setFontSize('medium')" 
+                            :class="{ 'bg-primary text-white': fontSize === 'medium' }" 
+                            class="flex-1 py-2 border border-gray-300 dark:border-gray-600 rounded"
+                            id="fontSizeMedium"
+                            name="fontSize"
+                            value="medium"
+                        >
+                            ก
+                        </button>
+                        <button 
+                            @click="setFontSize('large')" 
+                            :class="{ 'bg-primary text-white': fontSize === 'large' }" 
+                            class="flex-1 py-2 text-lg border border-gray-300 dark:border-gray-600 rounded"
+                            id="fontSizeLarge"
+                            name="fontSize"
+                            value="large"
+                        >
+                            ก
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <label for="highContrastToggle" class="text-sm font-medium text-gray-700 dark:text-gray-300">โหมดความคมชัดสูง</label>
+                    <input 
+                        type="checkbox" 
+                        x-model="highContrast" 
+                        id="highContrastToggle" 
+                        name="highContrast"
+                        class="w-4 h-4 text-primary rounded focus:ring-primary"
+                    >
+                </div>
+                
+                <div>
+                    <button 
+                        @click="textToSpeech()" 
+                        class="w-full bg-secondary hover:bg-pink-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center"
+                        id="textToSpeechBtn"
+                        name="textToSpeechBtn"
+                    >
+                        <i class="fas fa-volume-up mr-2"></i>อ่านออกเสียง
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="th" x-data="breathingApp()" x-init="init()" :class="{ 'dark': darkMode }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breathing Buddy - MindBloom</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6D9F71',
+                        'primary-light': '#8FBC8F',
+                        'primary-dark': '#4A7C59',
+                        secondary: '#FFB6C1',
+                        accent: '#FFD166',
+                    },
+                    fontFamily: {
+                        'sans': ['Anuphan', 'Noto Sans Thai', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                        'breathe-in': 'breatheIn 4s ease-in-out infinite',
+                        'breathe-hold': 'breatheHold 7s ease-in-out infinite',
+                        'breathe-out': 'breatheOut 8s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        breatheIn: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.2)' }
+                        },
+                        breatheHold: {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: 0.7 }
+                        },
+                        breatheOut: {
+                            '0%': { transform: 'scale(1.2)' },
+                            '100%': { transform: 'scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+        }
+        
+        @media (max-width: 640px) {
+            .circle {
+                width: 150px;
+                height: 150px;
+            }
+        }
+        
+        .breathing-animation {
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300 min-h-screen">
+    
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Back Button -->
+                <a href="index.html" class="flex items-center text-primary hover:text-primary-dark transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    กลับหน้าหลัก
+                </a>
+                
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="text-2xl text-primary">🌱</div>
+                    <h1 class="text-xl font-bold text-primary">MindBloom</h1>
+                </div>
+                
+                <!-- Theme Toggle -->
+                <button @click="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" aria-label="สลับธีม">
+                    <i :class="darkMode ? 'fas fa-sun' : 'fas fa-moon'" class="text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Title -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-primary mb-4">Breathing Buddy</h1>
+                <p class="text-xl text-gray-600 dark:text-gray-300">ฝึกหายใจแบบ 4-7-8 เพื่อผ่อนคลายจิตใจ</p>
+            </div>
+            
+            <!-- Breathing Circle -->
+            <div class="flex flex-col items-center mb-12">
+                <div 
+                    class="circle mb-8"
+                    :class="{
+                        'bg-gradient-to-r from-primary to-primary-light text-white': currentState === 'inhale',
+                        'bg-gradient-to-r from-accent to-yellow-400 text-gray-800': currentState === 'hold',
+                        'bg-gradient-to-r from-secondary to-pink-400 text-gray-800': currentState === 'exhale'
+                    }"
+                    :style="{
+                        animation: currentState === 'inhale' ? 'breatheIn 4s ease-in-out infinite' : 
+                                 currentState === 'hold' ? 'breatheHold 7s ease-in-out infinite' : 
+                                 currentState === 'exhale' ? 'breatheOut 8s ease-in-out infinite' : 'none'
+                    }"
+                >
+                    <div class="text-center">
+                        <div class="text-6xl font-bold mb-2" x-text="currentTime"></div>
+                        <div class="text-xl font-semibold" x-text="currentStateText"></div>
+                    </div>
+                </div>
+                
+                <!-- Controls -->
+                <div class="space-y-6 text-center">
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button 
+                            @click="startBreathing()" 
+                            x-show="!isRunning"
+                            class="bg-primary hover:bg-primary-dark text-white font-medium py-3 px-8 rounded-lg transition-colors flex items-center"
+                        >
+                            <i class="fas fa-play mr-2"></i>เริ่มฝึกหายใจ
+                        </button>
+                        
+                        <button 
+                            @click="pauseBreathing()" 
+                            x-show="isRunning"
+                            class="bg-secondary hover:bg-pink-400 text-gray-800 font-medium py-3 px-8 rounded-lg transition-colors flex items-center"
+                        >
+                            <i class="fas fa-pause mr-2"></i>หยุดพัก
+                        </button>
+                        
+                        <button 
+                            @click="resetBreathing()" 
+                            class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-3 px-8 rounded-lg transition-colors flex items-center"
+                        >
+                            <i class="fas fa-redo mr-2"></i>เริ่มใหม่
+                        </button>
+                    </div>
+                    
+                    <!-- Cycle Counter -->
+                    <div class="mt-4">
+                        <div class="text-lg text-gray-600 dark:text-gray-300">
+                            รอบที่ทำเสร็จแล้ว: <span class="font-bold text-primary" x-text="cycleCount"></span> รอบ
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 text-center shadow-md">
+                    <div class="text-4xl font-bold text-primary mb-4">4</div>
+                    <h3 class="text-xl font-bold mb-2">หายใจเข้า</h3>
+                    <p class="text-gray-600 dark:text-gray-300">หายใจเข้าช้าๆ ทางจมูก นับในใจ 1-4</p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 text-center shadow-md">
+                    <div class="text-4xl font-bold text-accent mb-4">7</div>
+                    <h3 class="text-xl font-bold mb-2">กลั้นหายใจ</h3>
+                    <p class="text-gray-600 dark:text-gray-300">กลั้นหายใจไว้ นับในใจ 1-7</p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 text-center shadow-md">
+                    <div class="text-4xl font-bold text-secondary mb-4">8</div>
+                    <h3 class="text-xl font-bold mb-2">หายใจออก</h3>
+                    <p class="text-gray-600 dark:text-gray-300">หายใจออกช้าๆ ทางปาก นับในใจ 1-8</p>
+                </div>
+            </div>
+            
+            <!-- Benefits -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8 mb-12">
+                <h2 class="text-2xl font-bold text-primary mb-6 flex items-center">
+                    <i class="fas fa-heart mr-3"></i>ประโยชน์ของการหายใจแบบ 4-7-8
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-start">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-full p-3 mr-4">
+                            <i class="fas fa-check text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">ลดความเครียดและความวิตกกังวล</h3>
+                            <p class="text-gray-600 dark:text-gray-300">ช่วยให้ระบบประสาทสงบลง ลดฮอร์โมนความเครียด</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-full p-3 mr-4">
+                            <i class="fas fa-check text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">ช่วยให้นอนหลับได้ง่ายขึ้น</h3>
+                            <p class="text-gray-600 dark:text-gray-300">ฝึกก่อนนอน ช่วยให้ร่างกายเข้าสู่ภาวะผ่อนคลาย</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-full p-3 mr-4">
+                            <i class="fas fa-check text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">ควบคุมอารมณ์เมื่อโกรธหรือหงุดหงิด</h3>
+                            <p class="text-gray-600 dark:text-gray-300">ช่วยให้สมองส่วนคิดวิเคราะห์ทำงานได้ดีขึ้น</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-full p-3 mr-4">
+                            <i class="fas fa-check text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg mb-1">เพิ่มสมาธิและความจดจ่อ</h3>
+                            <p class="text-gray-600 dark:text-gray-300">ช่วยให้จิตใจสงบและมีสมาธิมากขึ้น</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tips -->
+            <div class="bg-gradient-to-r from-primary to-primary-light text-white rounded-2xl p-6 md:p-8">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-lightbulb mr-3"></i>เคล็ดลับการฝึกหายใจ
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="bg-white bg-opacity-20 rounded-full p-2 mr-4">
+                            <i class="fas fa-1"></i>
+                        </div>
+                        <p>ฝึกในสถานที่เงียบสงบ ไม่มีสิ่งรบกวน</p>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-white bg-opacity-20 rounded-full p-2 mr-4">
+                            <i class="fas fa-2"></i>
+                        </div>
+                        <p>นั่งในท่าที่สบาย หลังตรง</p>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-white bg-opacity-20 rounded-full p-2 mr-4">
+                            <i class="fas fa-3"></i>
+                        </div>
+                        <p>เริ่มต้นด้วย 3-5 รอบต่อวัน แล้วค่อยๆ เพิ่ม</p>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-white bg-opacity-20 rounded-full p-2 mr-4">
+                            <i class="fas fa-4"></i>
+                        </div>
+                        <p>สามารถฝึกได้ตลอดทั้งวัน เมื่อรู้สึกเครียดหรือต้องการผ่อนคลาย</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col items-center space-y-6">
+                <div class="flex items-center space-x-2">
+                    <div class="text-2xl text-primary">🌱</div>
+                    <h2 class="text-xl font-bold text-primary">MindBloom</h2>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 text-center">"การหายใจคือสะพานเชื่อมระหว่างร่างกายและจิตใจ"</p>
+                
+                <p class="text-gray-500 dark:text-gray-400 text-sm">© 2023 MindBloom. พัฒนาด้วยความห่วงใย</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Breathing App JavaScript -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('breathingApp', () => ({
+                // App State
+                darkMode: false,
+                isRunning: false,
+                currentState: 'inhale', // inhale, hold, exhale
+                currentTime: 4,
+                cycleCount: 0,
+                timer: null,
+                
+                // Computed Properties
+                get currentStateText() {
+                    const texts = {
+                        'inhale': 'หายใจเข้า',
+                        'hold': 'กลั้นหายใจ',
+                        'exhale': 'หายใจออก'
+                    };
+                    return texts[this.currentState];
+                },
+                
+                // Methods
+                init() {
+                    // ตั้งค่า dark mode
+                    this.darkMode = localStorage.getItem('darkMode') === 'true' || 
+                                   (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                },
+                
+                startBreathing() {
+                    if (this.isRunning) return;
+                    
+                    this.isRunning = true;
+                    this.cycleCount = 0;
+                    this.currentState = 'inhale';
+                    this.currentTime = 4;
+                    
+                    this.startTimer();
+                },
+                
+                startTimer() {
+                    if (this.timer) clearInterval(this.timer);
+                    
+                    this.timer = setInterval(() => {
+                        this.currentTime--;
+                        
+                        if (this.currentTime <= 0) {
+                            this.nextState();
+                        }
+                    }, 1000);
+                },
+                
+                nextState() {
+                    if (this.currentState === 'inhale') {
+                        this.currentState = 'hold';
+                        this.currentTime = 7;
+                    } else if (this.currentState === 'hold') {
+                        this.currentState = 'exhale';
+                        this.currentTime = 8;
+                    } else if (this.currentState === 'exhale') {
+                        this.cycleCount++;
+                        this.currentState = 'inhale';
+                        this.currentTime = 4;
+                        
+                        // แสดงข้อความเมื่อครบ 3 รอบ
+                        if (this.cycleCount >= 3) {
+                            setTimeout(() => {
+                                if (this.isRunning) {
+                                    alert('เยี่ยมมาก! คุณฝึกหายใจครบ 3 รอบแล้ว 🎉');
+                                }
+                            }, 100);
+                        }
+                    }
+                },
+                
+                pauseBreathing() {
+                    this.isRunning = false;
+                    if (this.timer) {
+                        clearInterval(this.timer);
+                        this.timer = null;
+                    }
+                },
+                
+                resetBreathing() {
+                    this.pauseBreathing();
+                    this.currentState = 'inhale';
+                    this.currentTime = 4;
+                    this.cycleCount = 0;
+                },
+                
+                toggleDarkMode() {
+                    this.darkMode = !this.darkMode;
+                    localStorage.setItem('darkMode', this.darkMode);
+                }
+            }));
+        });
+    </script>
+</body>
+</html>

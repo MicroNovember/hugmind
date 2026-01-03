@@ -1,0 +1,138 @@
+{
+    "music": [
+        {
+            "id": "music1",
+            "title": "เพลงผ่อนคลายสบายใจ",
+            "artist": "MindBloom Relaxation",
+            "description": "เสียงดนตรีเบาๆ ช่วยให้จิตใจสงบและผ่อนคลาย",
+            "spotifyUrl": "https://open.spotify.com/embed/track/0c7egF6C2L5SDgF4yLxQcB?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "3:45",
+            "category": "ผ่อนคลาย"
+        },
+        {
+            "id": "music2",
+            "title": "เสียงธรรมชาติผ่อนคลาย",
+            "artist": "ธรรมชาติบำบัด",
+            "description": "เสียงน้ำไหลและนก chirp ช่วยลดความเครียด",
+            "spotifyUrl": "https://open.spotify.com/embed/track/5K5dBJ3uVd5tN0LhqB3rCc?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "5:20",
+            "category": "ธรรมชาติ"
+        },
+        {
+            "id": "music3",
+            "title": "เสียงเปียโนสำหรับสมาธิ",
+            "artist": "Piano Therapy",
+            "description": "เสียงเปียโนเบาๆ ช่วยเพิ่มสมาธิและความสงบ",
+            "spotifyUrl": "https://open.spotify.com/embed/track/3x5xEpe15RDFQmX8N8lNpS?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "4:15",
+            "category": "สมาธิ"
+        },
+        {
+            "id": "music4",
+            "title": "ดนตรีบำบัดความวิตกกังวล",
+            "artist": "Anxiety Relief Sounds",
+            "description": "ดนตรีที่ออกแบบมาสำหรับลดความวิตกกังวลโดยเฉพาะ",
+            "spotifyUrl": "https://open.spotify.com/embed/track/5S4qD4hCnTaV4eshXqs1H5?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "6:30",
+            "category": "ลดความกังวล"
+        },
+        {
+            "id": "music5",
+            "title": "เสียงสายฝนกับดนตรี ambient",
+            "artist": "Rain & Ambient",
+            "description": "เสียงฝนตกผสมกับดนตรี ambient สำหรับการนอนหลับ",
+            "spotifyUrl": "https://open.spotify.com/embed/track/2HZrZpjrmBz8VW0eK6KbMT?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1519692933481-e162a57d6721?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "8:00",
+            "category": "นอนหลับ"
+        }
+    ],
+    "podcasts": [
+        {
+            "id": "podcast1",
+            "title": "จิตวิทยาในชีวิตประจำวัน",
+            "artist": "ดร.สุขใจ ใจดี",
+            "description": "เรียนรู้จิตวิทยาง่ายๆ สำหรับการใช้ชีวิตประจำวัน",
+            "spotifyUrl": "https://open.spotify.com/embed/episode/7m7jZ8K7K7K7K7K7K7K7K7?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1590602847865-f6dcd2b43176?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "25:30",
+            "category": "จิตวิทยา"
+        },
+        {
+            "id": "podcast2",
+            "title": "วิธีจัดการกับความเครียด",
+            "artist": "โค้ชสายสุข",
+            "description": "เทคนิคง่ายๆ ในการจัดการความเครียดในแต่ละวัน",
+            "spotifyUrl": "https://open.spotify.com/embed/episode/0c7egF6C2L5SDgF4yLxQcB?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "18:45",
+            "category": "จัดการความเครียด"
+        },
+        {
+            "id": "podcast3",
+            "title": "ฝึก mindfulness สำหรับมือใหม่",
+            "artist": "ครูเล็ก สมาธิสุข",
+            "description": "เริ่มต้นฝึก mindfulness แบบง่ายๆ ในชีวิตประจำวัน",
+            "spotifyUrl": "https://open.spotify.com/embed/episode/5K5dBJ3uVd5tN0LhqB3rCc?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "22:10",
+            "category": "mindfulness"
+        },
+        {
+            "id": "podcast4",
+            "title": "สร้างนิสัยดีๆ สำหรับสุขภาพจิต",
+            "artist": "นักจิตวิทยา MindCare",
+            "description": "วิธีสร้างนิสัยที่ช่วยส่งเสริมสุขภาพจิตในระยะยาว",
+            "spotifyUrl": "https://open.spotify.com/embed/episode/3x5xEpe15RDFQmX8N8lNpS?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "30:15",
+            "category": "นิสัยสุขภาพจิต"
+        }
+    ],
+    "playlists": [
+        {
+            "id": "playlist1",
+            "title": "เพลย์ลิสต์ผ่อนคลายหลังเลิกงาน",
+            "artist": "MindBloom Curated",
+            "description": "เพลงและเสียงสำหรับผ่อนคลายหลังจากทำงานมาทั้งวัน",
+            "spotifyUrl": "https://open.spotify.com/embed/playlist/37i9dQZF1DX4WYpdgoIcn6?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "120+ นาที",
+            "category": "ผ่อนคลาย"
+        },
+        {
+            "id": "playlist2",
+            "title": "เสียงสำหรับสมาธิและการทำงาน",
+            "artist": "Focus & Flow",
+            "description": "เสียงที่ช่วยเพิ่มสมาธิและโฟกัสในการทำงานหรือเรียน",
+            "spotifyUrl": "https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKCadgRdKQ?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "90+ นาที",
+            "category": "สมาธิ"
+        },
+        {
+            "id": "playlist3",
+            "title": "เพลงนอนหลับลึก",
+            "artist": "Deep Sleep Sounds",
+            "description": "เสียงและดนตรีที่ช่วยให้นอนหลับลึกและผ่อนคลาย",
+            "spotifyUrl": "https://open.spotify.com/embed/playlist/37i9dQZF1DWYcDQ1hSjOpY?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "180+ นาที",
+            "category": "นอนหลับ"
+        },
+        {
+            "id": "playlist4",
+            "title": "เสียงธรรมชาติบำบัด",
+            "artist": "Nature Therapy",
+            "description": "เสียงธรรมชาติจากหลากหลายสถานที่ทั่วโลก",
+            "spotifyUrl": "https://open.spotify.com/embed/playlist/37i9dQZF1DX8ymr6UES7vc?utm_source=generator&theme=0",
+            "image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            "duration": "150+ นาที",
+            "category": "ธรรมชาติ"
+        }
+    ]
+}

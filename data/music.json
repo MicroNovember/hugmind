@@ -107,9 +107,9 @@
         {
             "id": "playlist2",
             "title": "เสียงสำหรับสมาธิและการทำงาน",
-            "artist": "Focus & Flow",
+            "artist": "Jazz-Youtube",
             "description": "เสียงที่ช่วยเพิ่มสมาธิและโฟกัสในการทำงานหรือเรียน",
-            "spotifyUrl": "https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKCadgRdKQ?utm_source=generator&theme=0",
+            "spotifyUrl": "https://www.youtube.com/watch?v=ARSq6GFSLGY&pp=0gcJCU0KAYcqIYzv",
             "image": "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
             "duration": "90+ นาที",
             "category": "สมาธิ"
@@ -135,4 +135,5 @@
             "category": "ธรรมชาติ"
         }
     ]
+
 }

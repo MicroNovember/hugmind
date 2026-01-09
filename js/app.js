@@ -24,6 +24,8 @@ document.addEventListener('alpine:init', () => {
             animation: ''
         },
         assessmentHistory: [],
+        resultAutoSaved: false,
+        
         
         // Forms
         journalForm: {
@@ -52,7 +54,13 @@ document.addEventListener('alpine:init', () => {
         
         // Assessments
         assessmentsData: [],
-        currentQuiz: null,
+        currentQuiz: {
+    id: '',
+    title: '',
+    desc: '',
+    questions: [],
+    results: []
+},
         currentQuestionIndex: 0,
         quizAnswers: [],
         quizScore: 0,
@@ -154,14 +162,40 @@ document.addEventListener('alpine:init', () => {
             { id: 6, icon: 'fas fa-star', earned: false }
         ],
         
+        randomQuote: null,
+
         quotes: [
-            { text: "การเดินทางที่ยิ่งใหญ่ที่สุด เริ่มต้นจากก้าวเล็กๆ ก้าวแรกเสมอ", author: "ผู้ไม่ประสงค์ออกนาม" },
-            { text: "ความสุขที่ยั่งยืนมักมาจากการยอมรับสิ่งที่เราเป็น", author: "ผู้ไม่ประสงค์ออกนาม" },
-            { text: "วันที่แย่ที่สุดก็มี 24 ชั่วโมง เท่ากับวันที่ดีที่สุด", author: "ผู้ไม่ประสงค์ออกนาม" },
-            { text: "การดูแลจิตใจก็สำคัญไม่น้อยไปกว่าการดูแลร่างกาย", author: "ผู้ไม่ประสงค์ออกนาม" },
-            { text: "ความเจ็บปวดคือครูที่ดี แต่เราไม่จำเป็นต้องเรียนกับมันทุกวัน", author: "ผู้ไม่ประสงค์ออกนาม" },
-            { text: "การให้อภัยตัวเองเป็นของขวัญที่ดีที่สุดที่คุณจะมอบให้ตัวเอง", author: "ผู้ไม่ประสงค์ออกนาม" }
-        ],
+  { "text": "ความพยายามอยู่ที่ไหน ความสำเร็จอยู่ที่นั่น", "author": "Anonymous ✨" },
+  { "text": "ล้มได้ แต่ต้องลุกให้ได้", "author": "Anonymous 🖤" },
+  { "text": "อย่าหยุดเมื่อเหนื่อย จงหยุดเมื่อสำเร็จ", "author": "Anon." },
+  { "text": "เชื่อในตัวเอง แล้วโลกจะเชื่อคุณ", "author": "Anonymous Soul" },
+  { "text": "ทุกเช้าวันใหม่คือโอกาสใหม่", "author": "Anonymous ✨" },
+  { "text": "ความล้มเหลวคือครูที่ดีที่สุด", "author": "Anon." },
+  { "text": "ไม่มีอะไรยิ่งใหญ่ได้ หากไม่เริ่มจากก้าวเล็ก ๆ", "author": "Anonymous 🖤" },
+  { "text": "ความสุขไม่ได้อยู่ที่ปลายทาง แต่อยู่ที่การเดินทาง", "author": "Anonymous Soul" },
+  { "text": "ทุกปัญหามีทางออกเสมอ", "author": "Anonymous ✨" },
+  { "text": "ความฝันจะไม่มีวันสำเร็จ หากไม่ลงมือทำ", "author": "Anon." },
+  { "text": "จงใช้ความล้มเหลวเป็นแรงผลักดัน", "author": "Anonymous 🖤" },
+  { "text": "ความสำเร็จเริ่มต้นจากความเชื่อมั่น", "author": "Anonymous Soul" },
+  { "text": "ไม่มีใครกำหนดชีวิตคุณได้นอกจากตัวคุณเอง", "author": "Anonymous ✨" },
+  { "text": "อย่าหยุดฝัน เพราะฝันคือพลังชีวิต", "author": "Anon." },
+  { "text": "ความกล้าคือก้าวแรกสู่ความสำเร็จ", "author": "Anonymous 🖤" },
+  { "text": "จงทำวันนี้ให้ดีที่สุด แล้วพรุ่งนี้จะดีเอง", "author": "Anonymous Soul" },
+  { "text": "ความหวังเล็ก ๆ สามารถเปลี่ยนชีวิตได้", "author": "Anonymous ✨" },
+  { "text": "จงยิ้มแม้ในวันที่เหนื่อยที่สุด", "author": "Anon." },
+  { "text": "ความเข้มแข็งไม่ได้เกิดจากการไม่ล้ม แต่เกิดจากการลุกขึ้นทุกครั้ง", "author": "Anonymous 🖤" },
+  { "text": "อย่ารอให้โอกาสมา จงสร้างมันขึ้นมาเอง", "author": "Anonymous Soul" },
+  { "text": "ทุกการเดินทางเริ่มต้นจากก้าวแรกเสมอ", "author": "Anonymous ✨" },
+  { "text": "ความสุขคือการเลือกที่จะมองโลกในแง่ดี", "author": "Anon." },
+  { "text": "อย่าหยุดเรียนรู้ เพราะชีวิตคือการเติบโต", "author": "Anonymous 🖤" },
+  { "text": "จงเชื่อว่าคุณทำได้ แม้ใครจะบอกว่าคุณทำไม่ได้", "author": "Anonymous Soul" },
+  { "text": "ความสำเร็จไม่ใช่เรื่องบังเอิญ แต่คือผลจากความพยายาม", "author": "Anonymous ✨" },
+  { "text": "ความภูมิใจที่ดีที่สุด คือการทำทุกอย่างด้วยตัวเองแล้วประสบความสำเร็จ", "author": "Anon." },
+  { "text": "ถ้าใจพร้อม กายพร้อม ก็ลุยเลย", "author": "Anonymous 🖤" },
+  { "text": "ซื่อกินไม่หมด คดกินไม่นาน", "author": "Anonymous Soul" },
+  { "text": "ทุกคนสามารถทำได้ทุกอย่าง แต่อยู่ที่ว่าคุณจะทำหรือไม่ทำ", "author": "Anonymous ✨" },
+  { "text": "ความหวังทำให้เรามีแรงเดินต่อไป", "author": "Anon." }
+],
         
         // Computed Properties
         get mentalAssessments() {
@@ -174,6 +208,11 @@ document.addEventListener('alpine:init', () => {
 
         // Methods
         async init() {
+
+            // สุ่มคำคมตอนเริ่มต้น
+            this.showRandomQuote(); 
+
+
             // ตั้งค่า dark mode
             this.darkMode = localStorage.getItem('darkMode') === 'true' || 
                            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -189,6 +228,18 @@ document.addEventListener('alpine:init', () => {
             
             // โหลดข้อมูลจาก JSON files
             await this.loadData();
+
+
+            // ตรวจสอบถ้ามีการส่งต่อมาจาก history page
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewHistoryId = urlParams.get('viewHistory');
+                if (viewHistoryId) {
+            const historyToView = JSON.parse(localStorage.getItem('viewHistoryDetail'));
+                if (historyToView) {
+            this._viewHistoryDetail(historyToView);
+            localStorage.removeItem('viewHistoryDetail');
+                }
+            }
             
             // ตั้งค่าขนาดฟอนต์
             this.fontSize = localStorage.getItem('fontSize') || 'medium';
@@ -233,11 +284,27 @@ document.addEventListener('alpine:init', () => {
             }
         },
         
-        setDailyQuote() {
-            const today = new Date().getDate();
-            const quoteIndex = today % this.quotes.length;
-            this.dailyQuote = this.quotes[quoteIndex];
-        },
+       // คำคม functions
+       // ฟังก์ชันเดิมของคุณ
+    setDailyQuote() {
+        const today = new Date().getDate();
+        const quoteIndex = today % this.quotes.length;
+        this.dailyQuote = this.quotes[quoteIndex];
+    },
+
+    // === ฟังก์ชันใหม่ที่เพิ่ม ===
+    // ฟังก์ชันสุ่มคำคม
+    getRandomQuote() {
+        const randomIndex = Math.floor(Math.random() * this.quotes.length);
+        return this.quotes[randomIndex];
+    },
+
+    // ฟังก์ชันแสดงคำคมสุ่ม
+    showRandomQuote() {
+        this.randomQuote = this.getRandomQuote();
+    },
+
+
         
         // Mood Functions
         selectMood(mood) {
@@ -337,11 +404,68 @@ document.addEventListener('alpine:init', () => {
                 year: 'numeric'
             });
         },
+
+
+        // History Functions
+viewHistoryDetail(history) {
+    // เก็บข้อมูลที่จะดูใน localStorage
+    localStorage.setItem('viewHistoryDetail', JSON.stringify(history));
+    // เปิดหน้า index.html เพื่อดูรายละเอียด
+    window.location.href = `index.html?viewHistory=${history.id}`;
+},
+
+// ฟังก์ชันช่วยในการดูประวัติ
+_viewHistoryDetail(history) {
+    const assessment = this.assessmentsData.find(a => a.id === history.id);
+    if (assessment) {
+        this.currentQuiz = assessment;
+        this.quizScore = history.score;
+        
+        // หาผลลัพธ์ที่ตรงกับคะแนน
+        for (const result of assessment.results) {
+            if (history.score >= result.min && history.score <= result.max) {
+                this.quizResult = result;
+                break;
+            }
+        }
+        
+        this.currentPage = 'results';
+    } else {
+        alert('ไม่พบข้อมูลแบบทดสอบ');
+    }
+},
+
         
         getMoodEmoji(moodId) {
             const mood = this.moods.find(m => m.id === moodId);
             return mood ? mood.emoji : '😐';
         },
+
+        // ===== เพิ่มฟังก์ชัน ประวัติ=====
+getAverageScore() {
+    if (!this.assessmentHistory || this.assessmentHistory.length === 0) return 0;
+    const sum = this.assessmentHistory.reduce((total, h) => total + h.score, 0);
+    return Math.round(sum / this.assessmentHistory.length);
+},
+
+getBestScore() {
+    if (!this.assessmentHistory || this.assessmentHistory.length === 0) return 0;
+    return Math.max(...this.assessmentHistory.map(h => h.score));
+},
+
+getLastTestDate() {
+    if (!this.assessmentHistory || this.assessmentHistory.length === 0) return 'ยังไม่มี';
+    const lastTest = this.assessmentHistory[0];
+    return this.formatDate(lastTest.date);
+},
+// ===== จบฟังก์ชันใหม่ =====
+
+
+
+
+
+
+
         
         // Music Functions
         playTrack(track) {
@@ -445,10 +569,30 @@ getPixabayDirectLink(url) {
 
         
         // Article Functions
+         
         openArticleModal(article) {
+            // ตรวจสอบว่าเป็นบทความภายนอกหรือไม่
+            if (article.type === 'external' || article.content.includes('href=')) {
+                // แสดง modal ยืนยันการเปิดลิงก์ภายนอก
+                this.currentArticle = article;
+                this.modalOpen = 'externalArticle';
+                return;
+            }
+            
+            // ถ้าเป็นบทความภายใน ให้เปิด modal ธรรมดา
             this.currentArticle = article;
             this.modalOpen = 'article';
         },
+        
+        openExternalArticle(url) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+            this.closeModal();
+        },
+
+
+
+
+
         
         // Assessment Functions
         getAssessmentIcon(assessmentId) {
@@ -471,10 +615,90 @@ getPixabayDirectLink(url) {
             return type === 'mental' ? 'สุขภาพจิต' : 'บุคลิกภาพ';
         },
         
-        startAssessment(assessment) {
+
+        // เพิ่ม  auto save
+                // เพิ่มฟังก์ชันนี้หลังฟังก์ชัน getMusicRecommendation() แต่ก่อนฟังก์ชัน updateTreeAnimation()
+        autoSaveAssessmentResult() {
+            if (this.resultAutoSaved) return;
+            
+            if (!this.quizScore && this.quizScore !== 0) return;
+            
+            const result = {
+                id: this.currentQuiz.id,
+                title: this.currentQuiz.title,
+                score: this.quizScore,
+                result: this.quizResult.title,
+                resultAdvice: this.quizResult.advice || '',
+                date: new Date().toISOString(),
+                formattedDate: new Date().toLocaleDateString('th-TH', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+            
+            // เพิ่มเข้าในประวัติ
+            this.assessmentHistory.unshift(result);
+            
+            // จำกัดจำนวนบันทึก
+            if (this.assessmentHistory.length > 50) {
+                this.assessmentHistory = this.assessmentHistory.slice(0, 50);
+            }
+            
+            // บันทึกลง localStorage
+            this.saveData();
+            
+            // อัปเดตสถานะ
+            this.resultAutoSaved = true;
+            
+            console.log('บันทึกผลการทดสอบอัตโนมัติแล้ว:', result);
+        },
+        
+        // ฟังก์ชันแจ้งเตือน
+        showNotification(message, type = 'info') {
+            // สร้าง element สำหรับ notification
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 transform ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-3"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // ลบ notification หลังจาก 3 วินาที
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        },
+
+            startAssessment(assessment) {
+                // ตรวจสอบว่า assessment มีข้อมูลครบหรือไม่
+            if (!assessment || !assessment.questions || assessment.questions.length === 0) {
+                alert('ไม่พบคำถามสำหรับแบบทดสอบนี้ กรุณาลองใหม่ในภายหลัง');
+                return;
+            }
+            
             this.currentQuiz = assessment;
             this.currentQuestionIndex = 0;
             this.quizAnswers = new Array(assessment.questions.length).fill(undefined);
+            this.quizScore = 0;
+            this.quizResult = {};
+            this.resultAutoSaved = false; // <-- เพิ่มบรรทัดนี้
             this.currentPage = 'quiz';
         },
         
@@ -488,7 +712,7 @@ getPixabayDirectLink(url) {
             }
         },
         
-        nextQuestion() {
+                    nextQuestion() {
             if (this.quizAnswers[this.currentQuestionIndex] === undefined) {
                 alert('กรุณาเลือกคำตอบก่อนดำเนินการต่อ');
                 return;
@@ -511,7 +735,10 @@ getPixabayDirectLink(url) {
                 // Update tree points
                 this.tree.points += 30;
                 
-                // Save data
+                // บันทึกผลอัตโนมัติก่อนแสดงผล <-- เพิ่มบรรทัดนี้
+                this.autoSaveAssessmentResult();
+                
+                // Save general data
                 this.saveData();
                 
                 // Show results
@@ -520,24 +747,18 @@ getPixabayDirectLink(url) {
         },
         
         retakeQuiz() {
-            this.startAssessment(this.currentQuiz);
+            this.resultAutoSaved = false; // <-- เพิ่มบรรทัดนี้
+            this.startAssessment(this.currentQuiz)
         },
         
-        saveAssessmentResult() {
-            const result = {
-                id: this.currentQuiz.id,
-                title: this.currentQuiz.title,
-                score: this.quizScore,
-                result: this.quizResult.title,
-                date: new Date().toISOString().split('T')[0]
-            };
-            
-            this.assessmentHistory.push(result);
-            
-            // Save to localStorage
-            this.saveData();
-            
-            alert('บันทึกผลการทดสอบเรียบร้อยแล้ว!');
+                saveAssessmentResult() {
+            // ถ้ายังไม่ได้บันทึกอัตโนมัติ ให้บันทึก
+            if (!this.resultAutoSaved) {
+                this.autoSaveAssessmentResult();
+                alert('บันทึกผลการทดสอบเรียบร้อยแล้ว!');
+            } else {
+                alert('ผลการทดสอบถูกบันทึกไว้แล้ว!');
+            }
         },
         
         getResultColor(result) {
@@ -580,6 +801,42 @@ getPixabayDirectLink(url) {
             return recommendations[assessmentId] || 'เพลงผ่อนคลาย';
         },
         
+
+
+        autoSaveAssessmentResult() {
+            if (this.resultAutoSaved) return;
+            
+            const result = {
+                id: this.currentQuiz.id,
+                title: this.currentQuiz.title,
+                score: this.quizScore,
+                result: this.quizResult.title,
+                resultAdvice: this.quizResult.advice || '',
+                date: new Date().toISOString().split('T')[0],
+                timestamp: new Date().toISOString(),
+                formattedDate: new Date().toLocaleDateString('th-TH', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+            
+            // เพิ่มเข้าในประวัติ (unshift เพื่อให้ใหม่สุดอยู่บน)
+            this.assessmentHistory.unshift(result);
+            
+            // บันทึกลง localStorage
+            this.saveData();
+            
+            // อัปเดตสถานะ
+            this.resultAutoSaved = true;
+        },
+
+
+
+
+
         // Tree Functions
         updateTreeAnimation() {
             if (this.tree.progress >= 7) {

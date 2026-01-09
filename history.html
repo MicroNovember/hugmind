@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประวัติผลการทดสอบ - Cloudy-Puk-Jai</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6D9F71',
+                        'primary-light': '#8FBC8F',
+                        'primary-dark': '#4A7C59',
+                        secondary: '#FFB6C1',
+                        accent: '#FFD166',
+                    },
+                    fontFamily: {
+                        'sans': ['Anuphan', 'Noto Sans Thai', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="history.css">
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 min-h-screen">
+    
+    <!-- Header (เหมือนเดิม) -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="text-2xl text-primary">🌸</div>
+                    <h1 class="text-xl font-bold text-primary">Cloudy-Puk-Jai</h1>
+                </div>
+                
+                <nav class="flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-600 dark:text-gray-300 hover:text-primary transition-colors">
+                        <i class="fas fa-home mr-1"></i>หน้าหลัก
+                    </a>
+                    <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i id="darkModeIcon" class="fas fa-moon text-lg"></i>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <div class="space-y-6">
+            <!-- Header -->
+           <!-- เพิ่มในส่วน Main Content (หลังจาก Header) -->
+<!-- Dashboard สุขภาพจิตภาพรวม -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+    <h3 class="text-lg font-bold text-primary mb-3 flex items-center">
+        <i class="fas fa-heartbeat mr-2"></i>สุขภาพจิตภาพรวม
+        <span class="ml-2 text-xs bg-primary text-white px-2 py-0.5 rounded-full">ภาพรวม</span>
+    </h3>
+    
+    <div id="mentalHealthOverview" class="space-y-3">
+        <!-- ข้อมูลจะแสดงที่นี่ -->
+        <div class="text-center py-4">
+            <div class="loading-spinner-small mx-auto"></div>
+            <p class="text-gray-500 text-xs mt-2">กำลังวิเคราะห์สุขภาพจิตภาพรวม...</p>
+        </div>
+    </div>
+    
+    <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+        <p class="text-xs text-gray-500">
+            <i class="fas fa-info-circle mr-1"></i>
+            สถานะสุขภาพจิตภาพรวม แสดงจากผลการทดสอบทั้งหมด
+        </p>
+    </div>
+</div>
+
+<!-- ปุ่ม Export PDF -->
+<!-- แก้ไขส่วนปุ่มที่ header -->
+<div class="flex flex-wrap gap-2">
+    <button id="exportJsonBtn" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center text-sm">
+        <i class="fas fa-file-export mr-1.5"></i>JSON
+    </button>
+    
+    <!-- เพิ่มปุ่ม PDF -->
+    <button id="exportPdfBtn" class="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center text-sm">
+        <i id="pdfIcon" class="fas fa-file-pdf mr-1.5"></i>
+        <span id="pdfText">PDF</span>
+    </button>
+    
+    <button id="printBtn" class="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center text-sm">
+        <i class="fas fa-print mr-1.5"></i>พิมพ์
+    </button>
+    
+    <button id="clearHistoryBtn" class="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center text-sm">
+        <i class="fas fa-trash-alt mr-1.5"></i>ล้างประวัติ
+    </button>
+</div>
+
+            <!-- ส่วนที่ 1: สรุปตามประเภทแบบทดสอบ -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+                <h3 class="text-lg font-bold text-primary mb-3 flex items-center">
+                    <i class="fas fa-chart-pie mr-2"></i>สรุปตามประเภทแบบทดสอบ
+                </h3>
+                
+                <div id="testTypeSummary" class="space-y-4">
+                    <!-- ข้อมูลจะแสดงที่นี่ -->
+                    <div class="text-center py-8">
+                        <div class="loading-spinner-small mx-auto"></div>
+                        <p class="text-gray-500 text-sm mt-2">กำลังโหลดข้อมูล...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ส่วนที่ 2: รายการประวัติทั้งหมด -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-primary flex items-center">
+                        <i class="fas fa-list mr-2"></i>รายการประวัติทั้งหมด
+                    </h3>
+                </div>
+                
+                <div id="historyTableContainer" class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th class="py-2 px-3 text-left font-semibold text-sm">วันที่</th>
+                                <th class="py-2 px-3 text-left font-semibold text-sm">แบบทดสอบ</th>
+                                <th class="py-2 px-3 text-left font-semibold text-sm">คะแนน</th>
+                                <th class="py-2 px-3 text-left font-semibold text-sm">ผลลัพธ์</th>
+                                <th class="py-2 px-3 text-left font-semibold text-sm">การดำเนินการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- ข้อมูลจะแสดงที่นี่ -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="emptyHistoryMessage" class="p-8 text-center hidden">
+                    <i class="fas fa-clipboard-list text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                    <h4 class="text-base font-bold text-gray-700 dark:text-gray-300 mb-1">ยังไม่มีประวัติการทดสอบ</h4>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4 text-sm">เริ่มทำแบบทดสอบเพื่อเก็บประวัติของคุณ</p>
+                    <a href="index.html" class="inline-block bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm">
+                        <i class="fas fa-clipboard-check mr-1.5"></i>ไปยังแบบทดสอบ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-8 py-6 border-t border-gray-200 dark:border-gray-700">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-600 dark:text-gray-300 text-sm">© 2026 Cloudy-Puk-Jai</p>
+            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">สุขภาพใจที่ดีเริ่มต้นที่การดูแลตัวเอง</p>
+        </div>
+    </footer>
+
+    <script src="history.js"></script>
+</body>
+</html>

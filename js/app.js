@@ -596,20 +596,37 @@ getPixabayDirectLink(url) {
         
         // Assessment Functions
         getAssessmentIcon(assessmentId) {
-            const icons = {
-                'who5': '😊',
-                'pss10': '😰',
-                'gad7': '😟',
-                'phq9': '😔',
-                'burnout': '🔥',
-                'self-compassion': '❤️',
-                'resilience': '💪',
-                'emotional-awareness': '🧠',
-                'mbti-simple': '👤',
-                'big-five': '🌟'
-            };
-            return icons[assessmentId] || '📝';
-        },
+    const icons = {
+        // Mental Health Tests
+        'who5': '😊',
+        'pss10': '😰',
+        'gad7': '😟',
+        'phq9': '😔',
+        'burnout': '🔥',
+        'self-compassion': '❤️',
+        'resilience': '💪',
+        'emotional-awareness': '🧠',
+        
+        // Personality Tests
+        'mbti': '🎭',
+        'big-five': '🌟',
+        'enneagram': '🌀',
+        'love-language': '💝',
+        'attachment-style': '🤝',
+        'conflict-style': '⚡',
+        'leadership-style': '👑',
+        'creativity': '🎨'
+    };
+    return icons[assessmentId] || '📝';
+},
+
+getAssessmentCategory(type) {
+    const categories = {
+        'mental': 'สุขภาพจิต',
+        'personality': 'บุคลิกภาพ'
+    };
+    return categories[type] || type;
+},
         
         getAssessmentCategory(type) {
             return type === 'mental' ? 'สุขภาพจิต' : 'บุคลิกภาพ';

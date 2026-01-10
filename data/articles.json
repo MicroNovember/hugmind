@@ -33,24 +33,68 @@
             "readTime": "6 นาที",
             "image": "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
         },
-        {
-      "id": "article4",
-      "title": "ชวนฝึกหายใจแบบ 4-7-8",
-      "excerpt": "(Breathing Exercise)",
-      "content": "<a href=\"https://thestandard.co/life/4-7-8-breathing-exercise/\" target=\"_blank\" rel=\"noopener noreferrer\">เปิดบทความ | ชวนฝึกหายใจแบบ 4-7-8</a>",
-      "category": "ความสุข",
-      "author": "ภูริตา บุญล้อม",
-      "date": "2023-10-05",
-      "readTime": "6 นาที",
-      "image": "https://images.pexels.com/photos/3822622/pexels-photo-3822622.jpeg"
-    }
+           
+
+  {
+    "id": "manarom-ext-01",
+    "type": "external",
+    "title": "สิ่งที่คนเข้าใจผิดเกี่ยวกับการฟังเพลงเศร้า",
+    "excerpt": "สดุดี อภิสุทธิพร นักดนตรีบำบัด โรงพยาบาลมนารมย์",
+    "content": "<div class='text-center py-4'><p>บทความนี้อยู่บนเว็บไซต์ภายนอก</p><p>คลิกปุ่มด้านล่างเพื่อเปิดอ่านบทความเต็มบนเว็บไซต์ Manarom</p></div>",
+    "category": "เด็กและวัยรุ่น",
+    "author": "https://www.manarom.com/blog/listening_to_sad_music.html",
+    "date": " ",
+    "readTime": "8 นาที",
+    "image": "https://www.manarom.com/blog/img/listening_to_sad_music_index.jpg",
+    "externalUrl": "https://www.manarom.com/blog/listening_to_sad_music.html",
+    "source": "Manarom"
+  },
+  {
+    "id": "manarom-ext-02",
+    "type": "external",
+    "title": "โรคซึมเศร้าในเด็ก",
+    "excerpt": "ความแตกต่างของอาการซึมเศร้าในเด็กที่ผู้ใหญ่อาจมองข้าม",
+    "content": "<div class='text-center py-4'><p>บทความนี้อยู่บนเว็บไซต์ภายนอก</p><p>คลิกปุ่มด้านล่างเพื่อเปิดอ่านบทความเต็มบนเว็บไซต์ Manarom</p></div>",
+    "category": "เด็กและวัยรุ่น",
+    "author": "ทีมมนารมณ์",
+    "date": "2024-12-15",
+    "readTime": "10 นาที",
+    "image": "https://www.manarom.com/blog/img/depression_in_children_index.jpg",
+    "externalUrl": "https://www.manarom.com/blog/depression-in-children.html",
+    "source": "Manarom"
+  },
+  {
+    "id": "manarom-ext-03",
+    "type": "external",
+    "title": "สมาธิสั้นในวัยรุ่นและวัยทำงาน",
+    "excerpt": "ADHD ไม่ได้หายไปเมื่อโตขึ้น แต่จะแสดงอาการในรูปแบบที่แตกต่าง",
+    "content": "<div class='text-center py-4'><p>บทความนี้อยู่บนเว็บไซต์ภายนอก</p><p>คลิกปุ่มด้านล่างเพื่อเปิดอ่านบทความเต็มบนเว็บไซต์ Manarom</p></div>",
+    "category": "การทำงาน",
+    "author": "ทีมมนารมณ์",
+    "date": "2024-11-30",
+    "readTime": "12 นาที",
+    "image": "https://www.manarom.com/blog/img/ADHD_in_teens_and_adults_index.jpg",
+    "externalUrl": "https://www.manarom.com/blog/adhd-in-adults.html",
+    "source": "Manarom"
+  },
+  {
+    "id": "manarom-ext-04",
+    "type": "external",
+    "title": "เตรียมตัวอย่างไร เมื่อต้องไปพบจิตแพทย์",
+    "excerpt": "เตรียมตัวอย่างไร เมื่อต้องไปพบจิตแพทย์",
+    "content": "<div class='text-center py-4'><p>บทความนี้อยู่บนเว็บไซต์ภายนอก</p><p>คลิกปุ่มด้านล่างเพื่อเปิดอ่านบทความเต็มบนเว็บไซต์ Manarom</p></div>",
+    "category": "สุขภาพจิต",
+    "author": "ทีมมนารมณ์",
+    "date": "2024-11-20",
+    "readTime": "7 นาที",
+    "image": "https://www.manarom.com/blog/img/seeing_psychiatrist_index.jpg",
+    "externalUrl": "https://www.manarom.com/blog/seeing_psychiatrist.html",
+    "source": "Manarom"
+  }
+
+]
 
 
-    ]
+
 
 }
-
-
-
-
-

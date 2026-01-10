@@ -1,27 +1,49 @@
 {
     "music": [
         {
-            "id": "music1",
-            "title": "เพลงผ่อนคลายสบายใจ",
-            "artist": "MindBloom Relaxation",
-            "description": "เสียงดนตรีเบาๆ ช่วยให้จิตใจสงบและผ่อนคลาย",
-            "spotifyUrl": "https://open.spotify.com/embed/track/0c7egF6C2L5SDgF4yLxQcB?utm_source=generator&theme=0",
-            "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "duration": "3:45",
-            "category": "ผ่อนคลาย"
-        },
+      "id": "music1",
+      "title": "Clair de Lune",
+      "artist": "Claude Debussy (Official)",
+      "description": "บรรเลงเปียโนนุ่มนวล (Allow Embed)",
+      "spotifyUrl": "https://www.youtube.com/watch?v=WNcsUNKlAKw",
+      "image": "https://img.youtube.com/vi/WNcsUNKlAKw/hqdefault.jpg",
+      "duration": "5:14",
+      "category": "บรรเลง"
+    },
+    {
+      "id": "music2",
+      "title": "Air on the G String",
+      "artist": "J.S. Bach (Voices of Music)",
+      "description": "บรรเลงด้วยเครื่องดนตรียุคดั้งเดิม",
+      "spotifyUrl": "https://www.youtube.com/watch?v=pzlw6fUux4o",
+      "image": "https://img.youtube.com/vi/pzlw6fUux4o/hqdefault.jpg",
+      "duration": "5:20",
+      "category": "บรรเลง"
+    },
+    
+    {
+      "id": "music3",
+      "title": "Nocturne Op.9 No.2",
+      "artist": "Chopin (Vadim Chaimovich)",
+      "description": "เพลงที่มียอดวิวสูงสุดสำหรับการพักผ่อน",
+      "spotifyUrl": "https://www.youtube.com/watch?v=9E6b3swbnWg",
+      "image": "https://img.youtube.com/vi/9E6b3swbnWg/hqdefault.jpg",
+      "duration": "4:30",
+      "category": "บรรเลง"
+    },
+    {
+      "id": "music4",
+      "title": "Rain Sounds for Sleep",
+      "artist": "ธรรมชาติบำบัด",
+      "description": "เสียงฝนช่วยให้นอนหลับสบาย",
+      "spotifyUrl": "https://www.youtube.com/watch?v=YNWPwyw-lvM",
+      "image": "https://img.youtube.com/vi/YNWPwyw-lvM/hqdefault.jpg",
+      "duration": "5:20",
+      "category": "ธรรมชาติ"
+    },
+
         {
-            "id": "music2",
-            "title": "YT1",
-            "artist": "ธรรมชาติบำบัด",
-            "description": "เสียงน้ำไหลและนก chirp ช่วยลดความเครียด",
-            "spotifyUrl": "https://www.youtube.com/watch?v=YNWPwyw-lvM",
-            "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "duration": "5:20",
-            "category": "ธรรมชาติ"
-        },
-        {
-            "id": "music3",
+            "id": "music5",
             "title": "Pixabay",
             "artist": "Pixabay",
             "description": "Pixabay",
@@ -31,7 +53,7 @@
             "category": "สมาธิ"
         },
         {
-            "id": "music4",
+            "id": "music6",
             "title": "Forever Love",
             "artist": "Ahjay Stelino",
             "description": "Forever Love",
@@ -41,14 +63,14 @@
             "category": "อบอุ่น"
         },
         {
-            "id": "music5",
-            "title": "เสียงสายฝนกับดนตรี ambient",
-            "artist": "Rain & Ambient",
-            "description": "เสียงฝนตกผสมกับดนตรี ambient สำหรับการนอนหลับ",
-            "spotifyUrl": "https://open.spotify.com/embed/track/2HZrZpjrmBz8VW0eK6KbMT?utm_source=generator&theme=0",
-            "image": "https://images.unsplash.com/photo-1519692933481-e162a57d6721?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "duration": "8:00",
-            "category": "นอนหลับ"
+            "id": "music7",
+            "title": "BIRDS OF A FEATHER",
+            "artist": "Billie Eilish",
+            "description": "Performed by\n\nBillie Eilish",
+            "spotifyUrl": "https://youtu.be/d5gf9dXbPi0?si=Dv6P_YdJVDlgfZ0X",
+            "image": "https://i.ytimg.com/vi/d5gf9dXbPi0/hq720.jpg",
+            "duration": "3:30",
+            "category": "ผ่อนคลาย"
         }
     ],
     "podcasts": [
@@ -135,6 +157,4 @@
             "category": "ธรรมชาติ"
         }
     ]
-
 }
-

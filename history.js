@@ -1112,3 +1112,205 @@ function setupEventListeners() {
 // เปิดฟังก์ชันให้เรียกจาก HTML ได้
 window.viewDetails = viewDetails;
 window.deleteItem = deleteItem;
+
+
+
+// Health Overview Tips Modal Functions
+function initHealthOverviewTips() {
+    const modal = document.getElementById('healthOverviewTipsModal');
+    const openBtn = document.getElementById('healthOverviewTipsBtn');
+    const closeBtn = document.getElementById('closeHealthTipsBtn');
+    const closeModalBtn = document.getElementById('closeHealthTipsModalBtn');
+    
+    if (!modal || !openBtn) return;
+    
+    // เปิด Modal
+    openBtn.addEventListener('click', function() {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden'; // ป้องกันการ scroll
+    });
+    
+    // ปิด Modal
+    function closeModal() {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        document.body.style.overflow = ''; // คืนค่า scroll
+    }
+    
+    // เพิ่ม Event Listeners
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+    
+    // ปิดเมื่อคลิกนอก Modal
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // ปิดด้วยปุ่ม Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+}
+
+// เรียกใช้เมื่อโหลดหน้า
+document.addEventListener('DOMContentLoaded', function() {
+    initHealthOverviewTips();
+    
+    // เรียกใช้ฟังก์ชันอื่นๆ ที่มีอยู่...
+});
+
+// เพิ่มฟังก์ชันเหล่านี้ใน history.js
+
+// ฟังก์ชันรีเฟรชข้อมูล
+function refreshHealthOverview() {
+    const lastUpdateElement = document.getElementById('lastUpdateTime');
+    if (lastUpdateElement) {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('th-TH', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+        lastUpdateElement.textContent = timeString;
+        
+        // แสดง Toast notification
+        showToast('อัปเดตข้อมูลสุขภาพจิตภาพรวมเรียบร้อยแล้ว', 'success');
+    }
+    
+    // โหลดข้อมูลใหม่
+    loadMentalHealthOverview();
+}
+
+// ฟังก์ชันแสดง Toast
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg 
+                      transform transition-all duration-300 translate-y-8 opacity-0`;
+    
+    // ตั้งค่าตามประเภท
+    const colors = {
+        success: 'bg-green-500 text-white',
+        error: 'bg-red-500 text-white',
+        info: 'bg-blue-500 text-white',
+        warning: 'bg-yellow-500 text-white'
+    };
+    
+    toast.className += ` ${colors[type] || colors.info}`;
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                            type === 'error' ? 'exclamation-circle' : 
+                            type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.classList.remove('translate-y-8', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+    }, 10);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-y-8', 'opacity-0');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// ฟังก์ชันโหลดข้อมูลวันที่ล่าสุด
+function loadLastTestDate() {
+    try {
+        const history = JSON.parse(localStorage.getItem('assessmentHistory') || '[]');
+        if (history.length > 0) {
+            // เรียงจากล่าสุดไปเก่าสุด
+            const sortedHistory = history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const lastTest = sortedHistory[0];
+            
+            const lastTestDateElement = document.getElementById('lastTestDate');
+            if (lastTestDateElement) {
+                const date = new Date(lastTest.timestamp);
+                const formattedDate = date.toLocaleDateString('th-TH', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                lastTestDateElement.textContent = formattedDate;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading last test date:', error);
+    }
+}
+
+// เรียกใช้เมื่อโหลดหน้า
+document.addEventListener('DOMContentLoaded', function() {
+    // โหลดข้อมูลวันที่ล่าสุด
+    loadLastTestDate();
+    
+    // ตั้งเวลาเริ่มต้นสำหรับ last update
+    refreshHealthOverview();
+    
+    // ฟังก์ชันเดิมๆ
+    initHealthOverviewTips();
+    loadMentalHealthOverview();
+    // ... ฟังก์ชันอื่นๆ
+});
+
+// ฟังก์ชัน initHealthOverviewTips แบบใหม่
+function initHealthOverviewTips() {
+    const modal = document.getElementById('healthOverviewTipsModal');
+    const openBtn = document.getElementById('healthOverviewTipsBtn');
+    const closeBtn = document.getElementById('closeHealthTipsBtn');
+    const closeModalBtn = document.getElementById('closeHealthTipsModalBtn');
+    
+    if (!modal || !openBtn) return;
+    
+    // เปิด Modal
+    openBtn.addEventListener('click', function() {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        
+        // เพิ่ม animation เมื่อเปิด
+        modal.style.animation = 'fadeIn 0.3s ease-out';
+    });
+    
+    // ปิด Modal
+    function closeModal() {
+        modal.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }, 250);
+    }
+    
+    // เพิ่ม Event Listeners
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+    
+    // ปิดเมื่อคลิกนอก Modal
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // ปิดด้วยปุ่ม Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+}

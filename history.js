@@ -6,14 +6,65 @@ let historyData = [];
 let darkMode = false;
 let isExportingPDF = false;
 
+// ==================== PAGE INITIALIZATION ====================
+
 // โหลดหน้าเว็บ
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOMContentLoaded: กำลังโหลดประวัติ...');
     
-    initDarkMode();
-    loadHistoryData();
-    setupEventListeners();
+    // เรียกใช้ฟังก์ชันเริ่มต้น
+    initializePage();
+    
+    // เปิดฟังก์ชันให้เรียกจาก HTML ได้
+    window.refreshHealthOverview = refreshHealthOverview;
+    window.viewDetails = viewDetails;
+    window.deleteItem = deleteItem;
+    window.showNotification = showNotification;
+    window.exportJSON = exportJSON;
+    window.exportPDF = exportPDF;
+    window.printReport = printReport;
+    window.clearAllHistory = clearAllHistory;
+    
+    console.log('History page fully loaded');
 });
+
+// ฟังก์ชันเริ่มต้นหน้าเว็บ
+function initializePage() {
+    console.log('Initializing history page...');
+    
+    try {
+        // 1. ตั้งค่า Dark Mode
+        initDarkMode();
+        
+        // 2. โหลดข้อมูลประวัติ
+        loadHistoryData();
+        
+        // 3. ตั้งค่า Event Listeners
+        setupEventListeners();
+        
+        // 4. ตั้งค่า Health Overview Tips Modal
+        initHealthOverviewTips();
+        
+        // 5. โหลดวันที่ทดสอบล่าสุด
+        loadLastTestDate();
+        
+        // 6. ตั้งค่าเวลาอัปเดตเริ่มต้น
+        updateLastUpdateTime();
+        
+        // 7. แสดงสถานะพร้อมใช้งาน
+        setTimeout(() => {
+            showNotification('ระบบประวัติการทดสอบพร้อมใช้งาน', 'info', 2000);
+        }, 500);
+        
+        console.log('Page initialization complete');
+        
+    } catch (error) {
+        console.error('initializePage error:', error);
+        showNotification('เกิดข้อผิดพลาดในการเริ่มต้นหน้า: ' + error.message, 'error');
+    }
+}
+
+// ==================== DARK MODE ====================
 
 // ตั้งค่า Dark Mode
 function initDarkMode() {
@@ -28,15 +79,18 @@ function initDarkMode() {
             document.getElementById('darkModeIcon').className = 'fas fa-sun text-lg';
         }
         
-        document.getElementById('darkModeToggle').addEventListener('click', function() {
-            darkMode = !darkMode;
-            document.documentElement.classList.toggle('dark');
-            
-            const icon = document.getElementById('darkModeIcon');
-            icon.className = darkMode ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
-            
-            localStorage.setItem('darkMode', darkMode);
-        });
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', function() {
+                darkMode = !darkMode;
+                document.documentElement.classList.toggle('dark');
+                
+                const icon = document.getElementById('darkModeIcon');
+                icon.className = darkMode ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
+                
+                localStorage.setItem('darkMode', darkMode);
+            });
+        }
         
         console.log('initDarkMode: สำเร็จ');
     } catch (error) {
@@ -44,30 +98,33 @@ function initDarkMode() {
     }
 }
 
+// ==================== DATA MANAGEMENT ====================
+
 // โหลดข้อมูลประวัติ
 function loadHistoryData() {
     console.log('loadHistoryData: กำลังโหลดข้อมูล...');
     
     try {
         const savedData = localStorage.getItem('mindbloomData');
-        console.log('savedData จาก localStorage:', savedData);
+        console.log('savedData จาก localStorage:', savedData ? 'พบข้อมูล' : 'ไม่พบข้อมูล');
         
         if (savedData) {
             const data = JSON.parse(savedData);
             console.log('ข้อมูลที่ parse แล้ว:', data);
             
             historyData = data.assessmentHistory || [];
-            console.log('historyData ที่ได้:', historyData);
+            console.log('historyData ที่ได้:', historyData.length, 'รายการ');
             
             // เรียงจากใหม่ไปเก่า
             historyData.sort((a, b) => {
-                const dateA = new Date(a.date || 0);
-                const dateB = new Date(b.date || 0);
+                const dateA = new Date(a.date || a.timestamp || 0);
+                const dateB = new Date(b.date || b.timestamp || 0);
                 return dateB - dateA;
             });
             
             console.log('โหลดข้อมูลสำเร็จ:', historyData.length, 'รายการ');
             updateUI();
+            
         } else {
             console.log('ไม่พบข้อมูลประวัติใน localStorage');
             showEmptyState();
@@ -75,9 +132,31 @@ function loadHistoryData() {
     } catch (error) {
         console.error('Error loading history data:', error);
         console.error('Error details:', error.message, error.stack);
+        showNotification('เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message, 'error');
         showEmptyState();
     }
 }
+
+// บันทึกข้อมูลประวัติ
+function saveHistoryData() {
+    try {
+        let data = {};
+        const savedData = localStorage.getItem('mindbloomData');
+        
+        if (savedData) {
+            data = JSON.parse(savedData);
+        }
+        
+        data.assessmentHistory = historyData;
+        localStorage.setItem('mindbloomData', JSON.stringify(data));
+        console.log('saveHistoryData: บันทึกข้อมูลสำเร็จ');
+    } catch (error) {
+        console.error('Error saving history data:', error);
+        showNotification('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+    }
+}
+
+// ==================== UI UPDATES ====================
 
 // อัปเดต UI
 function updateUI() {
@@ -88,9 +167,7 @@ function updateUI() {
         updateTestTypeSummary();
         updateMentalHealthOverview();
         updateHistoryTable();
-        
-        // อัปเดตจำนวนรายการ
-        document.getElementById('totalRecords').textContent = historyData.length;
+        updateLastTestDate();
         
         // ซ่อน/แสดงปุ่มล้างประวัติ
         const clearBtn = document.getElementById('clearHistoryBtn');
@@ -101,10 +178,55 @@ function updateUI() {
         console.log('updateUI: สำเร็จ');
     } catch (error) {
         console.error('updateUI error:', error);
+        console.error('Error details:', error.message);
+        showNotification('เกิดข้อผิดพลาดในการอัปเดต UI: ' + error.message, 'error');
+    }
+}
+
+// อัปเดตวันที่ทดสอบล่าสุด
+function updateLastTestDate() {
+    try {
+        const lastTestDateElement = document.getElementById('lastTestDate');
+        if (lastTestDateElement && historyData.length > 0) {
+            const lastTest = historyData[0];
+            const date = new Date(lastTest.date || lastTest.timestamp);
+            if (!isNaN(date.getTime())) {
+                const formattedDate = date.toLocaleDateString('th-TH', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                lastTestDateElement.textContent = formattedDate;
+            } else {
+                lastTestDateElement.textContent = '-';
+            }
+        } else if (lastTestDateElement) {
+            lastTestDateElement.textContent = '-';
+        }
+    } catch (error) {
+        console.error('updateLastTestDate error:', error);
+    }
+}
+
+// อัปเดตเวลาอัปเดตล่าสุด
+function updateLastUpdateTime() {
+    try {
+        const lastUpdateElement = document.getElementById('lastUpdateTime');
+        if (lastUpdateElement) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('th-TH', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            lastUpdateElement.textContent = timeString;
+        }
+    } catch (error) {
+        console.error('updateLastUpdateTime error:', error);
     }
 }
 
 // ==================== DASHBOARD ====================
+
 function updateMentalHealthOverview() {
     const container = document.getElementById('mentalHealthOverview');
     if (!container) return;
@@ -346,35 +468,8 @@ function analyzeMentalHealth() {
     return analysis;
 }
 
-// ฟังก์ชันช่วยเหลือ Dashboard
-function getTestCategory(title) {
-    if (!title) return 'other';
-    
-    const titleLower = title.toLowerCase();
-    if (titleLower.includes('who-5') || titleLower.includes('ความสุข')) return 'wellbeing';
-    if (titleLower.includes('pss-10') || titleLower.includes('ความเครียด')) return 'stress';
-    if (titleLower.includes('gad-7') || titleLower.includes('วิตกกังวล')) return 'anxiety';
-    if (titleLower.includes('phq-9') || titleLower.includes('ซึมเศร้า')) return 'depression';
-    if (titleLower.includes('หมดไฟ') || titleLower.includes('burnout')) return 'burnout';
-    if (titleLower.includes('ใจดีกับตัวเอง') || titleLower.includes('self-compassion')) return 'selfcare';
-    if (titleLower.includes('พลังแห่งการฟื้นตัว') || titleLower.includes('resilience')) return 'burnout';
-    if (titleLower.includes('รู้จักอารมณ์ตัวเอง') || titleLower.includes('emotional-awareness')) return 'selfcare';
-    return 'other';
-}
+// ==================== TEST TYPE SUMMARY ====================
 
-function getMaxScoreForCategory(category) {
-    const maxScores = {
-        'wellbeing': 25,
-        'stress': 40,
-        'anxiety': 21,
-        'depression': 27,
-        'burnout': 12,
-        'selfcare': 10
-    };
-    return maxScores[category] || 100;
-}
-
-// ==================== สรุปตามประเภทแบบทดสอบ ====================
 function updateTestTypeSummary() {
     const container = document.getElementById('testTypeSummary');
     if (!container) return;
@@ -468,7 +563,8 @@ function updateTestTypeSummary() {
     }
 }
 
-// ==================== ตารางประวัติ ====================
+// ==================== HISTORY TABLE ====================
+
 function updateHistoryTable() {
     const tableBody = document.getElementById('historyTableBody');
     const tableContainer = document.getElementById('historyTableContainer');
@@ -512,7 +608,7 @@ function updateHistoryTable() {
                         <button onclick="viewDetails(${index})" class="text-primary hover:text-primary-dark mr-2 text-sm">
                             <i class="fas fa-eye mr-1"></i>ดู
                         </button>
-                        <button onclick="deleteItem(${index})" class="text-red-500 hover:text-red-700 text-sm">
+                        <button onclick="deleteItem(${index})" class="text-red-300 hover:text-red-500 text-sm">
                             <i class="fas fa-trash mr-1"></i>ลบ
                         </button>
                     </td>
@@ -528,7 +624,8 @@ function updateHistoryTable() {
     }
 }
 
-// ==================== ฟังก์ชันช่วยเหลือ ====================
+// ==================== HELPER FUNCTIONS ====================
+
 function getShortTitle(title) {
     if (!title) return 'ไม่มีชื่อ';
     if (title.includes('(')) {
@@ -575,6 +672,33 @@ function getTestInfo(title) {
         return { icon: '🌍', color: '#6b7280' };
     }
     return { icon: '📊', color: '#6D9F71' };
+}
+
+function getTestCategory(title) {
+    if (!title) return 'other';
+    
+    const titleLower = title.toLowerCase();
+    if (titleLower.includes('who-5') || titleLower.includes('ความสุข')) return 'wellbeing';
+    if (titleLower.includes('pss-10') || titleLower.includes('ความเครียด')) return 'stress';
+    if (titleLower.includes('gad-7') || titleLower.includes('วิตกกังวล')) return 'anxiety';
+    if (titleLower.includes('phq-9') || titleLower.includes('ซึมเศร้า')) return 'depression';
+    if (titleLower.includes('หมดไฟ') || titleLower.includes('burnout')) return 'burnout';
+    if (titleLower.includes('ใจดีกับตัวเอง') || titleLower.includes('self-compassion')) return 'selfcare';
+    if (titleLower.includes('พลังแห่งการฟื้นตัว') || titleLower.includes('resilience')) return 'burnout';
+    if (titleLower.includes('รู้จักอารมณ์ตัวเอง') || titleLower.includes('emotional-awareness')) return 'selfcare';
+    return 'other';
+}
+
+function getMaxScoreForCategory(category) {
+    const maxScores = {
+        'wellbeing': 25,
+        'stress': 40,
+        'anxiety': 21,
+        'depression': 27,
+        'burnout': 12,
+        'selfcare': 10
+    };
+    return maxScores[category] || 100;
 }
 
 function getMaxScoreFromTestTitle(title) {
@@ -645,11 +769,12 @@ function showEmptyState() {
     }
 }
 
-// ==================== ฟังก์ชันพื้นฐาน ====================
+// ==================== BASIC FUNCTIONS ====================
+
 function viewDetails(index) {
     try {
         if (index < 0 || index >= historyData.length) {
-            alert('ไม่พบข้อมูลประวัตินี้');
+            showNotification('ไม่พบข้อมูลประวัตินี้', 'error');
             return;
         }
         
@@ -665,14 +790,14 @@ function viewDetails(index) {
         );
     } catch (error) {
         console.error('viewDetails error:', error);
-        alert('เกิดข้อผิดพลาดในการดูรายละเอียด');
+        showNotification('เกิดข้อผิดพลาดในการดูรายละเอียด', 'error');
     }
 }
 
 function deleteItem(index) {
     try {
         if (index < 0 || index >= historyData.length) {
-            alert('ไม่พบข้อมูลประวัตินี้');
+            showNotification('ไม่พบข้อมูลประวัตินี้', 'error');
             return;
         }
         
@@ -707,25 +832,8 @@ function clearAllHistory() {
     }
 }
 
-function saveHistoryData() {
-    try {
-        let data = {};
-        const savedData = localStorage.getItem('mindbloomData');
-        
-        if (savedData) {
-            data = JSON.parse(savedData);
-        }
-        
-        data.assessmentHistory = historyData;
-        localStorage.setItem('mindbloomData', JSON.stringify(data));
-        console.log('saveHistoryData: บันทึกข้อมูลสำเร็จ');
-    } catch (error) {
-        console.error('Error saving history data:', error);
-        showNotification('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
-    }
-}
+// ==================== EXPORT FUNCTIONS ====================
 
-// ==================== EXPORT JSON ====================
 function exportJSON() {
     try {
         const data = {
@@ -751,7 +859,6 @@ function exportJSON() {
     }
 }
 
-// ==================== EXPORT PDF ====================
 async function exportPDF() {
     if (isExportingPDF) return;
     
@@ -833,7 +940,6 @@ async function exportPDF() {
     }
 }
 
-// สร้างเนื้อหา PDF แบบง่าย
 function createSimplePDFContent() {
     const container = document.createElement('div');
     container.style.cssText = `
@@ -935,7 +1041,6 @@ function createSimplePDFContent() {
     return container;
 }
 
-// Fallback PDF export ใช้ print
 async function fallbackPDFExport() {
     console.log('fallbackPDFExport: ใช้วิธี fallback...');
     
@@ -984,7 +1089,6 @@ async function fallbackPDFExport() {
     showNotification('เปิดหน้าต่างพิมพ์แล้ว กรุณาเลือก "บันทึกเป็น PDF"', 'info');
 }
 
-// ==================== PRINT ====================
 function printReport() {
     console.log('printReport: พิมพ์รายงาน...');
     
@@ -993,7 +1097,7 @@ function printReport() {
         const printWindow = window.open('', '_blank');
         
         if (!printWindow) {
-            alert('ไม่สามารถเปิดหน้าต่างพิมพ์ได้ กรุณาปิดป๊อปอัพบล็อกเกอร์');
+            showNotification('ไม่สามารถเปิดหน้าต่างพิมพ์ได้ กรุณาปิดป๊อปอัพบล็อกเกอร์', 'error');
             return;
         }
         
@@ -1038,214 +1142,161 @@ function printReport() {
     }
 }
 
-// ==================== NOTIFICATION ====================
-function showNotification(message, type = 'info') {
+// ==================== NOTIFICATION SYSTEM ====================
+
+function showNotification(message, type = 'info', duration = 3000) {
     try {
+        // ลบ notification เก่าที่ซ้ำกัน
+        const oldNotifications = document.querySelectorAll('.notification-item');
+        oldNotifications.forEach(notif => {
+            if (notif.parentNode) {
+                notif.parentNode.removeChild(notif);
+            }
+        });
+        
         // สร้าง notification element
         const notification = document.createElement('div');
-        notification.className = `custom-notification ${type === 'success' ? 'notification-success' : 
-                                  type === 'error' ? 'notification-error' : 'notification-info'}`;
-        notification.textContent = message;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
-            max-width: 300px;
-            font-family: 'Anuphan', 'Noto Sans Thai', sans-serif;
+        notification.className = 'notification-item fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-8 opacity-0';
+        
+        // ตั้งค่าสีตามประเภท
+        const colors = {
+            success: 'bg-green-500 text-white border-l-4 border-green-600',
+            error: 'bg-red-500 text-white border-l-4 border-red-600',
+            info: 'bg-blue-500 text-white border-l-4 border-blue-600',
+            warning: 'bg-yellow-500 text-white border-l-4 border-yellow-600'
+        };
+        
+        notification.className += ` ${colors[type] || colors.info}`;
+        
+        // ตั้งค่าไอคอนตามประเภท
+        let icon = 'info-circle';
+        switch (type) {
+            case 'success': icon = 'check-circle'; break;
+            case 'error': icon = 'exclamation-circle'; break;
+            case 'warning': icon = 'exclamation-triangle'; break;
+        }
+        
+        notification.innerHTML = `
+            <div class="flex items-center gap-3">
+                <i class="fas fa-${icon} text-lg"></i>
+                <div class="flex-1">
+                    <p class="font-medium text-sm">${message}</p>
+                    <p class="text-xs opacity-90 mt-0.5">${getCurrentTime()}</p>
+                </div>
+                <button class="notification-close ml-2 opacity-70 hover:opacity-100 transition-opacity">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         `;
         
         // เพิ่มเข้า DOM
         document.body.appendChild(notification);
         
-        // ลบหลังจาก 3 วินาที
+        // Animate in
         setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 3000);
+            notification.classList.remove('translate-y-8', 'opacity-0');
+            notification.classList.add('translate-y-0', 'opacity-100');
+        }, 10);
+        
+        // ปิด notification เมื่อคลิกปุ่มปิด
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.addEventListener('click', () => {
+            removeNotification(notification);
+        });
+        
+        // Auto remove หลังจากเวลาที่กำหนด
+        setTimeout(() => {
+            removeNotification(notification);
+        }, duration);
+        
+        console.log(`[Notification] ${type.toUpperCase()}: ${message}`);
+        
     } catch (error) {
         console.error('showNotification error:', error);
+        // Fallback ใช้ alert ธรรมดา
+        alert(`${type.toUpperCase()}: ${message}`);
     }
 }
 
-// ==================== SETUP EVENT LISTENERS ====================
-function setupEventListeners() {
-    console.log('setupEventListeners: กำลังตั้งค่า...');
+function removeNotification(notification) {
+    if (!notification || !notification.parentNode) return;
     
-    try {
-        const exportJsonBtn = document.getElementById('exportJsonBtn');
-        const exportPdfBtn = document.getElementById('exportPdfBtn');
-        const printBtn = document.getElementById('printBtn');
-        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-        
-        if (exportJsonBtn) {
-            exportJsonBtn.addEventListener('click', exportJSON);
-            console.log('exportJsonBtn: ติดตั้งแล้ว');
+    notification.classList.add('translate-y-8', 'opacity-0');
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
         }
-        
-        if (exportPdfBtn) {
-            exportPdfBtn.addEventListener('click', exportPDF);
-            console.log('exportPdfBtn: ติดตั้งแล้ว');
-        }
-        
-        if (printBtn) {
-            printBtn.addEventListener('click', printReport);
-            console.log('printBtn: ติดตั้งแล้ว');
-        }
-        
-        if (clearHistoryBtn) {
-            clearHistoryBtn.addEventListener('click', clearAllHistory);
-            console.log('clearHistoryBtn: ติดตั้งแล้ว');
-        }
-        
-        console.log('setupEventListeners: สำเร็จ');
-    } catch (error) {
-        console.error('setupEventListeners error:', error);
-    }
+    }, 300);
 }
 
-// เปิดฟังก์ชันให้เรียกจาก HTML ได้
-window.viewDetails = viewDetails;
-window.deleteItem = deleteItem;
-
-
-
-// Health Overview Tips Modal Functions
-function initHealthOverviewTips() {
-    const modal = document.getElementById('healthOverviewTipsModal');
-    const openBtn = document.getElementById('healthOverviewTipsBtn');
-    const closeBtn = document.getElementById('closeHealthTipsBtn');
-    const closeModalBtn = document.getElementById('closeHealthTipsModalBtn');
-    
-    if (!modal || !openBtn) return;
-    
-    // เปิด Modal
-    openBtn.addEventListener('click', function() {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden'; // ป้องกันการ scroll
-    });
-    
-    // ปิด Modal
-    function closeModal() {
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
-        document.body.style.overflow = ''; // คืนค่า scroll
-    }
-    
-    // เพิ่ม Event Listeners
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-    
-    // ปิดเมื่อคลิกนอก Modal
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-    
-    // ปิดด้วยปุ่ม Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-            closeModal();
-        }
+function getCurrentTime() {
+    const now = new Date();
+    return now.toLocaleTimeString('th-TH', {
+        hour: '2-digit',
+        minute: '2-digit'
     });
 }
 
-// เรียกใช้เมื่อโหลดหน้า
-document.addEventListener('DOMContentLoaded', function() {
-    initHealthOverviewTips();
-    
-    // เรียกใช้ฟังก์ชันอื่นๆ ที่มีอยู่...
-});
+// ==================== HEALTH OVERVIEW FUNCTIONS ====================
 
-// เพิ่มฟังก์ชันเหล่านี้ใน history.js
-
-// ฟังก์ชันรีเฟรชข้อมูล
 function refreshHealthOverview() {
+    console.log('Refreshing health overview...');
+    
+    // แสดงสถานะกำลังโหลด
     const lastUpdateElement = document.getElementById('lastUpdateTime');
     if (lastUpdateElement) {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString('th-TH', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-        });
-        lastUpdateElement.textContent = timeString;
-        
-        // แสดง Toast notification
-        showToast('อัปเดตข้อมูลสุขภาพจิตภาพรวมเรียบร้อยแล้ว', 'success');
+        lastUpdateElement.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>กำลังอัปเดต...';
     }
     
     // โหลดข้อมูลใหม่
-    loadMentalHealthOverview();
+    loadHistoryData();
+    
+    // แสดงการแจ้งเตือน
+    showNotification('อัปเดตข้อมูลสุขภาพจิตภาพรวมเรียบร้อยแล้ว', 'success');
+    
+    // อัปเดตเวลาล่าสุด
+    setTimeout(() => {
+        if (lastUpdateElement) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('th-TH', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            lastUpdateElement.textContent = timeString;
+        }
+    }, 500);
 }
 
-// ฟังก์ชันแสดง Toast
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg 
-                      transform transition-all duration-300 translate-y-8 opacity-0`;
-    
-    // ตั้งค่าตามประเภท
-    const colors = {
-        success: 'bg-green-500 text-white',
-        error: 'bg-red-500 text-white',
-        info: 'bg-blue-500 text-white',
-        warning: 'bg-yellow-500 text-white'
-    };
-    
-    toast.className += ` ${colors[type] || colors.info}`;
-    toast.innerHTML = `
-        <div class="flex items-center gap-3">
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 
-                            type === 'error' ? 'exclamation-circle' : 
-                            type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // Animate in
-    setTimeout(() => {
-        toast.classList.remove('translate-y-8', 'opacity-0');
-        toast.classList.add('translate-y-0', 'opacity-100');
-    }, 10);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        toast.classList.add('translate-y-8', 'opacity-0');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-            }
-        }, 300);
-    }, 3000);
-}
-
-// ฟังก์ชันโหลดข้อมูลวันที่ล่าสุด
 function loadLastTestDate() {
     try {
-        const history = JSON.parse(localStorage.getItem('assessmentHistory') || '[]');
-        if (history.length > 0) {
-            // เรียงจากล่าสุดไปเก่าสุด
-            const sortedHistory = history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            const lastTest = sortedHistory[0];
+        // อ่านข้อมูลจาก localStorage (ใช้ key เดียวกับระบบหลัก)
+        const savedData = localStorage.getItem('mindbloomData');
+        
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            const history = data.assessmentHistory || [];
             
-            const lastTestDateElement = document.getElementById('lastTestDate');
-            if (lastTestDateElement) {
-                const date = new Date(lastTest.timestamp);
-                const formattedDate = date.toLocaleDateString('th-TH', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
+            if (history.length > 0) {
+                // เรียงจากล่าสุดไปเก่าสุด
+                const sortedHistory = history.sort((a, b) => {
+                    const dateA = new Date(a.date || a.timestamp || 0);
+                    const dateB = new Date(b.date || b.timestamp || 0);
+                    return dateB - dateA;
                 });
-                lastTestDateElement.textContent = formattedDate;
+                
+                const lastTest = sortedHistory[0];
+                const lastTestDateElement = document.getElementById('lastTestDate');
+                
+                if (lastTestDateElement && (lastTest.date || lastTest.timestamp)) {
+                    const date = new Date(lastTest.date || lastTest.timestamp);
+                    const formattedDate = date.toLocaleDateString('th-TH', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+                    lastTestDateElement.textContent = formattedDate;
+                }
             }
         }
     } catch (error) {
@@ -1253,52 +1304,63 @@ function loadLastTestDate() {
     }
 }
 
-// เรียกใช้เมื่อโหลดหน้า
-document.addEventListener('DOMContentLoaded', function() {
-    // โหลดข้อมูลวันที่ล่าสุด
-    loadLastTestDate();
-    
-    // ตั้งเวลาเริ่มต้นสำหรับ last update
-    refreshHealthOverview();
-    
-    // ฟังก์ชันเดิมๆ
-    initHealthOverviewTips();
-    loadMentalHealthOverview();
-    // ... ฟังก์ชันอื่นๆ
-});
+// ==================== MODAL MANAGEMENT ====================
 
-// ฟังก์ชัน initHealthOverviewTips แบบใหม่
 function initHealthOverviewTips() {
     const modal = document.getElementById('healthOverviewTipsModal');
     const openBtn = document.getElementById('healthOverviewTipsBtn');
     const closeBtn = document.getElementById('closeHealthTipsBtn');
     const closeModalBtn = document.getElementById('closeHealthTipsModalBtn');
     
-    if (!modal || !openBtn) return;
+    if (!modal || !openBtn) {
+        console.warn('Health overview tips modal elements not found');
+        return;
+    }
     
     // เปิด Modal
-    openBtn.addEventListener('click', function() {
+    openBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
         
         // เพิ่ม animation เมื่อเปิด
         modal.style.animation = 'fadeIn 0.3s ease-out';
+        
+        // Log สำหรับ debugging
+        console.log('Health tips modal opened');
     });
     
     // ปิด Modal
     function closeModal() {
         modal.style.animation = 'fadeOut 0.3s ease-out';
+        
         setTimeout(() => {
             modal.classList.remove('flex');
             modal.classList.add('hidden');
             document.body.style.overflow = '';
+            modal.style.animation = '';
         }, 250);
+        
+        console.log('Health tips modal closed');
     }
     
-    // เพิ่ม Event Listeners
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+    // เพิ่ม Event Listeners สำหรับปุ่มปิด
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeModal();
+        });
+    }
+    
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeModal();
+        });
+    }
     
     // ปิดเมื่อคลิกนอก Modal
     modal.addEventListener('click', function(e) {
@@ -1309,8 +1371,127 @@ function initHealthOverviewTips() {
     
     // ปิดด้วยปุ่ม Escape
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        if (e.key === 'Escape' && modal.classList.contains('flex')) {
             closeModal();
         }
     });
 }
+
+// ==================== EVENT LISTENERS SETUP ====================
+
+function setupEventListeners() {
+    console.log('Setting up event listeners...');
+    
+    try {
+        // ปุ่มรีเฟรช Dashboard
+        const refreshBtn = document.querySelector('button[onclick*="refreshHealthOverview"]');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', refreshHealthOverview);
+            console.log('Refresh button listener added');
+        }
+        
+        // ปุ่ม Export PDF (ถ้ามี)
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+        if (exportPdfBtn) {
+            exportPdfBtn.addEventListener('click', exportPDF);
+            console.log('Export PDF button listener added');
+        }
+        
+        // ปุ่ม Export JSON (ถ้ามี)
+        const exportJsonBtn = document.getElementById('exportJsonBtn');
+        if (exportJsonBtn) {
+            exportJsonBtn.addEventListener('click', exportJSON);
+            console.log('Export JSON button listener added');
+        }
+        
+        // ปุ่มพิมพ์ (ถ้ามี)
+        const printBtn = document.getElementById('printBtn');
+        if (printBtn) {
+            printBtn.addEventListener('click', printReport);
+            console.log('Print button listener added');
+        }
+        
+        // ปุ่มล้างประวัติ
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        if (clearHistoryBtn) {
+            clearHistoryBtn.addEventListener('click', clearAllHistory);
+            console.log('Clear history button listener added');
+        }
+        
+        // Quick access buttons
+        const quickPdfBtn = document.querySelector('button[onclick*="exportPdfBtn"]');
+        if (quickPdfBtn) {
+            quickPdfBtn.addEventListener('click', function() {
+                document.getElementById('exportPdfBtn')?.click();
+            });
+        }
+        
+        const quickPrintBtn = document.querySelector('button[onclick*="printBtn"]');
+        if (quickPrintBtn) {
+            quickPrintBtn.addEventListener('click', function() {
+                document.getElementById('printBtn')?.click();
+            });
+        }
+        
+        console.log('All event listeners setup complete');
+        
+    } catch (error) {
+        console.error('Error setting up event listeners:', error);
+        showNotification('เกิดข้อผิดพลาดในการตั้งค่า Event Listeners', 'error');
+    }
+}
+
+// ==================== CSS ANIMATION SUPPORT ====================
+
+// เพิ่ม CSS animations ถ้ายังไม่มีใน history.css
+(function() {
+    // ตรวจสอบว่า CSS animations ถูกโหลดหรือยัง
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+        
+        .notification-item {
+            min-width: 300px;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            background-opacity: 0.9;
+        }
+        
+        .notification-success {
+            background-color: rgba(16, 185, 129, 0.95) !important;
+        }
+        
+        .notification-error {
+            background-color: rgba(239, 68, 68, 0.95) !important;
+        }
+        
+        .notification-info {
+            background-color: rgba(59, 130, 246, 0.95) !important;
+        }
+        
+        .notification-warning {
+            background-color: rgba(245, 158, 11, 0.95) !important;
+        }
+    `;
+    document.head.appendChild(style);
+})();

@@ -1,677 +1,1289 @@
-/* ============================================
-   CSS Variables (Custom Properties) - Cloudy-Puk-Jai
-   ============================================ */
+/* ============================================================================
+   CLOUDY-PUK-JAI - COMPLETE CSS SYSTEM
+   Mental Health App Design System with Soft Pastel Colors
+   Version 1.0.0 | Designed for All Devices
+   ============================================================================ */
+
+/* ============================================================================
+   PART 1: CSS CUSTOM PROPERTIES (VARIABLES) - DESIGN SYSTEM
+   ============================================================================ */
+
 :root {
-    /* 🎯 PRIMARY - สีเอกลักษณ์หลัก (โทนธรรมชาติเบา) */
-    --primary: #5D8F6F;           /* ปรับจาก #6D9F71 -> ลดความเข้มลงเล็กน้อย */
-    --primary-light: #8DC792;     /* ปรับจาก #8FBC8F -> ฟื้นขึ้น ดูมีชีวิตชีวามากขึ้น */
-    --primary-dark: #3A6B4F;      /* ปรับจาก #4A7C59 -> มืดและลึกขึ้นสำหรับข้อความ */
-    --primary-bg: #F0F7F1;        /* 🆕 สีพื้นหลังอ่อนที่กลมกลืนกับธีม (ใช้กับ card, container) */
-
-    /* 🎭 SECONDARY - สีเสริม */
-    --secondary: #FFB8C6;         /* ปรับจาก #FFB6C1 -> ชมพูที่สดใสและเป็นมิตรขึ้นเล็กน้อย */
-    --accent: #FFC857;            /* ปรับจาก #FFD166 -> เหลืองทองที่อุ่นและดูน่าเชื่อถือขึ้น */
-
-    /* 😊 MOOD - สีสำหรับอารมณ์ (ลดความอิ่มตัวลงเพื่อความสบายตา) */
-    --happy: #FFF2B2;             /* ปรับจาก #FFEAA7 -> เหลืองนวล ไม่ฉุนเกินไป */
-    --calm: #B8E6FF;              /* ปรับจาก #A7E6FF -> ฟ้าอ่อน สบายตา */
-    --sad: #E2D4FF;               /* ปรับจาก #D8C3FF -> ม่วงอ่อน นุ่มนวล */
-    --anxious: #FFCECE;           /* ปรับจาก #FFB8B8 -> ชมพูอ่อนที่สงบกว่า */
-    --energetic: #C5E8B7;         /* ปรับจาก #C5FFB8 -> เขียวอ่อนที่ไม่ฉูดฉาด */
-    --neutral: #E8E8E8;           /* ปรับจาก #F0F0F0 -> เทาอ่อนที่ดูเป็นกลางมากขึ้น */
-
-    /* 📝 TEXT - สีตัวอักษร (เพิ่มคอนทราสต์เพื่อการอ่านที่ดี) */
-    --text-primary: #1A1A1A;      /* ปรับจาก #1f2937 -> ดำเทาเข้มเพิ่มคอนทราสต์ */
-    --text-secondary: #666666;    /* ปรับจาก #6b7280 -> เทากลางสำหรับข้อความรอง */
-    --text-tertiary: #999999;     /* 🆕 เทาอ่อนสำหรับข้อความที่ต้องการเน้นน้อย */
-    --text-inverse: #FFFFFF;      /* สีตัวอักษรบนพื้นสีเข้ม */
-
-    /* 🖼️ BACKGROUND - สีพื้นหลัง (เพิ่มระดับความลึก) */
-    --bg-primary: #FFFFFF;        /* พื้นหลังหลัก (ขาวสะอาด) */
-    --bg-secondary: #F8FAFC;      /* ปรับจาก #f9fafb -> ฟ้านวลเย็นสบายตา */
-    --bg-tertiary: #F1F5F9;       /* 🆕 พื้นหลังระดับ 3 สำหรับส่วนที่ต้องการแยก */
-
-    /* 🏞️ SURFACE - สีพื้นผิวสำหรับองค์ประกอบ UI */
-    --surface: #FFFFFF;           /* 🆕 สำหรับ card, modal */
-    --surface-hover: #F8FAFC;     /* 🆕 สำหรับสถานะ hover */
-
-    /* 📏 BORDER - สีเส้นขอบ (นุ่มนวลขึ้น) */
-    --border-light: #E2E8F0;      /* ปรับจาก #e5e7eb -> ฟ้านวล */
-    --border-medium: #CBD5E1;     /* ปรับจาก #d1d5db -> ขอบที่ชัดเจนขึ้นเล็กน้อย */
-    --border-strong: #94A3B8;     /* 🆕 สำหรับขอบที่ต้องการให้เห็นชัด */
-
-    /* ⚠️ FEEDBACK - สีสำหรับสถานะ */
-    --success: #10B981;           /* 🆕 สีเขียวสำหรับความสำเร็จ */
-    --warning: #F59E0B;           /* 🆕 สีส้มสำหรับคำเตือน */
-    --error: #EF4444;             /* 🆕 สีแดงสำหรับข้อผิดพลาด */
-    --info: #3B82F6;              /* 🆕 สีน้ำเงินสำหรับข้อมูล */
+  /* ============================================
+     🍃 NATURE-INSPIRED PRIMARY PALETTE (Soft Pastel Green)
+     ============================================ */
+  --color-primary-50: #F0F9F2;
+  --color-primary-100: #DCF1E0;
+  --color-primary-200: #B8E2C1;
+  --color-primary-300: #94D3A2;
+  --color-primary-400: #70C483;
+  --color-primary-500: #5D8F6F;
+  --color-primary-600: #4A7C59;
+  --color-primary-700: #376A43;
+  --color-primary-800: #24572D;
+  --color-primary-900: #114417;
+  
+  --color-primary: var(--color-primary-500);
+  --color-primary-light: var(--color-primary-300);
+  --color-primary-dark: var(--color-primary-700);
+  
+  /* ============================================
+     🌸 SECONDARY & ACCENT PALETTE
+     ============================================ */
+  --color-secondary-50: #FFF5F7;
+  --color-secondary-100: #FFEBEF;
+  --color-secondary-200: #FFB8C6;
+  --color-secondary-300: #FF94A9;
+  --color-secondary-400: #FF708C;
+  --color-secondary-500: #FF4C6F;
+  
+  --color-accent-50: #FFFCF0;
+  --color-accent-100: #FFF8E1;
+  --color-accent-200: #FFEBB3;
+  --color-accent-300: #FFDE85;
+  --color-accent-400: #FFC857;
+  --color-accent-500: #FFB224;
+  
+  /* ============================================
+     😊 MOOD PALETTE (Reduced Saturation)
+     ============================================ */
+  --color-mood-happy: #FFF7D6;
+  --color-mood-calm: #E6F4FF;
+  --color-mood-sad: #F0E6FF;
+  --color-mood-anxious: #FFE6E6;
+  --color-mood-energetic: #E6FFE6;
+  --color-mood-neutral: #F5F5F5;
+  
+  /* ============================================
+     🚨 FEEDBACK PALETTE (Mental Health Friendly)
+     ============================================ */
+  --color-feedback-success-soft: #A7E6B3;
+  --color-feedback-success: #4CAF50;
+  --color-feedback-success-dark: #2E7D32;
+  --color-feedback-success-text: #1B5E20;
+  
+  --color-feedback-warning-soft: #FFE0B2;
+  --color-feedback-warning: #FF9800;
+  --color-feedback-warning-dark: #EF6C00;
+  --color-feedback-warning-text: #E65100;
+  
+  --color-feedback-error-soft: #FFCDD2;
+  --color-feedback-error: #FF6B6B;
+  --color-feedback-error-dark: #D32F2F;
+  --color-feedback-error-text: #B71C1C;
+  
+  --color-feedback-info-soft: #B3E5FC;
+  --color-feedback-info: #42A5F5;
+  --color-feedback-info-dark: #1976D2;
+  --color-feedback-info-text: #0D47A1;
+  
+  /* ============================================
+     📝 TEXT PALETTE
+     ============================================ */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4A5568;
+  --color-text-tertiary: #718096;
+  --color-text-disabled: #A0AEC0;
+  --color-text-inverse: #FFFFFF;
+  --color-text-on-primary: #FFFFFF;
+  
+  /* ============================================
+     🖼️ BACKGROUND PALETTE
+     ============================================ */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F8FAFC;
+  --color-bg-tertiary: #F1F5F9;
+  --color-bg-overlay: rgba(0, 0, 0, 0.5);
+  
+  /* ============================================
+     🏞️ SURFACE PALETTE
+     ============================================ */
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F8FAFC;
+  --color-surface-hover: #EDF2F7;
+  --color-surface-active: #E2E8F0;
+  
+  /* ============================================
+     📏 BORDER PALETTE
+     ============================================ */
+  --color-border-light: #E2E8F0;
+  --color-border-medium: #CBD5E1;
+  --color-border-strong: #94A3B8;
+  --color-border-focus: var(--color-primary-400);
+  
+  /* ============================================
+     📱 SHADOW SYSTEM
+     ============================================ */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  
+  /* ============================================
+     📐 SPACING SYSTEM
+     ============================================ */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  
+  /* ============================================
+     🌀 BORDER RADIUS
+     ============================================ */
+  --radius-none: 0;
+  --radius-sm: 0.125rem;  /* 2px */
+  --radius-md: 0.375rem;  /* 6px */
+  --radius-lg: 0.5rem;    /* 8px */
+  --radius-xl: 0.75rem;   /* 12px */
+  --radius-2xl: 1rem;     /* 16px */
+  --radius-3xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;
+  
+  /* ============================================
+     📏 Z-INDEX SYSTEM
+     ============================================ */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+  --z-index-toast: 1080;
+  
+  /* ============================================
+     🌀 TRANSITION SYSTEM
+     ============================================ */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* ============================================
+     📱 BREAKPOINTS
+     ============================================ */
+  --breakpoint-xs: 475px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
 }
 
-/* 🌙 DARK MODE - เน้นความคมชัดสบายตาในที่มืด */
+/* ============================================================================
+   PART 2: DARK MODE THEME
+   ============================================================================ */
+
 .dark {
-    --primary: #6BBF7A;           /* เขียวที่สว่างขึ้นในที่มืด */
-    --primary-light: #8FDD9C;
-    --primary-dark: #4A9D5A;
-    --primary-bg: #1A2C23;        /* พื้นหลังโทนเขียวเข้ม */
-
-    --text-primary: #F1F5F9;      /* ขาวเทาสำหรับอ่านง่าย */
-    --text-secondary: #CBD5E1;
-    --text-tertiary: #94A3B8;
-
-    --bg-primary: #0F172A;        /* ดำเทาเข้มลึก (Midnight) */
-    --bg-secondary: #1E293B;
-    --bg-tertiary: #334155;
-
-    --surface: #1E293B;
-    --surface-hover: #2D3748;
-
-    --border-light: #334155;
-    --border-medium: #475569;
-    --border-strong: #64748B;
+  /* Primary */
+  --color-primary-50: #0D1F14;
+  --color-primary-100: #1A2F1F;
+  --color-primary-200: #27402A;
+  --color-primary-300: #345035;
+  --color-primary-400: #416040;
+  --color-primary: #5D8F6F;
+  --color-primary-600: #6BAF7A;
+  --color-primary-700: #79CF85;
+  --color-primary-800: #87EF90;
+  --color-primary-900: #95FF9B;
+  
+  /* Text */
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #CBD5E1;
+  --color-text-tertiary: #94A3B8;
+  --color-text-disabled: #64748B;
+  --color-text-inverse: #1A1A1A;
+  
+  /* Background */
+  --color-bg-primary: #0F172A;
+  --color-bg-secondary: #1E293B;
+  --color-bg-tertiary: #334155;
+  
+  /* Surface */
+  --color-surface: #1E293B;
+  --color-surface-elevated: #2D3748;
+  --color-surface-hover: #374151;
+  --color-surface-active: #4B5563;
+  
+  /* Border */
+  --color-border-light: #334155;
+  --color-border-medium: #475569;
+  --color-border-strong: #64748B;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* ============================================
-   Base Styles - สไตล์พื้นฐาน
-   ============================================ */
+/* ============================================================================
+   PART 3: BASE STYLES & RESET
+   ============================================================================ */
 
-/* Font setup - กำหนดฟอนต์หลักของแอป */
-* {
-    font-family: 'Anuphan', 'Noto Sans Thai', sans-serif;
-    box-sizing: border-box;
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* สำหรับปรับปรุงการแสดงผลภาษาไทย */
 html {
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
 }
 
-/* ============================================
-   Animations & Transitions - การเคลื่อนไหว
-   ============================================ */
-
-/* Breathing animation - สำหรับการหายใจ */
-@keyframes breathe {
-    0%, 100% { 
-        transform: scale(0.8); 
-        opacity: 0.7; 
-    }
-    50% { 
-        transform: scale(1.2); 
-        opacity: 1; 
-    }
+body {
+  font-family: 'Anuphan', 'Noto Sans Thai', 'Segoe UI', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  transition: background-color var(--transition-base), color var(--transition-base);
+  min-height: 100vh;
 }
 
-.animate-breathe {
-    animation: breathe 8s infinite ease-in-out;
+/* Thai Language Optimization */
+:lang(th) {
+  letter-spacing: 0.02em;
+  word-spacing: 0.1em;
 }
 
-/* Pulse animation - สำหรับ loading */
-@keyframes pulse-slow {
-    0%, 100% { 
-        opacity: 1; 
-    }
-    50% { 
-        opacity: 0.5; 
-    }
+/* ============================================================================
+   PART 4: TYPOGRAPHY SYSTEM
+   ============================================================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-primary);
 }
 
-.animate-pulse-slow {
-    animation: pulse-slow 3s ease-in-out infinite;
+h1 { font-size: 2.5rem; }      /* 40px */
+h2 { font-size: 2rem; }        /* 32px */
+h3 { font-size: 1.75rem; }     /* 28px */
+h4 { font-size: 1.5rem; }      /* 24px */
+h5 { font-size: 1.25rem; }     /* 20px */
+h6 { font-size: 1rem; }        /* 16px */
+
+p {
+  margin-bottom: var(--space-4);
+  line-height: 1.6;
 }
 
-/* Fade in animation - สำหรับการแสดงผลทีละส่วน */
-@keyframes fadeIn {
-    from { 
-        opacity: 0; 
-    }
-    to { 
-        opacity: 1; 
-    }
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-.fade-in {
-    animation: fadeIn 0.3s ease-in-out;
+a:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
 }
 
-/* Slide in animation - สำหรับ modal หรือ popup */
-@keyframes slideInUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+small, .text-small {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
 }
 
-.slide-in-up {
-    animation: slideInUp 0.3s ease-out;
+strong, b {
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
-/* Tree growth animation - สำหรับต้นไม้ในหน้า journal */
-.tree-transition {
-    transition: all 0.5s ease;
+/* ============================================================================
+   PART 5: UTILITY CLASSES
+   ============================================================================ */
+
+/* Text Colors */
+.text-primary { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-tertiary { color: var(--color-text-tertiary); }
+.text-inverse { color: var(--color-text-inverse); }
+.text-on-primary { color: var(--color-text-on-primary); }
+
+.text-success { color: var(--color-feedback-success-text); }
+.text-warning { color: var(--color-feedback-warning-text); }
+.text-error { color: var(--color-feedback-error-text); }
+.text-info { color: var(--color-feedback-info-text); }
+
+/* Background Colors */
+.bg-primary { background-color: var(--color-bg-primary); }
+.bg-secondary { background-color: var(--color-bg-secondary); }
+.bg-tertiary { background-color: var(--color-bg-tertiary); }
+.bg-surface { background-color: var(--color-surface); }
+.bg-overlay { background-color: var(--color-bg-overlay); }
+
+.bg-success { background-color: var(--color-feedback-success); }
+.bg-warning { background-color: var(--color-feedback-warning); }
+.bg-error { background-color: var(--color-feedback-error); }
+.bg-info { background-color: var(--color-feedback-info); }
+
+.bg-success-soft { background-color: var(--color-feedback-success-soft); }
+.bg-warning-soft { background-color: var(--color-feedback-warning-soft); }
+.bg-error-soft { background-color: var(--color-feedback-error-soft); }
+.bg-info-soft { background-color: var(--color-feedback-info-soft); }
+
+/* Border Colors */
+.border-light { border-color: var(--color-border-light); }
+.border-medium { border-color: var(--color-border-medium); }
+.border-strong { border-color: var(--color-border-strong); }
+
+.border-success { border-color: var(--color-feedback-success); }
+.border-warning { border-color: var(--color-feedback-warning); }
+.border-error { border-color: var(--color-feedback-error); }
+.border-info { border-color: var(--color-feedback-info); }
+
+/* Spacing Utilities */
+.m-0 { margin: var(--space-0); }
+.m-1 { margin: var(--space-1); }
+.m-2 { margin: var(--space-2); }
+.m-3 { margin: var(--space-3); }
+.m-4 { margin: var(--space-4); }
+.m-6 { margin: var(--space-6); }
+.m-8 { margin: var(--space-8); }
+
+.p-0 { padding: var(--space-0); }
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+.p-8 { padding: var(--space-8); }
+
+/* Flexbox Utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: var(--space-1); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+
+/* Grid Utilities */
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+/* Display Utilities */
+.hidden { display: none; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+.inline-flex { display: inline-flex; }
+
+/* Width & Height */
+.w-full { width: 100%; }
+.w-screen { width: 100vw; }
+.h-full { height: 100%; }
+.h-screen { height: 100vh; }
+.min-h-screen { min-height: 100vh; }
+
+/* Border Radius */
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-2xl { border-radius: var(--radius-2xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* Shadows */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+.shadow-inner { box-shadow: var(--shadow-inner); }
+
+/* Position */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+.top-0 { top: 0; }
+.right-0 { right: 0; }
+.bottom-0 { bottom: 0; }
+.left-0 { left: 0; }
+.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+
+/* Z-Index */
+.z-10 { z-index: 10; }
+.z-20 { z-index: 20; }
+.z-30 { z-index: 30; }
+.z-40 { z-index: 40; }
+.z-50 { z-index: 50; }
+
+/* Text Alignment */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Text Overflow */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* ============================================
-   Scrollbar Customization - ปรับแต่ง scrollbar
-   ============================================ */
-
-.scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f1f1f1;
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-    transition: background 0.2s;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #a0a0a0;
-}
-
-/* Dark mode scrollbar */
-.dark .scrollbar-thin {
-    scrollbar-color: #4a5568 #2d3748;
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-track {
-    background: #2d3748;
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #4a5568;
-}
-
-.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #5a6578;
-}
-
-/* ============================================
-   Text Utilities - อรรถประโยชน์สำหรับข้อความ
-   ============================================ */
-
-/* Line clamping - สำหรับจำกัดจำนวนบรรทัด */
 .line-clamp-1 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 }
 
 .line-clamp-2 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .line-clamp-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
-.line-clamp-4 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    line-clamp: 4;
+/* Opacity */
+.opacity-0 { opacity: 0; }
+.opacity-25 { opacity: 0.25; }
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+.opacity-100 { opacity: 1; }
+
+/* Cursor */
+.cursor-pointer { cursor: pointer; }
+.cursor-default { cursor: default; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+/* Overflow */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-y-auto { overflow-y: auto; }
+.overflow-x-hidden { overflow-x: hidden; }
+
+/* Transitions */
+.transition-all { transition: all var(--transition-base); }
+.transition-colors { transition: color var(--transition-base), background-color var(--transition-base), border-color var(--transition-base); }
+.transition-transform { transition: transform var(--transition-base); }
+.transition-opacity { transition: opacity var(--transition-base); }
+
+/* Transform */
+.transform { transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+.scale-95 { transform: scale(0.95); }
+.scale-100 { transform: scale(1); }
+.scale-105 { transform: scale(1.05); }
+.-translate-y-1 { transform: translateY(-0.25rem); }
+.-translate-y-2 { transform: translateY(-0.5rem); }
+.translate-y-0 { transform: translateY(0); }
+
+/* ============================================================================
+   PART 6: ANIMATIONS & TRANSITIONS
+   ============================================================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Responsive text - ข้อความที่ปรับตามขนาดหน้าจอ */
-.text-responsive {
-    font-size: 1rem;
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-@media (max-width: 640px) {
-    .text-responsive {
-        font-size: 0.875rem;
-    }
+@keyframes slideInDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-/* ============================================
-   Component Styles - สไตล์สำหรับคอมโพเนนต์
-   ============================================ */
-
-/* Mood buttons - ปุ่มอารมณ์ */
-.mood-btn-hover {
-    transition: all 0.3s ease;
+@keyframes slideInRight {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
-.mood-btn-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-/* Cards - การ์ดต่างๆ */
-.card-hover {
-    transition: all 0.3s ease;
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
 }
 
-.card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-                0 10px 10px -5px rgba(0, 0, 0, 0.04);
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Assessment results - ผลลัพธ์การประเมิน */
-.result-low {
-    background-color: #34d399; /* Green */
-    color: #065f46;
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
 }
 
-.result-medium {
-    background-color: #fbbf24; /* Yellow */
-    color: #92400e;
+.animate-fade-in { animation: fadeIn 0.3s ease-out; }
+.animate-slide-in-up { animation: slideInUp 0.3s ease-out; }
+.animate-slide-in-down { animation: slideInDown 0.3s ease-out; }
+.animate-slide-in-right { animation: slideInRight 0.3s ease-out; }
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-breathe { animation: breathe 3s ease-in-out infinite; }
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-bounce { animation: bounce 1s infinite; }
+.animate-ping { animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+/* ============================================================================
+   PART 7: COMPONENT STYLES
+   ============================================================================ */
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
 }
 
-.result-high {
-    background-color: #f87171; /* Red */
-    color: #7f1d1d;
+.btn:focus {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
 }
 
-.dark .result-low {
-    background-color: #10b981;
-    color: #d1fae5;
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.dark .result-medium {
-    background-color: #f59e0b;
-    color: #fef3c7;
-}
-
-.dark .result-high {
-    background-color: #ef4444;
-    color: #fee2e2;
-}
-
-/* Buttons - ปุ่มต่างๆ */
 .btn-primary {
-    background-color: var(--primary);
-    color: white;
-    transition: all 0.2s ease;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    border-radius: 0.375rem;
-    padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border-color: var(--color-primary);
 }
 
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(109, 159, 113, 0.3);
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
-    background-color: var(--secondary);
-    color: #374151;
-    transition: all 0.2s ease;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    border-radius: 0.375rem;
-    padding: 0.5rem 1rem;
+  background-color: var(--color-secondary-200);
+  color: var(--color-text-primary);
+  border-color: var(--color-secondary-200);
 }
 
-.btn-secondary:hover {
-    background-color: #ff9eb0;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--color-secondary-300);
+  border-color: var(--color-secondary-300);
 }
 
 .btn-accent {
-    background-color: var(--accent);
-    color: #374151;
-    transition: all 0.2s ease;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    border-radius: 0.375rem;
-    padding: 0.5rem 1rem;
+  background-color: var(--color-accent-400);
+  color: var(--color-text-primary);
+  border-color: var(--color-accent-400);
 }
 
-.btn-accent:hover {
-    background-color: #ffc043;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 209, 102, 0.3);
+.btn-accent:hover:not(:disabled) {
+  background-color: var(--color-accent-500);
+  border-color: var(--color-accent-500);
 }
 
-/* Focus styles - สำหรับ accessibility */
-.focus-ring:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--primary), 
-                0 0 0 4px rgba(109, 159, 113, 0.3);
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-border-medium);
 }
 
-/* ============================================
-   Article Styles - สไตล์สำหรับบทความ
-   ============================================ */
-
-/* Article grid - ตะแกรงบทความ */
-.article-grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-primary);
 }
 
-/* Article images - รูปภาพในบทความ */
-.article-image {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    border-radius: 0.5rem;
-    transition: transform 0.3s ease;
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
 }
 
-.article-image:hover {
-    transform: scale(1.02);
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
 }
 
-/* Compact article - บทความแบบกะทัดรัด */
-.compact-article {
-    transition: all 0.3s ease;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    background-color: var(--bg-primary);
-    border: 1px solid var(--border-light);
+/* Cards */
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+  padding: var(--space-6);
+  transition: all var(--transition-base);
 }
 
-.compact-article:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary-light);
+.card:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Article content prose - เนื้อหาบทความ */
-.prose {
-    color: var(--text-primary);
-    max-width: 65ch;
-    line-height: 1.75;
+.card-header {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
-.prose h1 {
-    font-size: 2.25rem;
-    font-weight: 700;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
+.card-footer {
+  margin-top: var(--space-4);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border-light);
 }
 
-.prose h2 {
-    font-size: 1.875rem;
-    font-weight: 600;
-    margin-top: 1.75rem;
-    margin-bottom: 0.75rem;
-    color: var(--text-primary);
+/* Forms */
+.form-group {
+  margin-bottom: var(--space-4);
 }
 
-.prose h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
+.form-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-weight: 500;
+  color: var(--color-text-primary);
 }
 
-.prose h4 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast);
 }
 
-.prose p {
-    margin-top: 1em;
-    margin-bottom: 1em;
-    line-height: 1.75;
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(93, 143, 111, 0.1);
 }
 
-.prose ul, .prose ol {
-    margin-top: 1em;
-    margin-bottom: 1em;
-    padding-left: 1.5em;
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--color-text-tertiary);
 }
 
-.prose li {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+.form-checkbox,
+.form-radio {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-primary);
+  border-color: var(--color-border-medium);
 }
 
-.prose blockquote {
-    border-left: 4px solid var(--primary-light);
-    padding-left: 1rem;
-    font-style: italic;
-    margin: 1.5em 0;
-    color: var(--text-secondary);
+/* Alerts & Notifications */
+.alert {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  border-left: 4px solid transparent;
 }
 
-/* ============================================
-   Responsive Design - การออกแบบสำหรับมือถือ
-   ============================================ */
+.alert-success {
+  background-color: var(--color-feedback-success-soft);
+  color: var(--color-feedback-success-text);
+  border-left-color: var(--color-feedback-success);
+}
 
-/* Mobile first responsive grid */
-@media (min-width: 475px) {
-    .xs\:grid-cols-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.alert-warning {
+  background-color: var(--color-feedback-warning-soft);
+  color: var(--color-feedback-warning-text);
+  border-left-color: var(--color-feedback-warning);
+}
+
+.alert-error {
+  background-color: var(--color-feedback-error-soft);
+  color: var(--color-feedback-error-text);
+  border-left-color: var(--color-feedback-error);
+}
+
+.alert-info {
+  background-color: var(--color-feedback-info-soft);
+  color: var(--color-feedback-info-text);
+  border-left-color: var(--color-feedback-info);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.badge-primary {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.badge-secondary {
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-500);
+}
+
+.badge-success {
+  background-color: var(--color-feedback-success-soft);
+  color: var(--color-feedback-success-text);
+}
+
+.badge-warning {
+  background-color: var(--color-feedback-warning-soft);
+  color: var(--color-feedback-warning-text);
+}
+
+.badge-error {
+  background-color: var(--color-feedback-error-soft);
+  color: var(--color-feedback-error-text);
+}
+
+.badge-info {
+  background-color: var(--color-feedback-info-soft);
+  color: var(--color-feedback-info-text);
+}
+
+/* Modals */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--color-bg-overlay);
+  z-index: var(--z-index-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.modal {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  max-width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: var(--z-index-modal);
+  animation: slideInUp 0.3s ease-out;
+}
+
+.modal-header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-body {
+  padding: var(--space-6);
+}
+
+.modal-footer {
+  padding: var(--space-6);
+  border-top: 1px solid var(--color-border-light);
+  display: flex;
+  gap: var(--space-3);
+}
+
+/* Navigation */
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.nav-item.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-weight: 500;
+}
+
+/* Tables */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.table th {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-secondary);
+}
+
+.table tr:hover {
+  background-color: var(--color-surface-hover);
+}
+
+/* Progress Bars */
+.progress {
+  width: 100%;
+  height: 0.5rem;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+/* Tooltips */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.5rem;
+  background-color: var(--color-text-primary);
+  color: var(--color-text-inverse);
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s;
+  z-index: var(--z-index-tooltip);
+}
+
+.tooltip:hover .tooltip-text {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ============================================================================
+   PART 8: PAGE-SPECIFIC STYLES
+   ============================================================================ */
+
+/* Mood Selector */
+.mood-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: center;
+}
+
+.mood-button {
+  width: 5rem;
+  height: 5rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid transparent;
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.mood-button:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.mood-button.selected {
+  border-color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+/* Journal Entry */
+.journal-entry {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--color-border-light);
+}
+
+.journal-entry:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+}
+
+/* Assessment Cards */
+.assessment-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-light);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.assessment-card:hover {
+  border-color: var(--color-primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.assessment-card-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+
+/* Tree Growth Component */
+.tree-container {
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.tree-icon {
+  font-size: 6rem;
+  margin-bottom: var(--space-4);
+  display: inline-block;
+  transition: all 0.5s ease;
+}
+
+.tree-progress {
+  margin-top: var(--space-4);
+}
+
+/* Music Player */
+.music-player {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-light);
+}
+
+.music-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+/* ============================================================================
+   PART 9: RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 475px) {
+  .xs\:hidden { display: none; }
+  .xs\:block { display: block; }
+  .xs\:flex { display: flex; }
+  .xs\:flex-col { flex-direction: column; }
+  .xs\:text-center { text-align: center; }
+  .xs\:text-sm { font-size: 0.875rem; }
+  .xs\:p-2 { padding: var(--space-2); }
+  .xs\:p-4 { padding: var(--space-4); }
 }
 
 @media (min-width: 640px) {
-    .sm\:grid-cols-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    
-    .sm\:grid-cols-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+  .sm\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sm\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .sm\:flex-row { flex-direction: row; }
+  .sm\:text-lg { font-size: 1.125rem; }
 }
 
 @media (min-width: 768px) {
-    .md\:grid-cols-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    
-    .md\:grid-cols-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-    
-    .md\:grid-cols-4 {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .md\:flex { display: flex; }
+  .md\:hidden { display: none; }
 }
 
-/* Aspect ratios - สำหรับควบคุมสัดส่วนรูปภาพ */
-.aspect-square {
-    aspect-ratio: 1 / 1;
+@media (min-width: 1024px) {
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .lg\:grid-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 
-.aspect-video {
-    aspect-ratio: 16 / 9;
+@media (min-width: 1280px) {
+  .xl\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .xl\:grid-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 
-.aspect-auto {
-    aspect-ratio: auto;
+/* ============================================================================
+   PART 10: SCROLLBAR CUSTOMIZATION
+   ============================================================================ */
+
+.scrollbar-custom {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-medium) transparent;
 }
 
-/* ============================================
-   Print Styles - สำหรับการพิมพ์
-   ============================================ */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: var(--radius-full);
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-medium);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-border-strong);
+}
+
+/* ============================================================================
+   PART 11: ACCESSIBILITY
+   ============================================================================ */
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus Visible Styles */
+.focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Skip to Main Content */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px;
+  z-index: 10000;
+  text-decoration: none;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================================
+   PART 12: PRINT STYLES
+   ============================================================================ */
 
 @media print {
-    /* ซ่อน element ที่ไม่จำเป็นสำหรับพิมพ์ */
-    .no-print {
-        display: none !important;
-    }
-    
-    /* แสดง element เฉพาะสำหรับพิมพ์ */
-    .print-only {
-        display: block !important;
-    }
-    
-    /* ปรับสีสำหรับพิมพ์ */
-    * {
-        color: #000000 !important;
-        background-color: #ffffff !important;
-        box-shadow: none !important;
-    }
-    
-    /* ปรับ margins */
-    @page {
-        margin: 2cm;
-    }
-    
-    /* ปรับขนาดฟอนต์สำหรับพิมพ์ */
-    body {
-        font-size: 12pt;
-        line-height: 1.5;
-    }
-    
-    /* ปรับหัวเรื่องสำหรับพิมพ์ */
-    h1, h2, h3, h4 {
-        page-break-after: avoid;
-    }
-    
-    /* ป้องกันไม่ให้ภาพถูกตัด */
-    img {
-        max-width: 100% !important;
-        page-break-inside: avoid;
-    }
-    
-    /* ป้องกันการตัดตาราง */
-    table {
-        page-break-inside: avoid;
-    }
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000 !important;
+    background: #fff !important;
+  }
+  
+  h1, h2, h3, h4 {
+    page-break-after: avoid;
+  }
+  
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+  
+  @page {
+    margin: 2cm;
+  }
 }
 
-/* ============================================
-   Dark Mode Fixes - แก้ไขโหมดกลางคืน
-   ============================================ */
+/* ============================================================================
+   PART 13: CUSTOM ANIMATIONS & EFFECTS
+   ============================================================================ */
 
-/* แก้ไขสีข้อความใน grid สำหรับโหมดกลางคืน */
-.dark .grid.grid-cols-3 .text-xs {
-    color: #f3f4f6 !important;
+/* Loading Spinner */
+.spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--color-border-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-/* Dark mode adjustments for cards */
-.dark .compact-article {
-    background-color: var(--bg-secondary);
-    border-color: var(--border-light);
+.spinner-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 2px;
 }
 
-/* Dark mode adjustments for mood colors */
-.dark .mood-btn-hover:hover {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+.spinner-lg {
+  width: 3rem;
+  height: 3rem;
+  border-width: 4px;
 }
 
-/* ============================================
-   Utility Classes - คลาสอรรถประโยชน์เพิ่มเติม
-   ============================================ */
-
-/* Text truncation - ตัดข้อความยาว */
-.text-truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+/* Ripple Effect */
+.ripple {
+  position: relative;
+  overflow: hidden;
 }
 
-/* Vertical centering - จัดกึ่งกลางแนวตั้ง */
-.v-center {
-    display: flex;
-    align-items: center;
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
 }
 
-/* Horizontal centering - จัดกึ่งกลางแนวนอน */
-.h-center {
-    display: flex;
-    justify-content: center;
+.ripple:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
 }
 
-/* Full centering - จัดกึ่งกลางทั้งแนวตั้งและแนวนอน */
-.full-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
+  }
 }
 
-/* Smooth transitions - การเปลี่ยนสภาพที่ลื่นไหล */
-.transition-all {
-    transition: all 0.3s ease;
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-400) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.transition-transform {
-    transition: transform 0.3s ease;
+/* Glass Morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.transition-colors {
-    transition: background-color 0.3s ease, 
-                border-color 0.3s ease, 
-                color 0.3s ease;
+.dark .glass {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ============================================
-   Accessibility - การเข้าถึง
-   ============================================ */
-
-/* Screen reader only - สำหรับ screen readers */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-/* Focus visible - สำหรับ keyboard navigation */
-.focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
-
-/* Reduced motion - สำหรับผู้ที่ต้องการลดการเคลื่อนไหว */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-}
-
-/* Animation สำหรับหมุนไอคอน */
-.rotate-180 {
-    transform: rotate(180deg);
-}
-
-/* Smooth transition */
-.transition-transform {
-    transition-property: transform;
-}
+/* ============================================================================
+   END OF CLOUDY-PUK-JAI CSS SYSTEM
+   ============================================================================ */

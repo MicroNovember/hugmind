@@ -51,7 +51,6 @@ document.addEventListener('alpine:init', () => {
             return this.$store.breathing.dailyProgress;
         },
         
-       
         get cycleCount() {
             return this.$store.breathing.cycleCount;
         },
@@ -88,10 +87,6 @@ document.addEventListener('alpine:init', () => {
             if (savedGuidanceState !== null) {
                 this.guidanceExpanded = savedGuidanceState === 'true';
             }
-            
-          
-            // Initial update
-             
         },
         
         applyDarkMode() {
@@ -172,7 +167,6 @@ document.addEventListener('alpine:init', () => {
             this.$store.breathing.sessionCount++;
             this.guidanceText = 'เริ่มหายใจเข้า... นับ 1-4';
             
-            
             // First session notification
             if (this.sessionCount === 1) {
                 this.showNotification('success', '🎉 ยินดีต้อนรับ!', 'นี่คือการฝึกหายใจครั้งแรกของคุณ ทำได้ดีที่สุดนะ!', 'fas fa-heart');
@@ -181,8 +175,6 @@ document.addEventListener('alpine:init', () => {
             this.startTimer();
             this.startTotalTimer();
             this.saveProgress();
-            
-             
         },
         
         startTimer() {
@@ -201,9 +193,6 @@ document.addEventListener('alpine:init', () => {
                 } else if (this.currentTime === 0) {
                     this.nextState();
                 }
-                
-                 
-                
             }, 1000);
         },
         
@@ -213,22 +202,44 @@ document.addEventListener('alpine:init', () => {
                 this.currentTime = 7;
                 this.guidanceText = 'กลั้นหายใจ... นับ 1-7';
                 
-                 
-                
             } else if (this.currentState === 'hold') {
                 this.currentState = 'exhale';
                 this.currentTime = 8;
                 this.guidanceText = 'หายใจออก... นับ 1-8';
                 
-                
-                
             } else if (this.currentState === 'exhale') {
                 // Complete cycle
                 this.$store.breathing.cycleCount++;
                 this.$store.breathing.dailyProgress++;
-                this.currentState = 'inhale';
-                this.currentTime = 4;
-                this.guidanceText = 'เริ่มรอบใหม่... หายใจเข้า';
+                
+                // Check if should take break (every 3 cycles)
+                if (this.cycleCount % 3 === 0 && this.cycleCount > 0) {
+                    // Start break automatically
+                    this.isRunning = false;
+                    clearInterval(this.timer);
+                    clearInterval(this.totalTimer);
+                    
+                    this.currentState = 'break';
+                    this.currentTime = 2;
+                    this.guidanceText = 'พัก 2 วินาที';
+                    
+                    // Start break countdown
+                    this.breakTimer = setInterval(() => {
+                        this.currentTime--;
+                        if (this.currentTime <= 0) {
+                            clearInterval(this.breakTimer);
+                            // Break finished, start breathing again
+                            this.startBreathing();
+                        }
+                    }, 1000);
+                    
+                    this.showNotification('info', '☕ พัก 2 วินาที', 'กำลังพักสั้นๆ ก่อนเริ่มใหม่', 'fas fa-coffee');
+                } else {
+                    // Continue with next cycle
+                    this.currentState = 'inhale';
+                    this.currentTime = 4;
+                    this.guidanceText = 'เริ่มรอบใหม่... หายใจเข้า';
+                }
                 
                 // Update achievements
                 this.checkAchievements();
@@ -244,8 +255,6 @@ document.addEventListener('alpine:init', () => {
                 }
                 
                 this.saveProgress();
-                
-                 
             }
         },
         
@@ -253,8 +262,8 @@ document.addEventListener('alpine:init', () => {
             this.isRunning = false;
             clearInterval(this.timer);
             clearInterval(this.totalTimer);
-            this.guidanceText = 'หยุดพัก... กดเริ่มเพื่อฝึกต่อ';
             
+            this.guidanceText = 'หยุดพักชั่วคราว';
             this.showNotification('info', '⏸️ หยุดพัก', 'คุณสามารถเริ่มใหม่เมื่อพร้อม', 'fas fa-pause');
         },
         
@@ -265,6 +274,32 @@ document.addEventListener('alpine:init', () => {
             this.guidanceText = 'พร้อมเริ่มฝึกใหม่';
             
             this.showNotification('info', '🔄 เริ่มใหม่', 'พร้อมเริ่มฝึกหายใจใหม่', 'fas fa-redo');
+        },
+        
+        takeBreak() {
+            if (!this.isRunning) return;
+            
+            // หยุดการทำงานชั่วคราว
+            this.isRunning = false;
+            clearInterval(this.timer);
+            clearInterval(this.totalTimer);
+            
+            // เปลี่ยนสถานะเป็นพัก
+            this.currentState = 'break';
+            this.currentTime = 2;
+            this.guidanceText = 'พัก 2 วินาที';
+            
+            // เริ่มนับถอยหลัง 2 วินาที
+            this.breakTimer = setInterval(() => {
+                this.currentTime--;
+                if (this.currentTime <= 0) {
+                    clearInterval(this.breakTimer);
+                    // พักเสร็จ กลับไปเริ่มหายใจใหม่
+                    this.startBreathing();
+                }
+            }, 1000);
+            
+            this.showNotification('info', '☕ พัก 2 วินาที', 'กำลังพักสั้นๆ ก่อนเริ่มใหม่', 'fas fa-coffee');
         },
         
         startTotalTimer() {
@@ -284,11 +319,6 @@ document.addEventListener('alpine:init', () => {
             this.totalTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
             this.$store.breathing.totalMinutes = minutes;
         },
-        
-        
-        
-     
-      
         
         showInstruction(state) {
             const instructions = {
@@ -416,8 +446,6 @@ document.addEventListener('alpine:init', () => {
             const randomMsg = encouragements[Math.floor(Math.random() * encouragements.length)];
             this.showNotification('info', 'กำลังไปได้สวย!', randomMsg, 'fas fa-heart');
         },
-        
-         
         
         // Toggle guidance card
         toggleGuidance() {

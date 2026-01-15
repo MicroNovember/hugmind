@@ -12,7 +12,6 @@ document.addEventListener('alpine:init', () => {
     // Main application
     Alpine.data('breathingApp', () => ({
         // Core State
-        darkMode: false,
         isRunning: false,
         currentState: 'inhale',
         currentTime: 4,
@@ -57,44 +56,22 @@ document.addEventListener('alpine:init', () => {
         
         // Methods
         init() {
-            // Dark mode - อ่านจาก localStorage เดียวกับ index.html
-            this.darkMode = localStorage.getItem('darkMode') === 'true' || 
-                           (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            this.applyDarkMode();
+            // โหลดข้อมูลการฝึกหายใจ
+            this.loadBreathingData();
             
-            // ฟังการเปลี่ยนแปลง darkMode จากหน้าอื่น (เฉพาะเมื่อมีการเปลี่ยนแปลงจริง)
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'darkMode' && e.oldValue !== e.newValue) {
-                    this.darkMode = e.newValue === 'true';
-                    this.applyDarkMode();
-                }
-            });
+            // ตรวจสอบ session ปัจจุบัน
+            this.checkCurrentSession();
             
-            // ตรวจสอบการเปลี่ยนแปลง darkMode ทุกๆ 500ms (fallback สำหรับข้ามแท็บ)
-            setInterval(() => {
-                const currentDarkMode = localStorage.getItem('darkMode') === 'true';
-                if (currentDarkMode !== this.darkMode) {
-                    this.darkMode = currentDarkMode;
-                    this.applyDarkMode();
-                }
-            }, 500);
+            // ตั้งค่าเวลา
+            this.updateTime();
+            setInterval(() => this.updateTime(), 1000);
             
-            // Load progress
-            this.loadProgress();
-            
-            // Load guidance state
-            const savedGuidanceState = localStorage.getItem('guidanceExpanded');
-            if (savedGuidanceState !== null) {
-                this.guidanceExpanded = savedGuidanceState === 'true';
-            }
+            // ตั้งค่า progress รายวัน
+            this.updateDailyProgress();
         },
         
-        applyDarkMode() {
-            if (this.darkMode) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
+        loadBreathingData() {
+            this.loadProgress();
         },
         
         loadProgress() {
@@ -150,12 +127,6 @@ document.addEventListener('alpine:init', () => {
                 this.$store.breathing.dailyProgress = 0;
                 this.saveProgress();
             }
-        },
-        
-        toggleDarkMode() {
-            this.darkMode = !this.darkMode;
-            localStorage.setItem('darkMode', this.darkMode);
-            this.applyDarkMode();
         },
         
         startBreathing() {

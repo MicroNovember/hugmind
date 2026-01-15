@@ -614,6 +614,7 @@ document.addEventListener('alpine:init', () => {
         toggleDarkMode() {
             this.darkMode = !this.darkMode;
             localStorage.setItem('darkMode', this.darkMode.toString());
+            this.applyDarkMode();
         },
 
         // Terms acceptance
@@ -1325,6 +1326,15 @@ document.addEventListener('alpine:init', () => {
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
             this.darkMode = savedDarkMode === 'true' || prefersDark;
+            this.applyDarkMode();
+        },
+
+        applyDarkMode() {
+            if (this.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         },
 
         setupDarkModeListener() {
@@ -1332,8 +1342,18 @@ document.addEventListener('alpine:init', () => {
             window.addEventListener('storage', (e) => {
                 if (e.key === 'darkMode' && e.oldValue !== e.newValue) {
                     this.darkMode = e.newValue === 'true';
+                    this.applyDarkMode();
                 }
             });
+            
+            // ตรวจสอบการเปลี่ยนแปลง darkMode ทุกๆ 500ms (fallback สำหรับข้ามแท็บ)
+            setInterval(() => {
+                const currentDarkMode = localStorage.getItem('darkMode') === 'true';
+                if (currentDarkMode !== this.darkMode) {
+                    this.darkMode = currentDarkMode;
+                    this.applyDarkMode();
+                }
+            }, 500);
         },
 
         setupStorageListener() {

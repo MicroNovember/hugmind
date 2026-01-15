@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th" x-data="mindbloomApp()">
+<html lang="th" x-data="mindbloomApp()" x-init="init()" :class="{ 'dark': darkMode }">
   <head>
     <link rel="icon" type="image/png" href="image/favicon.png">
     <meta charset="UTF-8">
@@ -157,7 +157,7 @@
       }
     </script>
   </head>
-  <body class="bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-200 min-h-screen transition-colors duration-300" x-data="breathingApp()" x-init="init()" :class="{ 'dark': darkMode, mobileMenuOpen: false }">
+  <body class="bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-800 dark:text-gray-200 min-h-screen transition-colors duration-300" x-data="breathingApp()" x-init="init()">
     <!-- Mobile Header -->
     <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md lg:hidden">
         <div class="container mx-auto px-4 py-3">

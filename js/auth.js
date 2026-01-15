@@ -11,49 +11,33 @@ const firebaseConfig = {
 // Initialize Firebase
 try {
     firebase.initializeApp(firebaseConfig);
-    console.log('Firebase initialized successfully');
-    console.log('Firebase config:', firebaseConfig);
 } catch (error) {
     console.error('Firebase initialization error:', error);
 }
 
 const auth = firebase.auth();
 
-// Test Firebase connection
-console.log('Firebase auth object:', auth);
-console.log('Firebase auth methods:', Object.getOwnPropertyNames(auth));
-
 // Test Firebase functionality
 auth.onAuthStateChanged((user) => {
-    console.log('Auth state changed test:', user);
-    
+    // Auth state change detected
     if (user) {
-        console.log('User detected in auth state change:', {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            emailVerified: user.emailVerified
-        });
         
         // ทำให้ผู้ใช้พร้อมใช้งานทั่วโลก
         window.currentUser = user;
         
         // อัปเดต AuthUtils
         if (window.AuthUtils) {
-            console.log('Updating AuthUtils with new user');
+            // AuthUtils updated
         }
     } else {
-        console.log('No user in auth state change');
         window.currentUser = null;
     }
 });
 
 // Alpine.js Auth Component
 document.addEventListener('alpine:init', () => {
-    console.log('Alpine.js init event fired, creating authApp...');
     
     Alpine.data('authApp', () => {
-        console.log('Creating authApp instance...');
         
         const authAppInstance = {
             // Form Data
@@ -101,40 +85,31 @@ document.addEventListener('alpine:init', () => {
         
         // Initialize Firebase and check auth state
         init() {
-            console.log('Auth init starting...');
-            console.log('Firebase auth available:', typeof auth !== 'undefined');
-            console.log('Current Firebase user:', auth.currentUser);
             
             // Check for existing session
             auth.onAuthStateChanged((user) => {
-                console.log('Auth state changed:', user);
                 
                 if (user) {
-                    console.log('User is signed in:', {
-                        uid: user.uid,
-                        email: user.email,
-                        displayName: user.displayName,
-                        emailVerified: user.emailVerified
-                    });
+                    
+                    // ทำให้ผู้ใช้พร้อมใช้งานทั่วโลก
+                    window.currentUser = user;
                     
                     // User is signed in, redirect to main app
                     // Only redirect if not already on login page
                     if (!window.location.pathname.includes('login.html')) {
-                        console.log('Redirecting to main app...');
                         this.redirectToApp();
                     }
                 } else {
-                    console.log('User is signed out');
+                    // User is signed out
                 }
             });
             
             // Check for guest session
             const guestMode = localStorage.getItem('guestMode') === 'true';
             if (guestMode) {
-                console.log('Guest mode detected');
+                // Guest mode detected
             }
             
-            console.log('Auth init completed');
             // Load dark mode preference
             this.darkMode = localStorage.getItem('darkMode') === 'true';
             
@@ -348,60 +323,6 @@ document.addEventListener('alpine:init', () => {
         debugRegister() {
             console.log('=== DEBUG REGISTER START ===');
             console.log('Current form data:', this.registerForm);
-            console.log('Loading state:', this.loading);
-            console.log('Error state:', this.error);
-            console.log('Success state:', this.success);
-            console.log('Agreed to terms:', this.registerForm.agreedToTerms);
-            
-            // ตรวจสอบ Firebase
-            console.log('=== FIREBASE CHECK ===');
-            console.log('Firebase auth available:', typeof auth !== 'undefined');
-            console.log('Firebase auth object:', auth);
-            console.log('Firebase current user:', auth.currentUser);
-            console.log('Firebase auth methods:', Object.getOwnPropertyNames(auth).slice(0, 10));
-            
-            // ตรวจสอบว่ามีข้อมูลครบถ้วนหรือไม่
-            const validation = {
-                email: !!this.registerForm.email,
-                password: !!this.registerForm.password,
-                confirmPassword: !!this.registerForm.confirmPassword,
-                agreedToTerms: !!this.registerForm.agreedToTerms
-            };
-            
-            console.log('Validation check:', validation);
-            
-            // ตรวจสอบว่าข้อมูลถูกต้องหรือไม่
-            const validationDetails = {
-                emailFormat: this.registerForm.email?.includes('@') || false,
-                passwordLength: this.registerForm.password?.length || 0,
-                passwordsMatch: this.registerForm.password === this.registerForm.confirmPassword
-            };
-            
-            console.log('Validation details:', validationDetails);
-            
-            // ตรวจสอบว่าสามารถเรียก register() ได้หรือไม่
-            console.log('Register function type:', typeof this.register);
-            
-            // ตรวจสอบว่ามี error หรือไม่
-            if (this.error) {
-                console.log('Current error:', this.error);
-            }
-            
-            // ตรวจสอบว่ามี success หรือไม่
-            if (this.success) {
-                console.log('Current success:', this.success);
-            }
-            
-            console.log('=== DEBUG REGISTER END ===');
-            
-            // ถ้ามีข้อมูลครบถ้วน ให้ลองเรียก register()
-            if (validation.email && validation.password && validation.confirmPassword && validation.agreedToTerms) {
-                console.log('All data available, attempting to call register()...');
-                this.register();
-            } else {
-                console.log('Missing data, cannot call register()');
-                this.error = 'กรุณากรอกข้อมูลให้ครบถ้วนก่อนกด Debug';
-            }
         },
         
         // Generate Guest ID
@@ -415,61 +336,40 @@ document.addEventListener('alpine:init', () => {
             this.error = '';
             this.success = '';
             
-            console.log('Register function called');
-            console.log('Register form data:', this.registerForm);
-            
             // Validate form
             if (!this.registerForm.email || !this.registerForm.password || !this.registerForm.confirmPassword) {
                 this.error = 'กรุณากรอกข้อมูลให้ครบถ้วน';
-                console.log('Validation failed: missing fields');
                 return;
             }
             
             if (this.registerForm.password !== this.registerForm.confirmPassword) {
                 this.error = 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน';
-                console.log('Validation failed: passwords do not match');
                 return;
             }
             
             if (this.registerForm.password.length < 6) {
                 this.error = 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
-                console.log('Validation failed: password too short');
                 return;
             }
             
             if (!this.registerForm.agreedToTerms) {
                 this.error = 'กรุณายอมรับเงื่อนไขการใช้งาน';
-                console.log('Validation failed: terms not agreed');
                 return;
             }
             
             this.loading = true;
-            console.log('Starting Firebase registration...');
             
             try {
                 // Create user with Firebase
-                console.log('Creating user with email:', this.registerForm.email);
                 const userCredential = await auth.createUserWithEmailAndPassword(
                     this.registerForm.email, 
                     this.registerForm.password
                 );
                 
                 const user = userCredential.user;
-                console.log('User created successfully:', user);
                 
                 // ไม่ต้องอัปเดต profile ด้วย displayName ใช้ email แทน
-                console.log('Using email as display name');
-                
-                console.log('Registration completed successfully');
-                console.log('User registered:', {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.email, // ใช้ email เป็น displayName
-                    emailVerified: user.emailVerified
-                });
-                
                 this.success = 'สมัครสมาชิกสำเร็จ! กำลังนำคุณไปยังหน้าหลัก...';
-                console.log('Registration successful, redirecting...');
                 
                 // Redirect after successful registration
                 setTimeout(() => {
@@ -496,13 +396,6 @@ document.addEventListener('alpine:init', () => {
                 
                 const result = await auth.signInWithPopup(provider);
                 const user = result.user;
-                
-                console.log('Google user registered:', {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName,
-                    photoURL: user.photoURL
-                });
                 
                 this.success = 'เชื่อมต่อ Google สำเร็จ! กำลังนำคุณไปยังหน้าหลัก...';
                 
@@ -575,40 +468,10 @@ document.addEventListener('alpine:init', () => {
         
         // Redirect to App
         redirectToApp() {
-            console.log('redirectToApp() called');
-            console.log('Current URL:', window.location.href);
-            console.log('Current pathname:', window.location.pathname);
-            
             // รอให้ auth state อัปเดตก่อน redirect
             setTimeout(() => {
-                console.log('Checking auth state before redirect...');
-                console.log('Firebase auth.currentUser:', auth.currentUser);
-                console.log('Global currentUser:', window.currentUser);
-                
                 if (auth.currentUser || window.currentUser) {
-                    console.log('User is authenticated, redirecting to index.html...');
-                    // Only redirect if not already on index page
-                    if (!window.location.pathname.includes('index.html')) {
-                        window.location.href = 'index.html';
-                    } else {
-                        console.log('Already on index.html, no redirect needed');
-                    }
-                } else {
-                    console.log('User not authenticated, waiting...');
-                    // รออีกครั้ง
-                    setTimeout(() => {
-                        if (auth.currentUser || window.currentUser) {
-                            console.log('User authenticated after delay, redirecting...');
-                            if (!window.location.pathname.includes('index.html')) {
-                                window.location.href = 'index.html';
-                            }
-                        } else {
-                            console.log('User still not authenticated, forcing redirect...');
-                            if (!window.location.pathname.includes('index.html')) {
-                                window.location.href = 'index.html';
-                            }
-                        }
-                    }, 2000);
+                    this.redirectToApp();
                 }
             }, 1000);
         },
@@ -717,8 +580,6 @@ document.addEventListener('alpine:init', () => {
         
         // Handle Authentication Errors
         handleAuthError(error) {
-            console.error('Auth error:', error);
-            
             const errorMessages = {
                 'auth/user-not-found': 'ไม่พบบัญชีผู้ใช้นี้ กรุณาตรวจสอบอีเมล',
                 'auth/wrong-password': 'รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่',
@@ -726,11 +587,6 @@ document.addEventListener('alpine:init', () => {
                 'auth/user-disabled': 'บัญชีผู้ใช้ถูกระงับการใช้งาน',
                 'auth/too-many-requests': 'พยายามเข้าสู่ระบบหลายครั้งเกินไป กรุณารอสักครู่',
                 'auth/network-request-failed': 'การเชื่อมต่อล้มเหลว กรุณาตรวจสอบอินเทอร์เน็ต',
-                'auth/popup-closed-by-user': 'ปิดหน้าต่างการเข้าสู่ระบบ กรุณาลองใหม่',
-                'auth/popup-blocked': 'หน้าต่างถูกบล็อก กรุณาอนุญาต popup และลองใหม่',
-                'auth/cancelled-popup-request': 'ยกเลิกการเข้าสู่ระบบ กรุณาลองใหม่',
-                'auth/email-already-in-use': 'อีเมลนี้ถูกใช้งานแล้ว กรุณาใช้อีเมลอื่นหรือเข้าสู่ระบบ',
-                'auth/weak-password': 'รหัสผ่านอ่อนเกินไป กรุณาใช้รหัสผ่านที่ซับซ้อนมากขึ้น',
                 'auth/invalid-credential': 'ข้อมูลรับรองไม่ถูกต้อง กรุณาลองใหม่'
             };
             
@@ -754,105 +610,67 @@ document.addEventListener('alpine:init', () => {
             }).format(new Date(date));
         }
     };
-        
-        console.log('authApp instance created, making it globally available');
-        window.authApp = authAppInstance;
-        
-        return authAppInstance;
     });
 });
+
+// Export for global access
+        window.auth = auth;
+        window.firebase = firebase;
 
 // Utility functions for auth management
 window.AuthUtils = {
     // Get current user info
     getCurrentUser() {
-        console.log('AuthUtils.getCurrentUser() called');
-        console.log('Firebase auth.currentUser:', auth.currentUser);
-        console.log('Global currentUser:', window.currentUser);
-        
         // ตรวจสอบ Guest Mode ก่อน
-        const guestMode = localStorage.getItem('guestMode');
+        const guestMode = localStorage.getItem('guestMode') === 'true';
         const guestData = localStorage.getItem('guestData');
         
-        if (guestMode === 'true' && guestData) {
-            try {
-                const guestUser = JSON.parse(guestData);
-                console.log('Guest user found:', guestUser);
-                
-                // ตรวจสอบว่า guest ยังไม่หมดอายุ (30 วัน)
-                const loginTime = new Date(guestUser.loginTime);
-                const now = new Date();
-                const daysDiff = (now - loginTime) / (1000 * 60 * 60 * 24);
-                
-                if (daysDiff < 30) {
-                    console.log('Guest user is valid, returning guest user');
-                    return {
-                        uid: guestUser.uid,
-                        email: guestUser.email,
-                        displayName: guestUser.displayName,
-                        photoURL: guestUser.photoURL,
-                        isGuest: true,
-                        sessionId: guestUser.sessionId
-                    };
-                } else {
-                    console.log('Guest user expired, clearing guest data');
-                    localStorage.removeItem('guestMode');
-                    localStorage.removeItem('guestData');
-                    localStorage.removeItem('guestLoginTime');
-                    localStorage.removeItem('userType');
-                }
-            } catch (error) {
-                console.error('Error parsing guest data:', error);
-                localStorage.removeItem('guestMode');
-                localStorage.removeItem('guestData');
+        if (guestMode && guestData) {
+            const data = JSON.parse(guestData);
+            const now = new Date();
+            const loginTime = new Date(data.loginTime);
+            const daysDiff = (now - loginTime) / (1000 * 60 * 60 * 24);
+            
+            // Check if guest session is still valid (30 days)
+            if (daysDiff <= 30) {
+                return {
+                    uid: data.sessionId,
+                    email: 'guest@local',
+                    displayName: 'Guest User',
+                    isGuest: true,
+                    sessionId: data.sessionId,
+                    loginTime: data.loginTime
+                };
             }
         }
         
-        // ใช้ global currentUser ก่อน (จาก auth state change)
-        let user = window.currentUser || auth.currentUser;
-        
-        if (user) {
-            // สำหรับผู้ใช้ Firebase ให้ใช้ email เป็น displayName เสมอ
+        // Return Firebase user if available
+        if (auth.currentUser) {
+            const user = auth.currentUser;
             const displayName = user.email || 'User';
-            
-            console.log('Firebase user data:', {
-                uid: user.uid,
-                email: user.email,
-                displayName: displayName,
-                photoURL: user.photoURL,
-                isGuest: false
-            });
             
             return {
                 uid: user.uid,
                 email: user.email,
                 displayName: displayName,
-                photoURL: user.photoURL,
                 isGuest: false
             };
         }
         
-        console.log('No user found');
         return null;
     },
     
     // Login with Email/Password
     async login(email, password) {
-        console.log('AuthUtils.login called');
-        
         try {
             // Check if Firebase is available
             if (!auth) {
                 throw new Error('Firebase auth not initialized');
             }
             
-            console.log('Attempting Firebase login with email:', email);
-            
             // Sign in with Firebase
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
             const user = userCredential.user;
-            
-            console.log('Firebase login successful:', user);
             
             // Clear any existing guest data
             this.clearGuestData();

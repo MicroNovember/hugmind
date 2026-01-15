@@ -259,9 +259,7 @@ document.addEventListener('alpine:init', () => {
         
         // Journal Entry Management
         toggleEntryMenu(entryId) {
-            console.log('toggleEntryMenu called with:', entryId);
-            this.activeEntryMenu = this.activeEntryMenu === entryId ? null : entryId;
-            console.log('activeEntryMenu set to:', this.activeEntryMenu);
+            // this.activeEntryMenu = this.activeEntryMenu === entryId ? null : entryId;
         },
 
         getMoodLabel(moodId) {
@@ -270,20 +268,15 @@ document.addEventListener('alpine:init', () => {
         },
 
         deleteJournalEntry(entryId) {
-            console.log('deleteJournalEntry called with:', entryId);
             this.activeEntryMenu = null;
 
             const entry = this.journalEntries.find(e => e.id === entryId);
             const date = entry ? this.formatDate(entry.date) : '';
 
-            console.log('Entry found:', entry);
-            console.log('Date:', date);
-
             this.showConfirmModal(
                 'ยืนยันการลบบันทึก',
                 `คุณต้องการลบบันทึกวันที่ ${date} จริงหรือไม่?\n\nการกระทำนี้ไม่สามารถย้อนกลับได้`,
                 () => {
-                    console.log('Confirm delete clicked');
                     const index = this.journalEntries.findIndex(e => e.id === entryId);
 
                     if (index !== -1) {
@@ -293,12 +286,10 @@ document.addEventListener('alpine:init', () => {
                         this.updateTreeAnimation();
                         this.saveData();
                         this.showNotification('ลบบันทึกเรียบร้อยแล้ว ✓', 'success');
-                        console.log('Entry deleted successfully');
                     }
                 },
                 () => {
                     this.showNotification('ยกเลิกการลบบันทึกแล้ว', 'info');
-                    console.log('Delete cancelled');
                 }
             );
         },
@@ -490,7 +481,6 @@ document.addEventListener('alpine:init', () => {
         },
 
         showConfirmModal(title, message, onConfirm, onCancel = null) {
-            console.log('showConfirmModal called');
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-[9999]';
             modal.innerHTML = `
@@ -518,21 +508,16 @@ document.addEventListener('alpine:init', () => {
             `;
 
             document.body.appendChild(modal);
-            console.log('Modal added to DOM');
 
             const cancelBtn = modal.querySelector('#confirmCancelBtn');
             const okBtn = modal.querySelector('#confirmOkBtn');
 
-            console.log('Buttons found:', cancelBtn, okBtn);
-
             cancelBtn.addEventListener('click', () => {
-                console.log('Cancel button clicked');
                 document.body.removeChild(modal);
                 if (onCancel) onCancel();
             });
 
             okBtn.addEventListener('click', () => {
-                console.log('OK button clicked');
                 document.body.removeChild(modal);
                 onConfirm();
             });
@@ -588,11 +573,8 @@ document.addEventListener('alpine:init', () => {
         // Data loading
         async loadData() {
             try {
-                console.log('Loading data...');
-                
                 // ตรวจสอบว่าข้อมูลถูกโหลดแล้วหรือไม่
                 if (this.articlesData && this.articlesData.length > 0) {
-                    console.log('Data already loaded, skipping...');
                     return;
                 }
                 
@@ -606,16 +588,9 @@ document.addEventListener('alpine:init', () => {
                 const articlesJson = await articlesResponse.json();
                 const assessmentsJson = await assessmentsResponse.json();
 
-                console.log('Music data loaded:', musicJson);
-                console.log('Articles data loaded:', articlesJson);
-                console.log('Assessments data loaded:', assessmentsJson);
-
                 this.musicData = musicJson;
                 this.articlesData = articlesJson.articles || articlesJson;
                 this.assessmentsData = assessmentsJson;
-
-                console.log('ArticlesData set:', this.articlesData);
-                console.log('Number of articles:', this.articlesData?.length || 0);
             } catch (error) {
                 console.error('Error loading data:', error);
                 // ตั้งค่าเริ่มต้นกรณีเกิด error
@@ -700,80 +675,6 @@ document.addEventListener('alpine:init', () => {
             this.showNotification('บันทึกเรียบร้อยแล้ว! 💕', 'success');
         },
 
-        // ============================================
-        // AUTHENTICATION METHODS
-        // ============================================
-        
-        // Check authentication state
-        checkAuthState() {
-            console.log('Checking authentication state...');
-            console.log('AuthUtils is available, getting current user...');
-            
-            if (typeof window.AuthUtils !== 'undefined') {
-                const user = window.AuthUtils.getCurrentUser();
-                console.log('AuthUtils.getCurrentUser() returned:', user);
-                
-                if (user) {
-                    console.log('User found in checkAuthState:', user);
-                    this.user = user;
-                    
-                    // ตรวจสอบว่าเป็น guest หรือไม่
-                    if (user.isGuest) {
-                        console.log('Guest user detected, proceeding with init...');
-                        this.isGuest = true;
-                        this.isAuthenticated = true;
-                        // ไม่เรียก refreshUserData() ตรงนี้เพื่อป้องกัน loop
-                        return true;
-                    } else {
-                        console.log('Firebase user detected, proceeding with init...');
-                        this.isGuest = false;
-                        this.isAuthenticated = true;
-                        // ไม่เรียก refreshUserData() ตรงนี้เพื่อป้องกัน loop
-                        return true;
-                    }
-                } else {
-                    console.log('No user found from AuthUtils');
-                    this.user = null;
-                    console.log('User not authenticated, setting user to null');
-                    
-                    // รอให้ auth state อัปเดต
-                    console.log('Waiting for auth state update...');
-                    setTimeout(() => {
-                        console.log('Retrying auth state check...');
-                        const retryUser = window.AuthUtils.getCurrentUser();
-                        console.log('Retry AuthUtils.getCurrentUser() returned:', retryUser);
-                        
-                        if (retryUser) {
-                            console.log('User found in retry:', retryUser);
-                            this.user = retryUser;
-                            
-                            // ตรวจสอบว่าเป็น guest หรือไม่
-                            if (retryUser.isGuest) {
-                                console.log('Guest user detected in retry, proceeding with init...');
-                                this.isGuest = true;
-                                this.isAuthenticated = true;
-                                // ไม่เรียก refreshUserData() ตรงนี้เพื่อป้องกัน loop
-                            } else {
-                                console.log('Firebase user detected in retry, proceeding with init...');
-                                this.isGuest = false;
-                                this.isAuthenticated = true;
-                                // ไม่เรียก refreshUserData() ตรงนี้เพื่อป้องกัน loop
-                            }
-                        } else {
-                            console.log('Still no user found, redirecting to login');
-                            this.redirectToLogin();
-                        }
-                    }, 2000);
-                    return false;
-                }
-            } else {
-                console.log('AuthUtils not available, setting user to null');
-                this.user = null;
-                this.redirectToLogin();
-                return false;
-            }
-        },
-        
         // Logout user
         async logout() {
             try {
@@ -795,21 +696,17 @@ document.addEventListener('alpine:init', () => {
         
         // Redirect to login
         redirectToLogin() {
-            console.log('User not authenticated, redirecting to login');
             window.location.href = 'login.html';
         },
         
         // Refresh user data from Firebase
         refreshUserData() {
-            console.log('refreshUserData() called');
             
             if (typeof window.AuthUtils !== 'undefined') {
                 const user = window.AuthUtils.getCurrentUser();
-                console.log('User from AuthUtils:', user);
                 
                 if (user && !user.isGuest) {
                     // รีเฟรชชข้อมูลจาก Firebase
-                    console.log('Refreshing Firebase user data:', user);
                     
                     this.user = user;
                     this.isGuest = false;
@@ -826,7 +723,6 @@ document.addEventListener('alpine:init', () => {
                             this.journalEntries = savedData.journalEntries || [];
                             this.assessmentHistory = savedData.assessmentHistory || [];
                             this.tree = savedData.tree || this.tree;
-                            console.log('Firebase user data loaded from localStorage');
                         } catch (error) {
                             console.error('Failed to decrypt Firebase user data:', error);
                             this.journalEntries = [];
@@ -834,24 +730,21 @@ document.addEventListener('alpine:init', () => {
                             this.tree = this.tree;
                         }
                     } else {
-                        console.log('No saved data found for Firebase user');
                         this.journalEntries = [];
                         this.assessmentHistory = [];
                         this.tree = this.tree;
                     }
                     
                     // แสดงชื่อที่อัปเดต
-                    console.log('User data refreshed successfully');
                 } else if (user && user.isGuest) {
-                    console.log('Guest user found, setting up guest state');
+                    // Guest user found, setting up guest state
                     this.user = user;
                     this.isGuest = true;
                     this.isAuthenticated = true;
                     
                     // ไม่ต้องโหลดข้อมูลจาก localStorage สำหรับ guest
-                    console.log('Guest user setup complete');
                 } else {
-                    console.log('No valid user found in AuthUtils');
+                    // No valid user found
                     this.user = null;
                     this.isGuest = false;
                     this.isAuthenticated = false;
@@ -860,7 +753,7 @@ document.addEventListener('alpine:init', () => {
                     this.tree = this.tree;
                 }
             } else {
-                console.log('AuthUtils not available');
+                // AuthUtils not available
                 this.user = null;
                 this.isGuest = false;
                 this.isAuthenticated = false;
@@ -873,8 +766,6 @@ document.addEventListener('alpine:init', () => {
 
         // Login with Email/Password
         async login() {
-            console.log('Login function called');
-            console.log('Login form data:', this.form);
             
             // Clear previous messages
             this.error = '';
@@ -883,23 +774,19 @@ document.addEventListener('alpine:init', () => {
             // Validate form
             if (!this.form.email || !this.form.password) {
                 this.error = 'กรุณากรอกอีเมลและรหัสผ่าน';
-                console.log('Validation failed: missing email or password');
                 return;
             }
             
             this.loading = true;
-            console.log('Starting Firebase login...');
             
             try {
                 // Check if AuthUtils is available
                 if (typeof window.AuthUtils !== 'undefined') {
-                    console.log('AuthUtils available, attempting login...');
                     
                     // Use AuthUtils to login
                     const result = await window.AuthUtils.login(this.form.email, this.form.password);
                     
                     if (result.success) {
-                        console.log('Login successful:', result.user);
                         this.success = 'เข้าสู่ระบบสำเร็จ! กำลังนำคุณไปยังหน้าหลัก...';
                         
                         // Redirect after successful login
@@ -907,11 +794,9 @@ document.addEventListener('alpine:init', () => {
                             window.location.href = 'index.html';
                         }, 2000);
                     } else {
-                        console.log('Login failed:', result.error);
                         this.error = result.error || 'เข้าสู่ระบบล้มเหลว กรุณาลองใหม่';
                     }
                 } else {
-                    console.log('AuthUtils not available');
                     this.error = 'ระบบไม่พร้อมใช้งาน กรุณาลองใหม่';
                 }
                 
@@ -925,62 +810,49 @@ document.addEventListener('alpine:init', () => {
         
         // Get user display name (computed property)
         get userDisplayName() {
-            console.log('userDisplayName computed property called');
             
             if (!this.user) {
-                console.log('No user found, returning default');
                 return 'ผู้ใช้';
             }
             
             if (this.user.isGuest) {
-                console.log('Guest user, returning Guest User');
                 return 'Guest User';
             }
             
             // สำหรับผู้ใช้ Firebase ให้ความสำคัญกับ email มากกว่า
             if (this.user.email) {
                 const email = this.user.email;
-                console.log('User email from Firebase:', email);
                 
                 // แสดงแค่ชื่อผู้ใช้ส่วนหน้า (ก่อน @)
                 const username = email.split('@')[0];
-                console.log('Username extracted:', username);
                 return username;
             }
             
             // ถ้าไม่มี email ให้ใช้ displayName เป็น fallback
             if (this.user.displayName) {
-                console.log('Display name from Firebase (fallback):', this.user.displayName);
                 return this.user.displayName;
             }
             
-            console.log('No email or display name found, using default');
             return 'ผู้ใช้';
         },
         
         // Get user authentication info
         getUserAuthInfo() {
-            console.log('getUserAuthInfo() called');
-            console.log('Current user:', this.user);
             
             if (!this.user) {
-                console.log('No user found, returning default');
                 return 'ผู้ใช้';
             }
             
             if (this.user.isGuest) {
-                console.log('Guest user, returning Guest User • Local Storage');
                 return 'Guest User • Local Storage';
             }
             
             // สำหรับผู้ใช้ Firebase แสดง email เต็มแทน domain
             if (this.user.email) {
                 const email = this.user.email;
-                console.log('User auth info (full email):', email);
                 return email; // แสดง email เต็มแทน email • domain
             }
             
-            console.log('No email found, using default');
             return 'Authenticated • Firebase';
         },
         
@@ -1144,12 +1016,8 @@ document.addEventListener('alpine:init', () => {
         // INITIALIZATION
         // ============================================
         async init() {
-            console.log('App init starting...');
-            console.log('AuthUtils available:', typeof window.AuthUtils !== 'undefined');
-            
             // ป้องกันการเรียก init() ซ้ำ
             if (this._initialized) {
-                console.log('App already initialized, skipping...');
                 return;
             }
             
@@ -1157,33 +1025,25 @@ document.addEventListener('alpine:init', () => {
             
             // Check if we're on login page
             const isLoginPage = window.location.pathname.includes('login.html');
-            console.log('Is login page:', isLoginPage);
             
             // If on login page, don't check auth state immediately
             if (isLoginPage) {
-                console.log('On login page, skipping auth check');
                 return;
             }
             
             // ตรวจสอบ user จาก AuthUtils โดยตรง (ไม่ต้องเรียก checkAuthState)
             const user = window.AuthUtils?.getCurrentUser();
-            console.log('User from AuthUtils in init:', user);
             
             if (user) {
-                console.log('User found, setting up user state');
                 this.user = user;
                 
                 if (user.isGuest) {
-                    console.log('Guest user detected');
                     this.isGuest = true;
                     this.isAuthenticated = true;
                 } else {
-                    console.log('Firebase user detected');
                     this.isGuest = false;
                     this.isAuthenticated = true;
                 }
-                
-                console.log('User authenticated, proceeding with init...');
                 
                 // รีเฟรชชข้อมูลผู้ใช้จาก Firebase เพื่อให้แน่ใจว่ามีการเปลี่ยนแปลง
                 this.refreshUserData();
@@ -1203,9 +1063,8 @@ document.addEventListener('alpine:init', () => {
                 // ตั้งค่าการอัปเดตข้อมูลอัตโนมัติ (แต่ไม่ใช่ refreshUserData)
                 this.setupAutoUpdate();
                 
-                console.log('App initialization complete');
+                // App initialization complete
             } else {
-                console.log('No user found, redirecting to login');
                 this.redirectToLogin();
                 return;
             }

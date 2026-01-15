@@ -53,131 +53,6 @@
     <link rel="stylesheet" href="assets/css/logo.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        body {
-            background: linear-gradient(135deg, 
-                rgba(31, 41, 55, 0.9) 0%,
-                rgba(31, 41, 55, 0.7) 25%,
-                rgba(31, 41, 55, 0.5) 50%,
-                rgba(31, 41, 55, 0.7) 75%,
-                rgba(31, 41, 55, 0.9) 100%
-            );
-            min-height: 100vh;
-        }
-        
-        /* Floating Blobs Animation */
-        .floating-blob {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(40px);
-            opacity: 0.6;
-            animation: cloud-drift 25s infinite ease-in-out;
-            z-index: 1;
-        }
-        
-        .blob-1 {
-            width: 350px;
-            height: 180px;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.8), rgba(255,255,255,0.4), rgba(255,255,255,0.1));
-            top: 15%;
-            left: -175px;
-            animation-delay: 0s;
-            animation-name: cloud-float-1;
-        }
-        
-        .blob-2 {
-            width: 400px;
-            height: 200px;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.7), rgba(255,255,255,0.3), rgba(255,255,255,0.05));
-            top: 35%;
-            right: -200px;
-            animation-delay: 3s;
-            animation-name: cloud-float-2;
-        }
-        
-        .blob-3 {
-            width: 300px;
-            height: 160px;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.75), rgba(255,255,255,0.35), rgba(255,255,255,0.08));
-            top: 60%;
-            left: -150px;
-            animation-delay: 6s;
-            animation-name: cloud-float-3;
-        }
-        
-        .blob-4 {
-            width: 380px;
-            height: 190px;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.72), rgba(255,255,255,0.32), rgba(255,255,255,0.06));
-            top: 45%;
-            right: -190px;
-            animation-delay: 9s;
-            animation-name: cloud-float-4;
-        }
-        
-        @keyframes cloud-float-1 {
-            0% { transform: translateX(-175px) translateY(0) scale(1); opacity: 0.6; }
-            50% { transform: translateX(calc(100vw + 175px)) translateY(-20px) scale(1.1); opacity: 0.4; }
-            100% { transform: translateX(-175px) translateY(0) scale(1); opacity: 0.6; }
-        }
-        
-        @keyframes cloud-float-2 {
-            0% { transform: translateX(calc(100vw + 200px)) translateY(0) scale(1); opacity: 0.5; }
-            50% { transform: translateX(-200px) translateY(15px) scale(1.08); opacity: 0.7; }
-            100% { transform: translateX(calc(100vw + 200px)) translateY(0) scale(1); opacity: 0.5; }
-        }
-        
-        @keyframes cloud-float-3 {
-            0% { transform: translateX(-150px) translateY(0) scale(1); opacity: 0.55; }
-            50% { transform: translateX(calc(100vw + 150px)) translateY(-25px) scale(1.12); opacity: 0.35; }
-            100% { transform: translateX(-150px) translateY(0) scale(1); opacity: 0.55; }
-        }
-        
-        @keyframes cloud-float-4 {
-            0% { transform: translateX(calc(100vw + 190px)) translateY(0) scale(1); opacity: 0.58; }
-            50% { transform: translateX(-190px) translateY(18px) scale(1.05); opacity: 0.65; }
-            100% { transform: translateX(calc(100vw + 190px)) translateY(0) scale(1); opacity: 0.58; }
-        }
-        
-        /* Dark mode adjustments */
-        .dark .floating-blob {
-            opacity: 0.5;
-        }
-        
-        .dark .blob-1 {
-            background: linear-gradient(135deg, #4A7C59, #8B5A6B);
-        }
-        
-        .dark .blob-2 {
-            background: linear-gradient(135deg, #B8860B, #B8956A);
-        }
-        
-        .dark .blob-3 {
-            background: linear-gradient(135deg, #5B9ECC, #8B6FA7);
-        }
-        
-        .dark .blob-4 {
-            background: linear-gradient(135deg, #7FB069, #B86B6B);
-        }
-        
-        /* Smooth transitions */
-        body {
-            transition: background-color 0.3s ease;
-        }
-        
-        /* Glassmorphism effect for login card */
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .dark .glass-effect {
-            background: rgba(31, 41, 55, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-    </style>
     <script>
       // กำหนดค่า Tailwind
       tailwind.config = {
@@ -220,15 +95,9 @@
     <!-- Main App Script -->
     <script src="js/app.js"></script>
 </head>
-<body>
-    <!-- Animated Background -->
-    <div class="floating-blob blob-1"></div>
-    <div class="floating-blob blob-2"></div>
-    <div class="floating-blob blob-3"></div>
-    <div class="floating-blob blob-4"></div>
-    
+<body class="bg-gray-900 dark:bg-gray-900 min-h-screen">
     <!-- Login Container -->
-    <div class="min-h-screen flex items-center justify-center px-4 py-12 relative z-10">
+    <div class="min-h-screen flex items-center justify-center px-4 py-12">
         <div class="w-full max-w-md">
             <!-- Logo & Welcome -->
             <div class="text-center mb-8">
@@ -238,13 +107,13 @@
             </div>
             
             <!-- Login Options -->
-            <div class="glass-effect rounded-2xl shadow-xl p-8">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
                 <!-- Guest Mode (Primary Option) -->
                 <div class="mb-6">
                     <button 
                         @click="showGuestAgreement()"
                         :disabled="loading"
-                        class="w-full btn-primary text-lg py-4 mb-4 flex items-center justify-center">
+                        class="w-full btn-primary text-lg py-3 mb-4 flex items-center justify-center">
                         <i class="fas fa-user-astronaut mr-3"></i>
                         <span x-show="!loading">ทดลองใช้งาน (Guest)</span>
                         <span x-show="loading" class="flex items-center justify-center">
@@ -300,7 +169,7 @@
                     <button 
                         @click="login()"
                         :disabled="loading"
-                        class="w-full btn-primary">
+                        class="w-full btn-primary text-lg py-3">
                         <span x-show="!loading">เข้าสู่ระบบ</span>
                         <span x-show="loading" class="flex items-center justify-center">
                             <i class="fas fa-spinner fa-spin mr-2"></i>
@@ -328,7 +197,7 @@
             </div>
             
             <!-- Features Preview (Guest Mode Benefits) -->
-            <div class="mt-8 glass-effect rounded-xl p-6">
+            <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl p-6">
                 <h3 class="text-lg font-semibold text-primary mb-4 text-center">
                     <i class="fas fa-sparkles mr-2"></i>
                     ทดลองใช้งานฟรี!
@@ -366,7 +235,7 @@
     <!-- Guest Agreement Modal -->
     <div x-show="showGuestModal" x-transition class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display: none;">
         <div class="fixed inset-0 bg-black/50" @click="showGuestModal = false"></div>
-        <div class="relative glass-effect rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-6">
+        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-6">
             <div class="text-center mb-6">
                 <div class="text-4xl mb-4">👋</div>
                 <h2 class="text-2xl font-bold text-primary mb-2">ยินดีต้อนรับ Guest!</h2>

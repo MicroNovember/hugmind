@@ -14,7 +14,25 @@ document.addEventListener('alpine:init', () => {
         
         // UI State
         darkMode: false,
+        mobileMenuOpen: false,
+        loading: false,
+        error: '',
+        success: '',
+        
+        // Modal State
         modalOpen: null,
+        
+        // Login Form State
+        form: {
+            email: '',
+            password: '',
+            remember: false
+        },
+        showPassword: false,
+        
+        // Guest Mode State
+        showGuestModal: false,
+        guestAgreed: false,
         
         // Feature States
         assessmentTab: 'mental',
@@ -99,6 +117,9 @@ document.addEventListener('alpine:init', () => {
         // Articles
         articlesData: [],
         currentArticle: {},
+        
+        // Initialization flag
+        _initialized: false,
 
         // Assessments
         assessmentsData: [],
@@ -532,7 +553,10 @@ document.addEventListener('alpine:init', () => {
                 tree: this.tree
             };
             const userStorageKey = this.getUserStorageKey();
-            localStorage.setItem(userStorageKey, JSON.stringify(data));
+            
+            // เข้ารหัสข้อมูลก่อนบันทึก
+            const encryptedData = this.encryptData(JSON.stringify(data));
+            localStorage.setItem(userStorageKey, encryptedData);
         },
 
         // Tree animation
@@ -564,6 +588,14 @@ document.addEventListener('alpine:init', () => {
         // Data loading
         async loadData() {
             try {
+                console.log('Loading data...');
+                
+                // ตรวจสอบว่าข้อมูลถูกโหลดแล้วหรือไม่
+                if (this.articlesData && this.articlesData.length > 0) {
+                    console.log('Data already loaded, skipping...');
+                    return;
+                }
+                
                 const [musicResponse, articlesResponse, assessmentsResponse] = await Promise.all([
                     fetch('data/music.json'),
                     fetch('data/articles.json'),
@@ -574,11 +606,22 @@ document.addEventListener('alpine:init', () => {
                 const articlesJson = await articlesResponse.json();
                 const assessmentsJson = await assessmentsResponse.json();
 
+                console.log('Music data loaded:', musicJson);
+                console.log('Articles data loaded:', articlesJson);
+                console.log('Assessments data loaded:', assessmentsJson);
+
                 this.musicData = musicJson;
                 this.articlesData = articlesJson.articles || articlesJson;
                 this.assessmentsData = assessmentsJson;
+
+                console.log('ArticlesData set:', this.articlesData);
+                console.log('Number of articles:', this.articlesData?.length || 0);
             } catch (error) {
                 console.error('Error loading data:', error);
+                // ตั้งค่าเริ่มต้นกรณีเกิด error
+                this.articlesData = [];
+                this.musicData = { music: [], podcasts: [], playlists: [] };
+                this.assessmentsData = [];
             }
         },
 
@@ -663,42 +706,72 @@ document.addEventListener('alpine:init', () => {
         
         // Check authentication state
         checkAuthState() {
-            try {
-                // Check if AuthUtils is available
-                if (typeof window.AuthUtils !== 'undefined') {
-                    const user = window.AuthUtils.getCurrentUser();
-                    if (user) {
-                        this.user = user;
-                        this.isGuest = user.isGuest;
+            console.log('Checking authentication state...');
+            console.log('AuthUtils is available, getting current user...');
+            
+            if (typeof window.AuthUtils !== 'undefined') {
+                const user = window.AuthUtils.getCurrentUser();
+                console.log('AuthUtils.getCurrentUser() returned:', user);
+                
+                if (user) {
+                    console.log('User found in checkAuthState:', user);
+                    this.user = user;
+                    
+                    // ตรวจสอบว่าเป็น guest หรือไม่
+                    if (user.isGuest) {
+                        console.log('Guest user detected, proceeding with init...');
+                        this.isGuest = true;
                         this.isAuthenticated = true;
+                        // ไม่เรียก refreshUserData() ตรงนี้เพื่อป้องกัน loop
+                        return true;
+                    } else {
+                        console.log('Firebase user detected, proceeding with init...');
+                        this.isGuest = false;
+                        this.isAuthenticated = true;
+                        // ไม่เรียก refreshUserData() ตรงนี้เพื่อป้องกัน loop
                         return true;
                     }
                 } else {
-                    // Fallback check
-                    const guestMode = localStorage.getItem('guestMode') === 'true';
-                    if (guestMode) {
-                        const guestData = JSON.parse(localStorage.getItem('guestData') || '{}');
-                        this.user = {
-                            uid: guestData.sessionId,
-                            displayName: 'Guest User',
-                            email: 'guest@local',
-                            photoURL: null,
-                            isGuest: true
-                        };
-                        this.isGuest = true;
-                        this.isAuthenticated = true;
-                        return true;
-                    }
+                    console.log('No user found from AuthUtils');
+                    this.user = null;
+                    console.log('User not authenticated, setting user to null');
+                    
+                    // รอให้ auth state อัปเดต
+                    console.log('Waiting for auth state update...');
+                    setTimeout(() => {
+                        console.log('Retrying auth state check...');
+                        const retryUser = window.AuthUtils.getCurrentUser();
+                        console.log('Retry AuthUtils.getCurrentUser() returned:', retryUser);
+                        
+                        if (retryUser) {
+                            console.log('User found in retry:', retryUser);
+                            this.user = retryUser;
+                            
+                            // ตรวจสอบว่าเป็น guest หรือไม่
+                            if (retryUser.isGuest) {
+                                console.log('Guest user detected in retry, proceeding with init...');
+                                this.isGuest = true;
+                                this.isAuthenticated = true;
+                                // ไม่เรียก refreshUserData() ตรงนี้เพื่อป้องกัน loop
+                            } else {
+                                console.log('Firebase user detected in retry, proceeding with init...');
+                                this.isGuest = false;
+                                this.isAuthenticated = true;
+                                // ไม่เรียก refreshUserData() ตรงนี้เพื่อป้องกัน loop
+                            }
+                        } else {
+                            console.log('Still no user found, redirecting to login');
+                            this.redirectToLogin();
+                        }
+                    }, 2000);
+                    return false;
                 }
-            } catch (error) {
-                console.error('Auth check error:', error);
+            } else {
+                console.log('AuthUtils not available, setting user to null');
+                this.user = null;
+                this.redirectToLogin();
+                return false;
             }
-            
-            // Not authenticated
-            this.user = null;
-            this.isGuest = false;
-            this.isAuthenticated = false;
-            return false;
         },
         
         // Logout user
@@ -720,10 +793,195 @@ document.addEventListener('alpine:init', () => {
             }
         },
         
-        // Get user display name
-        getUserDisplayName() {
-            if (!this.user) return 'ผู้ใช้';
-            return this.user.displayName || (this.user.isGuest ? 'Guest User' : this.user.email);
+        // Redirect to login
+        redirectToLogin() {
+            console.log('User not authenticated, redirecting to login');
+            window.location.href = 'login.html';
+        },
+        
+        // Refresh user data from Firebase
+        refreshUserData() {
+            console.log('refreshUserData() called');
+            
+            if (typeof window.AuthUtils !== 'undefined') {
+                const user = window.AuthUtils.getCurrentUser();
+                console.log('User from AuthUtils:', user);
+                
+                if (user && !user.isGuest) {
+                    // รีเฟรชชข้อมูลจาก Firebase
+                    console.log('Refreshing Firebase user data:', user);
+                    
+                    this.user = user;
+                    this.isGuest = false;
+                    this.isAuthenticated = true;
+                    
+                    // โหลดข้อมูลจาก localStorage สำหรับ Firebase user
+                    const userStorageKey = this.getUserStorageKey();
+                    const encryptedData = localStorage.getItem(userStorageKey);
+                    
+                    if (encryptedData) {
+                        try {
+                            const decryptedData = this.decryptData(encryptedData);
+                            const savedData = JSON.parse(decryptedData);
+                            this.journalEntries = savedData.journalEntries || [];
+                            this.assessmentHistory = savedData.assessmentHistory || [];
+                            this.tree = savedData.tree || this.tree;
+                            console.log('Firebase user data loaded from localStorage');
+                        } catch (error) {
+                            console.error('Failed to decrypt Firebase user data:', error);
+                            this.journalEntries = [];
+                            this.assessmentHistory = [];
+                            this.tree = this.tree;
+                        }
+                    } else {
+                        console.log('No saved data found for Firebase user');
+                        this.journalEntries = [];
+                        this.assessmentHistory = [];
+                        this.tree = this.tree;
+                    }
+                    
+                    // แสดงชื่อที่อัปเดต
+                    console.log('User data refreshed successfully');
+                } else if (user && user.isGuest) {
+                    console.log('Guest user found, setting up guest state');
+                    this.user = user;
+                    this.isGuest = true;
+                    this.isAuthenticated = true;
+                    
+                    // ไม่ต้องโหลดข้อมูลจาก localStorage สำหรับ guest
+                    console.log('Guest user setup complete');
+                } else {
+                    console.log('No valid user found in AuthUtils');
+                    this.user = null;
+                    this.isGuest = false;
+                    this.isAuthenticated = false;
+                    this.journalEntries = [];
+                    this.assessmentHistory = [];
+                    this.tree = this.tree;
+                }
+            } else {
+                console.log('AuthUtils not available');
+                this.user = null;
+                this.isGuest = false;
+                this.isAuthenticated = false;
+            }
+        },
+
+        // ============================================
+        // LOGIN METHODS
+        // ============================================
+
+        // Login with Email/Password
+        async login() {
+            console.log('Login function called');
+            console.log('Login form data:', this.form);
+            
+            // Clear previous messages
+            this.error = '';
+            this.success = '';
+            
+            // Validate form
+            if (!this.form.email || !this.form.password) {
+                this.error = 'กรุณากรอกอีเมลและรหัสผ่าน';
+                console.log('Validation failed: missing email or password');
+                return;
+            }
+            
+            this.loading = true;
+            console.log('Starting Firebase login...');
+            
+            try {
+                // Check if AuthUtils is available
+                if (typeof window.AuthUtils !== 'undefined') {
+                    console.log('AuthUtils available, attempting login...');
+                    
+                    // Use AuthUtils to login
+                    const result = await window.AuthUtils.login(this.form.email, this.form.password);
+                    
+                    if (result.success) {
+                        console.log('Login successful:', result.user);
+                        this.success = 'เข้าสู่ระบบสำเร็จ! กำลังนำคุณไปยังหน้าหลัก...';
+                        
+                        // Redirect after successful login
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    } else {
+                        console.log('Login failed:', result.error);
+                        this.error = result.error || 'เข้าสู่ระบบล้มเหลว กรุณาลองใหม่';
+                    }
+                } else {
+                    console.log('AuthUtils not available');
+                    this.error = 'ระบบไม่พร้อมใช้งาน กรุณาลองใหม่';
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                this.error = 'เกิดข้อผิดพลาด: ' + error.message;
+            } finally {
+                this.loading = false;
+            }
+        },
+        
+        // Get user display name (computed property)
+        get userDisplayName() {
+            console.log('userDisplayName computed property called');
+            
+            if (!this.user) {
+                console.log('No user found, returning default');
+                return 'ผู้ใช้';
+            }
+            
+            if (this.user.isGuest) {
+                console.log('Guest user, returning Guest User');
+                return 'Guest User';
+            }
+            
+            // สำหรับผู้ใช้ Firebase ให้ความสำคัญกับ email มากกว่า
+            if (this.user.email) {
+                const email = this.user.email;
+                console.log('User email from Firebase:', email);
+                
+                // แสดงแค่ชื่อผู้ใช้ส่วนหน้า (ก่อน @)
+                const username = email.split('@')[0];
+                console.log('Username extracted:', username);
+                return username;
+            }
+            
+            // ถ้าไม่มี email ให้ใช้ displayName เป็น fallback
+            if (this.user.displayName) {
+                console.log('Display name from Firebase (fallback):', this.user.displayName);
+                return this.user.displayName;
+            }
+            
+            console.log('No email or display name found, using default');
+            return 'ผู้ใช้';
+        },
+        
+        // Get user authentication info
+        getUserAuthInfo() {
+            console.log('getUserAuthInfo() called');
+            console.log('Current user:', this.user);
+            
+            if (!this.user) {
+                console.log('No user found, returning default');
+                return 'ผู้ใช้';
+            }
+            
+            if (this.user.isGuest) {
+                console.log('Guest user, returning Guest User • Local Storage');
+                return 'Guest User • Local Storage';
+            }
+            
+            // สำหรับผู้ใช้ Firebase แสดง email เต็มแทน domain
+            if (this.user.email) {
+                const email = this.user.email;
+                console.log('User auth info (full email):', email);
+                return email; // แสดง email เต็มแทน email • domain
+            }
+            
+            console.log('No email found, using default');
+            return 'Authenticated • Firebase';
         },
         
         // Get user storage key
@@ -732,59 +990,224 @@ document.addEventListener('alpine:init', () => {
             const userId = this.user.isGuest ? this.user.sessionId : this.user.uid;
             return `mindbloomData_${userId}`;
         },
+        
+        // สร้าง secret key สำหรับการเข้ารหัส
+        getSecretKey() {
+            // ใช้ข้อมูลผู้ใช้ + ข้อมูลเบราว์เซอร์ + วันที่ปัจจุบัน
+            const userId = this.user ? (this.user.isGuest ? this.user.sessionId : this.user.uid) : 'default';
+            const browserInfo = navigator.userAgent;
+            const today = new Date().toDateString();
+            
+            // สร้าง key จากข้อมูลที่ไม่ง่ายเดา
+            const keySource = `${userId}_${browserInfo}_${today}`;
+            return btoa(keySource).slice(0, 32); // ตัดให้เหลือ 32 ตัวอักษร
+        },
+        
+        // เข้ารหัสข้อมูล
+        encryptData(data) {
+            try {
+                // แปลงข้อมูลเป็น JSON string ก่อน
+                const jsonString = JSON.stringify(data);
+                
+                // ใช้ encodeURIComponent เพื่อรองรับภาษาไทย
+                const encoded = encodeURIComponent(jsonString);
+                
+                // ใช้ Base64 แบบง่าย (สำหรับ demo)
+                // ในอนาคตควรใช้ CryptoJS หรือ Web Crypto API
+                const secretKey = this.getSecretKey();
+                
+                // เพิ่มการสับเปลี่ยนตัวอักษร
+                let encrypted = '';
+                for (let i = 0; i < encoded.length; i++) {
+                    const charCode = encoded.charCodeAt(i);
+                    const keyChar = secretKey.charCodeAt(i % secretKey.length);
+                    encrypted += String.fromCharCode(charCode ^ keyChar);
+                }
+                
+                return btoa(encrypted);
+            } catch (error) {
+                console.error('Encryption failed:', error);
+                // fallback: ใช้ JSON.stringify และ btoa ตรงๆ
+                try {
+                    return btoa(JSON.stringify(data));
+                } catch (fallbackError) {
+                    console.error('Fallback encryption failed:', fallbackError);
+                    return JSON.stringify(data);
+                }
+            }
+        },
+        
+        // ถอดรหัสข้อมูล
+        decryptData(encryptedData) {
+            try {
+                const secretKey = this.getSecretKey();
+                const decoded = atob(encryptedData);
+                
+                // ย้อนกลับการสับเปลี่ยนตัวอักษร
+                let decrypted = '';
+                for (let i = 0; i < decoded.length; i++) {
+                    const charCode = decoded.charCodeAt(i);
+                    const keyChar = secretKey.charCodeAt(i % secretKey.length);
+                    decrypted += String.fromCharCode(charCode ^ keyChar);
+                }
+                
+                // ใช้ decodeURIComponent เพื่อรองรับภาษาไทย
+                const decodedString = decodeURIComponent(decrypted);
+                
+                // แปลงกลับเป็น object
+                return JSON.parse(decodedString);
+            } catch (error) {
+                console.error('Decryption failed:', error);
+                // fallback: ลองแปลงตรงๆ
+                try {
+                    return JSON.parse(atob(encryptedData));
+                } catch (fallbackError) {
+                    console.error('Fallback decryption failed:', fallbackError);
+                    return {};
+                }
+            }
+        },
 
-        // Initialization
-        async init() {
-            // Check authentication first
-            if (!this.checkAuthState()) {
-                console.error('User not authenticated, redirecting to login');
-                // Don't redirect immediately - let auth-guard handle it
-                // This prevents redirect loops
+        // ============================================
+        // GUEST MODE METHODS
+        // ============================================
+        
+        // Show Guest Agreement Modal
+        showGuestAgreement() {
+            console.log('showGuestAgreement called');
+            this.showGuestModal = true;
+            this.guestAgreed = false;
+        },
+        
+        // Login as Guest
+        async loginAsGuest() {
+            console.log('loginAsGuest called');
+            
+            if (!this.guestAgreed) {
+                this.error = 'กรุณายอมรับเงื่อนไขการใช้งาน Guest Mode';
                 return;
             }
             
-            this.initRouter();
-            this.showRandomQuote();
-
-            this.darkMode = localStorage.getItem('darkMode') === 'true' ||
-                (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-            // ฟังการเปลี่ยนแปลง darkMode จากหน้าอื่น
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'darkMode' && e.oldValue !== e.newValue) {
-                    this.darkMode = e.newValue === 'true';
-                }
-            });
-
-            // ตรวจสอบการเปลี่ยนแปลง darkMode ทุกๆ 500ms (fallback สำหรับข้ามแท็บ)
-            setInterval(() => {
-                const currentDarkMode = localStorage.getItem('darkMode') === 'true';
-                if (currentDarkMode !== this.darkMode) {
-                    this.darkMode = currentDarkMode;
-                }
-            }, 500);
-
-            const savedAgreement = localStorage.getItem('agreedToTerms');
-            if (savedAgreement !== 'true') {
+            this.loading = true;
+            this.error = '';
+            
+            try {
+                // Create guest user data
+                const guestUser = {
+                    uid: this.generateGuestId(),
+                    email: 'guest@local',
+                    displayName: 'Guest User',
+                    photoURL: null,
+                    isGuest: true,
+                    sessionId: this.generateGuestId(),
+                    loginTime: new Date().toISOString()
+                };
+                
+                console.log('Creating guest user:', guestUser);
+                
+                // Save guest data to localStorage
+                localStorage.setItem('guestMode', 'true');
+                localStorage.setItem('guestData', JSON.stringify(guestUser));
+                localStorage.setItem('guestLoginTime', guestUser.loginTime);
+                localStorage.setItem('userType', 'guest');
+                
+                // Set user state
+                this.user = guestUser;
+                this.isGuest = true;
+                this.isAuthenticated = true;
+                
+                // Close modal
+                this.showGuestModal = false;
+                this.guestAgreed = false;
+                
+                console.log('Guest login successful, redirecting to index...');
+                
+                // Redirect to index.html
                 setTimeout(() => {
-                    this.modalOpen = 'welcome';
+                    window.location.href = 'index.html';
                 }, 1000);
-            } else {
-                this.agreedToTerms = true;
+                
+            } catch (error) {
+                console.error('Guest login error:', error);
+                this.error = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ Guest: ' + error.message;
+            } finally {
+                this.loading = false;
             }
-
-            const userStorageKey = this.getUserStorageKey();
-            const savedData = JSON.parse(localStorage.getItem(userStorageKey) || '{}');
-            this.journalEntries = savedData.journalEntries || [];
-            this.assessmentHistory = savedData.assessmentHistory || [];
-            this.tree = savedData.tree || this.tree;
-
-            this.setDailyQuote();
-            await this.loadData();
-
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('result')) {
-                this.currentPage = 'results';
+        },
+        
+        // Generate Guest ID
+        generateGuestId() {
+            return 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        },
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        async init() {
+            console.log('App init starting...');
+            console.log('AuthUtils available:', typeof window.AuthUtils !== 'undefined');
+            
+            // ป้องกันการเรียก init() ซ้ำ
+            if (this._initialized) {
+                console.log('App already initialized, skipping...');
+                return;
+            }
+            
+            this._initialized = true;
+            
+            // Check if we're on login page
+            const isLoginPage = window.location.pathname.includes('login.html');
+            console.log('Is login page:', isLoginPage);
+            
+            // If on login page, don't check auth state immediately
+            if (isLoginPage) {
+                console.log('On login page, skipping auth check');
+                return;
+            }
+            
+            // ตรวจสอบ user จาก AuthUtils โดยตรง (ไม่ต้องเรียก checkAuthState)
+            const user = window.AuthUtils?.getCurrentUser();
+            console.log('User from AuthUtils in init:', user);
+            
+            if (user) {
+                console.log('User found, setting up user state');
+                this.user = user;
+                
+                if (user.isGuest) {
+                    console.log('Guest user detected');
+                    this.isGuest = true;
+                    this.isAuthenticated = true;
+                } else {
+                    console.log('Firebase user detected');
+                    this.isGuest = false;
+                    this.isAuthenticated = true;
+                }
+                
+                console.log('User authenticated, proceeding with init...');
+                
+                // รีเฟรชชข้อมูลผู้ใช้จาก Firebase เพื่อให้แน่ใจว่ามีการเปลี่ยนแปลง
+                this.refreshUserData();
+                
+                // โหลดข้อมูล (music, articles, assessments)
+                this.loadData();
+                
+                this.initRouter();
+                this.showRandomQuote();
+                
+                // Dark mode setup and listeners...
+                this.initDarkMode();
+                this.setupDarkModeListener();
+                this.setupStorageListener();
+                this.setupAuthListener();
+                
+                // ตั้งค่าการอัปเดตข้อมูลอัตโนมัติ (แต่ไม่ใช่ refreshUserData)
+                this.setupAutoUpdate();
+                
+                console.log('App initialization complete');
+            } else {
+                console.log('No user found, redirecting to login');
+                this.redirectToLogin();
+                return;
             }
         },
 
@@ -815,6 +1238,69 @@ document.addEventListener('alpine:init', () => {
             this.showNotification('หยุดเพลง', 'info');
         },
 
+        // Audio event handlers
+        onAudioPlay() {
+            console.log('Audio play event triggered');
+            this.audioPlaying = true;
+        },
+
+        onAudioPause() {
+            console.log('Audio pause event triggered');
+            this.audioPlaying = false;
+        },
+
+        // Get direct audio URL for Pixabay
+        getDirectAudioUrl(pixabayUrl) {
+            console.log('Getting direct audio URL for:', pixabayUrl);
+            
+            // ถ้าเป็น URL โดยตรง (MP3/WAV/OGG) ให้ใช้เลย
+            if (pixabayUrl.match(/\.(mp3|wav|ogg)$/i)) {
+                return pixabayUrl;
+            }
+            
+            // ถ้าเป็น Pixabay URL ให้แปลงเป็น direct download
+            if (pixabayUrl.includes('pixabay.com')) {
+                // ดึง ID จาก URL
+                const match = pixabayUrl.match(/\/music\/[^\/]+\/(\d+)\//);
+                if (match) {
+                    const audioId = match[1];
+                    // สร้าง direct download URL
+                    return `https://cdn.pixabay.com/download/audio-${Date.now()}-${audioId}.mp3`;
+                }
+            }
+            
+            // ถ้าไม่สามารถแปลงได้ ให้ใช้ URL เดิม
+            return pixabayUrl;
+        },
+
+        // Get YouTube embed URL
+        getYouTubeEmbedUrl(youtubeUrl) {
+            console.log('Getting YouTube embed URL for:', youtubeUrl);
+            
+            const videoId = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+            if (videoId) {
+                // ใช้ youtube-nocookie.com เพื่อหลีกเลี่ยง X-Frame-Options
+                // เพิ่ม parameters สำหรับ accessibility และ performance
+                return `https://www.youtube-nocookie.com/embed/${videoId[1]}?rel=0&showinfo=0&modestbranding=1&disablekb=1&cc_load_policy=1&cc_lang_pref=th&hl=th&iv_load_policy=3`;
+            }
+            return youtubeUrl;
+        },
+
+        // Get source type for display
+        getSourceType(url) {
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                return 'YouTube';
+            } else if (url.includes('pixabay.com')) {
+                return 'Pixabay';
+            } else if (url.includes('open.spotify.com')) {
+                return 'Spotify';
+            } else if (url.match(/\.(mp3|wav|ogg)$/i)) {
+                return 'Direct Audio';
+            } else {
+                return 'Unknown';
+            }
+        },
+
         // Assessment functions
         startQuiz(quiz) {
             this.currentQuiz = quiz;
@@ -830,42 +1316,82 @@ document.addEventListener('alpine:init', () => {
         },
 
         calculateQuizResult() {
-            // คำนวณคะแนนโดยรวมค่า val ของคำตอบทั้งหมด
-            let totalScore = 0;
-            this.quizAnswers.forEach(answer => {
-                totalScore += answer || 0;
-            });
+            console.log('calculateQuizResult() called');
+            console.log('Current quiz:', this.currentQuiz);
+            console.log('Quiz answers:', this.quizAnswers);
+            console.log('Current question index:', this.currentQuestionIndex);
+            console.log('Total questions:', this.currentQuiz.questions?.length);
+            
+            try {
+                // ตรวจสอบว่าตอบคำถามครบทุกข้อหรือไม่
+                if (!this.quizAnswers || this.quizAnswers.length !== this.currentQuiz.questions.length) {
+                    console.error('Quiz answers incomplete');
+                    this.showNotification('กรุณาตอบคำถามให้ครบทุกข้อ', 'warning');
+                    return;
+                }
+                
+                // ตรวจสอบว่าทุกข้อมีคำตอบหรือไม่
+                const hasUnanswered = this.quizAnswers.some(answer => answer === undefined || answer === null || answer === '');
+                if (hasUnanswered) {
+                    console.error('Some questions are unanswered');
+                    this.showNotification('กรุณาตอบคำถามให้ครบทุกข้อ', 'warning');
+                    return;
+                }
+                
+                // คำนวณคะแนนโดยรวมค่า val ของคำตอบทั้งหมด
+                let totalScore = 0;
+                this.quizAnswers.forEach(answer => {
+                    totalScore += answer || 0;
+                });
+                console.log('Total score:', totalScore);
 
-            // แปลงเป็นเปอร์เซ็นต์ (สูงสุดคือคะแนนเต็ม)
-            const maxScore = this.currentQuiz.questions.length * 5; // สมมติว่าคะแนนสูงสุดต่อข้อคือ 5
-            this.quizScore = Math.round((totalScore / maxScore) * 100);
+                // แปลงเป็นเปอร์เซ็นต์ (สูงสุดคือคะแนนเต็ม)
+                const maxScore = this.currentQuiz.questions.length * 5; // สมมติว่าคะแนนสูงสุดต่อข้อคือ 5
+                this.quizScore = Math.round((totalScore / maxScore) * 100);
+                console.log('Quiz score percentage:', this.quizScore);
 
-            // หาผลลัพธ์จาก assessments.json
-            this.quizResult = this.currentQuiz.results.find(result => {
-                return this.quizScore >= result.min && this.quizScore <= result.max;
-            }) || this.currentQuiz.results[0];
+                // หาผลลัพธ์จาก assessments.json
+                this.quizResult = this.currentQuiz.results.find(result => {
+                    return this.quizScore >= result.min && this.quizScore <= result.max;
+                }) || this.currentQuiz.results[0];
+                console.log('Quiz result:', this.quizResult);
 
-            // บันทึกประวัติ
-            this.assessmentHistory.unshift({
-                id: Date.now().toString(),
-                quizId: this.currentQuiz.id,
-                quizTitle: this.currentQuiz.title,
-                score: this.quizScore,
-                result: this.quizResult,
-                date: new Date().toISOString(),
-                answers: this.quizAnswers
-            });
+                // บันทึกประวัติ
+                const assessmentEntry = {
+                    id: Date.now().toString(),
+                    quizId: this.currentQuiz.id,
+                    quizTitle: this.currentQuiz.title,
+                    score: this.quizScore,
+                    result: this.quizResult,
+                    date: new Date().toISOString(),
+                    answers: this.quizAnswers
+                };
+                
+                console.log('Adding to assessment history:', assessmentEntry);
+                this.assessmentHistory.unshift(assessmentEntry);
 
-            // อัพเดทต้นไม้
-            this.tree.points += 5;
-            this.tree.progress += 1;
-            this.updateTreeAnimation();
+                // อัพเดทต้นไม้
+                this.tree.points += 5;
+                this.tree.progress += 1;
+                this.updateTreeAnimation();
+                console.log('Tree updated:', this.tree);
 
-            // บันทึกข้อมูล
-            this.saveData();
+                // บันทึกข้อมูล
+                console.log('Saving data...');
+                this.saveData();
 
-            // ไปหน้าผลลัพธ์
-            this.navigateTo('results');
+                // แสดง notification
+                this.showNotification('คำนวณผลลัพธ์เรียบร้อย! กำลังนำไปยังหน้าผลลัพธ์...', 'success');
+
+                // ไปหน้าผลลัพธ์
+                setTimeout(() => {
+                    this.navigateTo('results');
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error in calculateQuizResult:', error);
+                this.showNotification('เกิดข้อผิดพลาดในการคำนวณผลลัพธ์: ' + error.message, 'error');
+            }
         },
 
         resetQuiz() {
@@ -937,7 +1463,7 @@ document.addEventListener('alpine:init', () => {
         getYouTubeEmbedUrl(url) {
             if (url.includes('youtube.com/watch?v=')) {
                 const videoId = url.split('v=')[1]?.split('&')[0];
-                return `https://www.youtube.com/embed/${videoId}`;
+                return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&showinfo=0&modestbranding=1&disablekb=1&cc_load_policy=1&cc_lang_pref=th&hl=th&iv_load_policy=3`;
             }
             return url;
         },
@@ -950,7 +1476,62 @@ document.addEventListener('alpine:init', () => {
             return categories[type] || 'ทั่วไป';
         },
 
-        // Article functions
+        // Dark mode functions
+        initDarkMode() {
+            console.log('initDarkMode called');
+            
+            // ตรวจสอบว่ามีการตั้งค่า darkMode ใน localStorage หรือไม่
+            const savedDarkMode = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            this.darkMode = savedDarkMode === 'true' || prefersDark;
+            
+            console.log('Dark mode initialized:', this.darkMode);
+        },
+
+        setupDarkModeListener() {
+            console.log('setupDarkModeListener called');
+            
+            // ฟังการเปลี่ยนแปลงจาก localStorage
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'darkMode' && e.oldValue !== e.newValue) {
+                    this.darkMode = e.newValue === 'true';
+                    console.log('Dark mode updated from storage event');
+                }
+            });
+        },
+
+        setupStorageListener() {
+            console.log('setupStorageListener called');
+            // สำหรับฟังการเปลี่ยนแปลงข้อมูลอื่นๆ ถ้าจำเป็น
+        },
+
+        setupAuthListener() {
+            console.log('setupAuthListener called');
+            
+            // ฟังการเปลี่ยนแปลง auth state
+            if (typeof window.AuthUtils !== 'undefined' && typeof window.AuthUtils.onAuthStateChanged === 'function') {
+                window.AuthUtils.onAuthStateChanged((user) => {
+                    console.log('Auth state changed:', user);
+                    if (user) {
+                        this.user = user;
+                        this.isAuthenticated = true;
+                        this.isGuest = user.isGuest || false;
+                    } else {
+                        this.user = null;
+                        this.isAuthenticated = false;
+                        this.isGuest = false;
+                    }
+                });
+            } else {
+                console.log('onAuthStateChanged not available in AuthUtils');
+            }
+        },
+
+        setupAutoUpdate() {
+            console.log('setupAutoUpdate called');
+            // สำหรับการอัปเดตอัตโนมัติอื่นๆ ถ้าจำเป็น
+        },
         openArticleModal(article) {
             this.currentArticle = article;
             if (article.type === 'external') {
@@ -995,13 +1576,56 @@ document.addEventListener('alpine:init', () => {
 
         // Quiz functions
         selectQuizAnswer(value) {
+            console.log('selectQuizAnswer called with value:', value);
             this.quizAnswers[this.currentQuestionIndex] = value;
         },
 
+        // ฟังก์ชันสำหรับส่งคำตอบ (ปุ่มส่งคำตอบ)
+        submitQuiz() {
+            console.log('submitQuiz() called');
+            console.log('Current question index:', this.currentQuestionIndex);
+            console.log('Total questions:', this.currentQuiz.questions?.length);
+            
+            // ตรวจสอบว่าตอบคำถามปัจจุบันหรือยัง
+            if (this.quizAnswers[this.currentQuestionIndex] === undefined || this.quizAnswers[this.currentQuestionIndex] === null || this.quizAnswers[this.currentQuestionIndex] === '') {
+                console.log('Current question not answered, showing warning');
+                this.showNotification('กรุณาเลือกคำตอบก่อนส่ง', 'warning');
+                return;
+            }
+            
+            // ตรวจสอบว่าตอบครบทุกข้อหรือไม่
+            const hasUnanswered = this.quizAnswers.some((answer, index) => {
+                return answer === undefined || answer === null || answer === '';
+            });
+            
+            if (hasUnanswered) {
+                console.log('Some questions are unanswered');
+                this.showNotification('กรุณาตอบคำถามให้ครบทุกข้อ', 'warning');
+                return;
+            }
+            
+            console.log('All questions answered, calculating result');
+            this.calculateQuizResult();
+        },
+
         nextQuestion() {
+            console.log('nextQuestion() called');
+            console.log('Current question index:', this.currentQuestionIndex);
+            console.log('Total questions:', this.currentQuiz.questions?.length);
+            
+            // ตรวจสอบว่าตอบคำถามปัจจุบันหรือยัง
+            if (this.quizAnswers[this.currentQuestionIndex] === undefined || this.quizAnswers[this.currentQuestionIndex] === null || this.quizAnswers[this.currentQuestionIndex] === '') {
+                console.log('Current question not answered, showing warning');
+                this.showNotification('กรุณาเลือกคำตอบก่อนไปข้อถัดไป', 'warning');
+                return;
+            }
+            
+            // ตรวจสอบว่าเป็นข้อสุดท้ายหรือไม่
             if (this.currentQuestionIndex < this.currentQuiz.questions.length - 1) {
+                console.log('Moving to next question');
                 this.currentQuestionIndex++;
             } else {
+                console.log('Last question reached, calculating result');
                 this.calculateQuizResult();
             }
         },

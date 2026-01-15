@@ -21,13 +21,14 @@
     <meta property="og:title" content="Cloudy-Puk-Jai - ดูแลสุขภาพจิตของคุณ">
     <meta property="og:description" content="แอปพลิเคชันดูแลสุขภาพจิต พร้อมเครื่องมือผ่อนคลายและบันทึกความรู้สึก">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://your-domain.com/image/og-image.jpg">
+    <meta property="og:image" content="http://127.0.0.1:5500/image/og-image.jpg">
+    <meta property="og:url" content="http://127.0.0.1:5500/register.html">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cloudy-Puk-Jai - ดูแลสุขภาพจิตของคุณ">
     <meta name="twitter:description" content="แอปพลิเคชันดูแลสุขภาพจิต พร้อมเครื่องมือผ่อนคลายและบันทึกความรู้สึก">
-    <meta name="twitter:image" content="https://your-domain.com/image/twitter-image.jpg">
+    <meta name="twitter:image" content="http://127.0.0.1:5500/image/twitter-image.jpg">
     
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="image/apple-touch-icon.png">
@@ -86,6 +87,93 @@
     
     <!-- Auth Script -->
     <script src="js/auth.js"></script>
+    
+    <!-- Debug Script -->
+    <script>
+        console.log('Register page loaded');
+        
+        // เพิ่มการตรวจสอบฟอร์ม
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, checking form...');
+            
+            const form = document.querySelector('form');
+            if (form) {
+                console.log('Form found:', form);
+                
+                form.addEventListener('submit', function(e) {
+                    console.log('Form submit event triggered');
+                    console.log('Form data:', new FormData(form));
+                    e.preventDefault(); // หยุดการ submit ชั่วคราวเพื่อดู log
+                    console.log('Submit prevented, calling register()...');
+                    
+                    // เรียก register() ด้วยตนเอง
+                    if (window.authApp) {
+                        console.log('Calling authApp.register()');
+                        window.authApp.register();
+                    } else {
+                        console.log('authApp not found, waiting for Alpine.js...');
+                        // รอ Alpine.js โหลด
+                        setTimeout(() => {
+                            if (window.authApp) {
+                                console.log('authApp found after delay, calling register()');
+                                window.authApp.register();
+                            } else {
+                                console.log('authApp still not found');
+                            }
+                        }, 1000);
+                    }
+                });
+            } else {
+                console.log('Form not found');
+            }
+        });
+        
+        // ตรวจสอบว่า Alpine.js ทำงานหรือไม่
+        document.addEventListener('alpine:init', function() {
+            console.log('Alpine.js initialized');
+            
+            // รอให้ authApp ถูกสร้าง
+            setTimeout(() => {
+                console.log('Checking authApp after Alpine.js init:', typeof window.authApp);
+                if (window.authApp) {
+                    console.log('authApp found:', window.authApp);
+                } else {
+                    console.log('authApp not found after Alpine.js init');
+                }
+            }, 500);
+        });
+        
+        // ตรวจสอบว่า authApp ถูกสร้างหรือไม่
+        setTimeout(function() {
+            console.log('Checking authApp:', typeof window.authApp);
+            if (window.authApp) {
+                console.log('authApp found:', window.authApp);
+            } else {
+                console.log('authApp not found');
+            }
+        }, 1000);
+        
+        // ฟังก์ชัน debugRegister สำรอง
+        function debugRegisterFallback() {
+            console.log('debugRegisterFallback called');
+            
+            // รอ authApp ให้พร้อมใช้งาน
+            const checkAuthApp = () => {
+                if (window.authApp) {
+                    console.log('authApp found, calling debugRegister()');
+                    window.authApp.debugRegister();
+                } else {
+                    console.log('authApp not found, retrying...');
+                    setTimeout(checkAuthApp, 100);
+                }
+            };
+            
+            checkAuthApp();
+        }
+        
+        // ทำให้ฟังก์ชันสำรองพร้อมใช้งานทั่วโลก
+        window.debugRegisterFallback = debugRegisterFallback;
+    </script>
 </head>
 <body class="bg-gradient-to-br from-primary/10 to-accent/10 min-h-screen">
     <!-- Register Container -->
@@ -108,7 +196,7 @@
                     <li>• เราไม่เก็บข้อมูลส่วนตัวใดๆ นอกจาก email</li>
                     <li>• ใช้อีเมลอะไรก็ได้ที่จำได้</li>
                     <li>• ข้อมูลบันทึกความรู้สึกจะถูกเก็บไว้ในอุปกรณ์ของคุณเท่านั้น</li>
-                    <li>• Google Login ไม่มีการเข้าถึงข้อมูลส่วนตัวใดๆ ทั้งสิ้น</li>
+                    
                 </ul>
             </div>
             
@@ -118,7 +206,7 @@
                     <!-- Email Field -->
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            <i class="fas fa-envelope mr-2"></i>อีเมล (จำได้ก็พอ)
+                            <i class="fas fa-envelope mr-2"></i>อีเมล 
                         </label>
                         <input 
                             type="email" 
@@ -199,6 +287,8 @@
                         </span>
                     </button>
                     
+
+                    
                     <!-- Error Message -->
                     <div x-show="error" class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">
                         <i class="fas fa-exclamation-circle mr-2"></i>
@@ -217,23 +307,10 @@
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
                     </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white dark:bg-gray-800 text-gray-500">หรือสมัครด้วย</span>
-                    </div>
+ 
                 </div>
                 
-                <!-- Google Register -->
-                <button 
-                    @click="registerWithGoogle()"
-                    :disabled="loading"
-                    class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors mb-4">
-                    <i class="fab fa-google mr-2 text-red-500"></i>
-                    <span x-show="!loading">สมัครด้วย Google</span>
-                    <span x-show="loading" class="flex items-center justify-center">
-                        <i class="fas fa-spinner fa-spin mr-2"></i>
-                        กำลังเชื่อมต่อ...
-                    </span>
-                </button>
+ 
                 
                 <!-- Back to Login -->
                 <div class="text-center">
@@ -244,19 +321,7 @@
                 </div>
             </div>
             
-            <!-- Alternative Options -->
-            <div class="mt-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur rounded-xl p-6">
-                <h3 class="text-lg font-semibold text-primary mb-4 text-center">
-                    <i class="fas fa-user-astronaut mr-2"></i>
-                    ต้องการใช้งานทันที?
-                </h3>
-                <p class="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
-                    ไม่ต้องสมัครสมาชิกก็ใช้งานได้เลย
-                </p>
-                <a href="login.html" class="block w-full btn-outline text-center">
-                    ทดลองใช้งานแบบ Guest
-                </a>
-            </div>
+            
         </div>
     </div>
 </body>

@@ -1,0 +1,151 @@
+/* Logo CSS - Cloudy-Puk-Jai */
+
+/* Base logo styles */
+.logo {
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+}
+
+/* Logo classes */
+.logo-cloudy-puk-jai {
+  background-image: url('../logos/logo-cloudy-puk-jai-medium.png');
+  width: 120px;
+  height: 40px;
+}
+
+.logo-cloudy-puk-jai-white {
+  background-image: url('../logos/logo-cloudy-puk-jai-white.svg');
+  width: 200px;
+  height: 60px;
+}
+
+.logo-cloudy-puk-jai-small {
+  background-image: url('../logos/logo-cloudy-puk-jai-small.png');
+  width: 40px;
+  height: 40px;
+}
+
+.logo-cloudy-puk-jai-medium {
+  background-image: url('../logos/logo-cloudy-puk-jai-medium.png');
+  width: 120px;
+  height: 40px;
+}
+
+.logo-cloudy-puk-jai-large {
+  background-image: url('../logos/logo-cloudy-puk-jai-large.png');
+  width: 250px;
+  height: 80px;
+}
+
+/* Dark mode - ใช้รูปเดิมเพราะเป็น transparent */
+/* ไม่ต้องมีไฟล์ white version ถ้ารูปเป็น transparent แล้ว */
+
+/* Size variations */
+.logo-small { width: 40px; height: 40px; }
+.logo-medium { width: 120px; height: 40px; }
+.logo-large { width: 250px; height: 80px; }
+.logo-xlarge { width: 300px; height: 96px; }
+
+/* Header logo sizes */
+.logo-header-mobile { width: 40px; height: 40px; }
+.logo-header-desktop { width: 120px; height: 40px; }
+
+/* Footer logo sizes */
+.logo-footer-mobile { width: 120px; height: 40px; }
+.logo-footer-desktop { width: 200px; height: 60px; }
+
+/* Dark mode adjustments */
+.dark .logo-cloudy-puk-jai-white {
+  filter: brightness(1.1);
+}
+
+/* Hover effects */
+.logo:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease;
+}
+
+/* Animation classes */
+.logo.animate-pulse-slow {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.logo.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .logo-header-desktop { width: 40px; height: 40px; }
+  .logo-footer-desktop { width: 120px; height: 40px; }
+}
+
+/* Logo container styles */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-text {
+  font-family: 'Anuphan', 'Noto Sans Thai', sans-serif;
+  font-weight: 600;
+  color: #6D9F71;
+}
+
+.dark .logo-text {
+  color: #8FBC8F;
+}
+
+/* Logo with text combination */
+.logo-with-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-with-text .logo {
+  flex-shrink: 0;
+}
+
+.logo-with-text .logo-text {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Mobile specific */
+@media (max-width: 640px) {
+  .logo-with-text .logo-text {
+    font-size: 12px;
+  }
+}
+
+/* Logo for different sections */
+.logo-header {
+  margin: 0;
+  padding: 0;
+}
+
+.logo-footer {
+  margin: 0 auto;
+  padding: 16px 0;
+}
+
+.logo-sidebar {
+  margin: 0 auto 16px;
+  padding: 0;
+}

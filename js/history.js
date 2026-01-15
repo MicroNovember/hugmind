@@ -28,6 +28,84 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('History page fully loaded');
 });
 
+// ฟังก์ชันดูรายละเอียด
+function viewDetails(index) {
+    console.log('viewDetails called with index:', index);
+    
+    const historyData = getHistoryData();
+    const item = historyData[index];
+    
+    if (!item) {
+        console.log('Item not found at index:', index);
+        showNotification('ไม่พบข้อมูลรายการที่เลือก', 'error');
+        return;
+    }
+    
+    console.log('Viewing details for:', item);
+    
+    // สร้าง modal สำหรับแสดงรายละเอียด
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+    modal.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-primary">รายละเอียดการทดสอบ</h3>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="font-semibold text-gray-700 dark:text-gray-300">ชื่อแบบทดสอบ:</label>
+                    <p class="text-gray-600 dark:text-gray-400">${item.quizTitle || 'ไม่มีข้อมูล'}</p>
+                </div>
+                
+                <div>
+                    <label class="font-semibold text-gray-700 dark:text-gray-300">วันที่ทำ:</label>
+                    <p class="text-gray-600 dark:text-gray-400">${item.date ? new Date(item.date).toLocaleString('th-TH') : 'ไม่มีข้อมูล'}</p>
+                </div>
+                
+                <div>
+                    <label class="font-semibold text-gray-700 dark:text-gray-300">คะแนน:</label>
+                    <p class="text-gray-600 dark:text-gray-400">${item.score || 'ไม่มีข้อมูล'}%</p>
+                </div>
+                
+                <div>
+                    <label class="font-semibold text-gray-700 dark:text-gray-300">ผลลัพธ์:</label>
+                    <p class="text-gray-600 dark:text-gray-400">${item.result || 'ไม่มีข้อมูล'}</p>
+                </div>
+                
+                <div>
+                    <label class="font-semibold text-gray-700 dark:text-gray-300">ประเภท:</label>
+                    <p class="text-gray-600 dark:text-gray-400">${item.quizId || 'ไม่มีข้อมูล'}</p>
+                </div>
+                
+                ${item.answers ? `
+                <div>
+                    <label class="font-semibold text-gray-700 dark:text-gray-300">คำตอบ:</label>
+                    <div class="mt-2 space-y-2">
+                        ${item.answers.map((answer, idx) => `
+                            <div class="bg-gray-50 dark:bg-gray-700 p-2 rounded">
+                                <span class="text-sm">ข้อ ${idx + 1}: ${answer || 'ไม่ตอบ'}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+            
+            <div class="mt-6 flex justify-end">
+                <button onclick="this.closest('.fixed').remove()" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg">
+                    ปิด
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
 // ฟังก์ชันเริ่มต้นหน้าเว็บ
 function initializePage() {
     console.log('Initializing history page...');
@@ -76,7 +154,12 @@ function initDarkMode() {
         
         if (darkMode) {
             document.documentElement.classList.add('dark');
-            document.getElementById('darkModeIcon').className = 'fas fa-sun text-lg';
+        }
+        
+        // ตรวจสอบว่ามี icon element ก่อนใช้งาน
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        if (darkModeIcon) {
+            darkModeIcon.className = darkMode ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
         }
         
         const darkModeToggle = document.getElementById('darkModeToggle');
@@ -86,7 +169,9 @@ function initDarkMode() {
                 document.documentElement.classList.toggle('dark');
                 
                 const icon = document.getElementById('darkModeIcon');
-                icon.className = darkMode ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
+                if (icon) {
+                    icon.className = darkMode ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
+                }
                 
                 localStorage.setItem('darkMode', darkMode);
             });
@@ -98,10 +183,13 @@ function initDarkMode() {
                 darkMode = e.newValue === 'true';
                 if (darkMode) {
                     document.documentElement.classList.add('dark');
-                    document.getElementById('darkModeIcon').className = 'fas fa-sun text-lg';
                 } else {
                     document.documentElement.classList.remove('dark');
-                    document.getElementById('darkModeIcon').className = 'fas fa-moon text-lg';
+                }
+                
+                const icon = document.getElementById('darkModeIcon');
+                if (icon) {
+                    icon.className = darkMode ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
                 }
             }
         });
@@ -113,10 +201,13 @@ function initDarkMode() {
                 darkMode = currentDarkMode;
                 if (darkMode) {
                     document.documentElement.classList.add('dark');
-                    document.getElementById('darkModeIcon').className = 'fas fa-sun text-lg';
                 } else {
                     document.documentElement.classList.remove('dark');
-                    document.getElementById('darkModeIcon').className = 'fas fa-moon text-lg';
+                }
+                
+                const icon = document.getElementById('darkModeIcon');
+                if (icon) {
+                    icon.className = darkMode ? 'fas fa-sun text-lg' : 'fas fa-moon text-lg';
                 }
             }
         }, 500);
@@ -815,7 +906,7 @@ function showEmptyState() {
 
 // ==================== BASIC FUNCTIONS ====================
 
-function viewDetails(index) {
+function showItemDetails(index) {
     try {
         if (index < 0 || index >= historyData.length) {
             showNotification('ไม่พบข้อมูลประวัตินี้', 'error');
@@ -825,16 +916,48 @@ function viewDetails(index) {
         const item = historyData[index];
         const maxScore = getMaxScoreFromTestTitle(item.title);
         
-        alert(
-            `📋 รายละเอียดแบบทดสอบ\n\n` +
-            `📝 ชื่อ: ${item.title || 'ไม่มีชื่อ'}\n` +
-            `📊 คะแนน: ${item.score}${maxScore ? '/' + maxScore : ''}\n` +
-            `🏷️ ผลลัพธ์: ${item.result || 'ไม่มีข้อมูล'}\n` +
-            `📅 วันที่: ${formatDate(item.date)}`
+        // สร้าง popup แสดงรายละเอียด
+        showDetailsDialog(
+            '📋 รายละเอียดแบบทดสอบ',
+            `
+                <div class="text-left space-y-3">
+                    <div class="flex items-start">
+                        <i class="fas fa-file-alt text-blue-500 mt-1 mr-3"></i>
+                        <div>
+                            <span class="font-semibold">ชื่อ:</span>
+                            <span class="text-gray-700 dark:text-gray-300">${item.title || 'ไม่มีชื่อ'}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-chart-line text-green-500 mt-1 mr-3"></i>
+                        <div>
+                            <span class="font-semibold">คะแนน:</span>
+                            <span class="text-gray-700 dark:text-gray-300">${item.score}${maxScore ? '/' + maxScore : ''}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-calendar text-purple-500 mt-1 mr-3"></i>
+                        <div>
+                            <span class="font-semibold">วันที่:</span>
+                            <span class="text-gray-700 dark:text-gray-300">${new Date(item.date).toLocaleString('th-TH')}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-clock text-orange-500 mt-1 mr-3"></i>
+                        <div>
+                            <span class="font-semibold">เวลา:</span>
+                            <span class="text-gray-700 dark:text-gray-300">${new Date(item.date).toLocaleTimeString('th-TH')}</span>
+                        </div>
+                    </div>
+                </div>
+            `,
+            'ปิด',
+            null,
+            null
         );
     } catch (error) {
-        console.error('viewDetails error:', error);
-        showNotification('เกิดข้อผิดพลาดในการดูรายละเอียด', 'error');
+        console.error('showItemDetails error:', error);
+        showNotification('เกิดข้อผิดพลาดในการแสดงรายละเอียด', 'error');
     }
 }
 
@@ -847,11 +970,11 @@ function deleteItem(index) {
         
         const item = historyData[index];
         
-        // สร้าง popup แจ้งเตือนสำหรับมือถือ
+        // สร้าง popup แจ้งเตือนการลบรายการเดียว
         showConfirmDialog(
             '⚠️ ยืนยันการลบข้อมูล',
-            `คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการทดสอบนี้?\n\n📝 แบบทดสอบ: ${item.title || 'ไม่มีชื่อ'}\n📅 วันที่: ${formatDate(item.date)}\n\nการดำเนินการนี้ไม่สามารถย้อนกลับได้`,
-            'ลบรายการ',
+            `คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการทดสอบนี้?\n\n📝 ชื่อ: ${item.title || 'ไม่มีชื่อ'}\n📊 คะแนน: ${item.score}\n📅 วันที่: ${new Date(item.date).toLocaleDateString('th-TH')}\n\nการดำเนินการนี้ไม่สามารถย้อนกลับได้`,
+            'ลบรายการนี้',
             'ยกเลิก',
             () => {
                 // ลบข้อมูล
@@ -987,6 +1110,89 @@ function closeConfirmDialog(overlay, callback) {
         document.body.removeChild(overlay);
         if (callback) callback();
     }, 300);
+}
+
+// ฟังก์ชันสร้าง popup แสดงรายละเอียด
+function showDetailsDialog(title, message, confirmText, cancelText, onConfirm, onCancel) {
+    // สร้าง overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+    overlay.style.backdropFilter = 'blur(4px)';
+    
+    // สร้าง popup container
+    const popup = document.createElement('div');
+    popup.className = 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all duration-300 scale-95';
+    
+    popup.innerHTML = `
+        <div class="text-center">
+            <!-- Icon -->
+            <div class="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-info-circle text-2xl text-blue-600 dark:text-blue-400"></i>
+            </div>
+            
+            <!-- Title -->
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">${title}</h3>
+            
+            <!-- Message -->
+            <div class="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed text-left">
+                ${message}
+            </div>
+            
+            <!-- Buttons -->
+            <div class="flex gap-3 justify-center">
+                ${cancelText ? `
+                    <button id="cancelBtn" class="px-6 py-2.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg font-medium transition-all duration-200 flex items-center">
+                        <i class="fas fa-times mr-2"></i>
+                        ${cancelText}
+                    </button>
+                ` : ''}
+                <button id="confirmBtn" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all duration-200 flex items-center">
+                    <i class="fas fa-check mr-2"></i>
+                    ${confirmText}
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // เพิ่ม popup ไปยัง overlay
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+    
+    // แสดง popup ด้วย animation
+    setTimeout(() => {
+        popup.classList.remove('scale-95');
+        popup.classList.add('scale-100');
+    }, 10);
+    
+    // Event listeners
+    const cancelBtn = document.getElementById('cancelBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            closeConfirmDialog(overlay, onCancel);
+        });
+    }
+    
+    confirmBtn.addEventListener('click', () => {
+        closeConfirmDialog(overlay, onConfirm);
+    });
+    
+    // ปิด popup เมื่อคลิก overlay
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeConfirmDialog(overlay, onCancel);
+        }
+    });
+    
+    // ปิด popup เมื่อกด Escape
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            closeConfirmDialog(overlay, onCancel);
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
 }
 
 // ==================== EXPORT FUNCTIONS ====================

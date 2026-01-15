@@ -21,13 +21,14 @@
     <meta property="og:title" content="Cloudy-Puk-Jai - ดูแลสุขภาพจิตของคุณ">
     <meta property="og:description" content="แอปพลิเคชันดูแลสุขภาพจิต พร้อมเครื่องมือผ่อนคลายและบันทึกความรู้สึก">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://your-domain.com/image/og-image.jpg">
+    <meta property="og:image" content="http://127.0.0.1:5500/image/og-image.jpg">
+    <meta property="og:url" content="http://127.0.0.1:5500/index.html">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cloudy-Puk-Jai - ดูแลสุขภาพจิตของคุณ">
     <meta name="twitter:description" content="แอปพลิเคชันดูแลสุขภาพจิต พร้อมเครื่องมือผ่อนคลายและบันทึกความรู้สึก">
-    <meta name="twitter:image" content="https://your-domain.com/image/twitter-image.jpg">
+    <meta name="twitter:image" content="http://127.0.0.1:5500/image/twitter-image.jpg">
     
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="image/apple-touch-icon.png">
@@ -47,8 +48,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/styles.css">
+    <!-- Main Styles CSS -->
+    <link rel="stylesheet" href="./css/styles.css">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="assets/css/icons.css">
+    <!-- Logo CSS -->
+    <link rel="stylesheet" href="assets/css/logo.css">
     <script>
       // กำหนดค่า Tailwind
       tailwind.config = {
@@ -88,14 +93,16 @@
     <script src="js/auth.js"></script>
     <script src="js/auth-guard.js"></script>
   </head>
-  <body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300" x-data="mindbloomApp()" x-init="init()">
+  <body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
     <!-- Mobile Header -->
     <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md lg:hidden">
         <div class="container mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                    <div class="text-2xl text-primary">🌸</div>
-                    <h1 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h1>
+                    <div class="logo logo-cloudy-puk-jai-small animate-pulse-slow"></div>
+                    <div>
+                        <h1 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h1>
+                    </div>
                 </div>
                 <div class="flex items-center space-x-3">
                     <button @click="openModal('help')" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -110,8 +117,8 @@
                         </button>
                         <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                             <div class="p-3 border-b border-gray-200 dark:border-gray-700">
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="getUserDisplayName()"></p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400" x-text="isGuest ? 'Guest User' : 'Authenticated'"></p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="userDisplayName"></p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400" x-text="userDisplayName"></p>
                             </div>
                             <button @click="logout()" class="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg">
                                 <i class="fas fa-sign-out-alt mr-2"></i>ออกจากระบบ
@@ -133,8 +140,10 @@
             <div class="p-4">
                 <div class="flex items-center justify-between mb-6">
                     <div class="flex items-center gap-3">
-                        <div class="text-3xl text-primary animate-pulse-slow">🌸</div>
-                        <h3 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h3>
+                        <div class="logo logo-cloudy-puk-jai-small animate-pulse-slow"></div>
+                        <div>
+                            <h3 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h3>
+                        </div>
                     </div>
                     <button @click="mobileMenuOpen = false" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
                         <i class="fas fa-times text-lg"></i>
@@ -177,13 +186,12 @@
                         <div class="relative" x-data="{ userMenuOpen: false }">
                             <button @click="userMenuOpen = !userMenuOpen" class="w-full flex items-center px-3 py-3 rounded-lg font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 <i class="fas fa-user-circle mr-3 w-4 text-primary"></i>
-                                <span class="flex-1 text-left" x-text="getUserDisplayName()"></span>
+                                <span class="flex-1 text-left" x-text="userDisplayName"></span>
                                 <i class="fas fa-chevron-down text-xs"></i>
                             </button>
                             <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition class="absolute left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                                 <div class="p-3 border-b border-gray-200 dark:border-gray-700">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="getUserDisplayName()"></p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400" x-text="isGuest ? 'Guest User • Local Storage' : 'Authenticated • Firebase'"></p>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="userDisplayName"></p>
                                 </div>
                                 <button @click="logout(); mobileMenuOpen = false" class="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg">
                                     <i class="fas fa-sign-out-alt mr-2"></i>ออกจากระบบ
@@ -205,8 +213,8 @@
           <!-- Desktop Sidebar Navigation -->
           <nav class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sticky top-6 h-fit">
             <!-- Logo Section -->
-            <div class="flex items-center justify-center gap-3 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-              <div class="text-3xl text-primary animate-pulse-slow">🌸</div>
+            <div class="text-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+              <div class="logo logo-cloudy-puk-jai-medium animate-pulse-slow mb-2"></div>
               <h3 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h3>
             </div>
             
@@ -246,13 +254,13 @@
                 <div class="relative" x-data="{ userMenuOpen: false }">
                     <button @click="userMenuOpen = !userMenuOpen" class="w-full flex items-center px-3 py-2 rounded-lg font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <i class="fas fa-user-circle mr-3 w-4 text-primary"></i>
-                        <span class="flex-1 text-left" x-text="getUserDisplayName()"></span>
+                        <span class="flex-1 text-left" x-text="userDisplayName"></span>
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
                     <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition class="absolute left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                         <div class="p-3 border-b border-gray-200 dark:border-gray-700">
-                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="getUserDisplayName()"></p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400" x-text="isGuest ? 'Guest User • Local Storage' : 'Authenticated • Firebase'"></p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="userDisplayName"></p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400" x-text="getUserAuthInfo()"></p>
                         </div>
                         <button @click="logout()" class="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg">
                             <i class="fas fa-sign-out-alt mr-2"></i>ออกจากระบบ
@@ -1389,24 +1397,18 @@
             </div>
             <!-- คำเตือนสำคัญก่อนเริ่มทำแบบทดสอบ -->
             <div class="mb-6">
-              <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 dark:bg-yellow-900/20 dark:border-yellow-600">
-                <div class="flex">
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 dark:bg-blue-900/20 dark:border-blue-700">
+                <div class="flex items-start">
                   <div class="flex-shrink-0">
-                    <i class="fas fa-exclamation-circle text-yellow-400 text-xl"></i>
+                    <i class="fas fa-info-circle text-blue-500 text-lg mt-0.5"></i>
                   </div>
                   <div class="ml-3">
-                    <h3 class="text-sm font-bold text-yellow-800 dark:text-yellow-300"> โปรดอ่านก่อนตอบคำถาม </h3>
-                    <div class="mt-1 text-sm text-yellow-700 dark:text-yellow-400">
-                      <p class="font-semibold">แบบทดสอบนี้เป็นเครื่องมือ "เสริมการสังเกตตนเอง" เท่านั้น</p>
-                      <ul class="list-disc pl-5 mt-1 space-y-1">
-                        <li>ตอบตามความรู้สึกจริงๆ ในช่วง <strong>1-2 สัปดาห์ที่ผ่านมา</strong>
-                        </li>
-                        <li>ผลลัพธ์เป็นเพียง <strong>แนวโน้ม</strong> ไม่ใช่การวินิจฉัย </li>
-                        <li>ข้อมูลเก็บในอุปกรณ์คุณ <strong>ไม่มีการส่งออกไปภายนอก</strong>
-                        </li>
-                        <li>หากต้องการความช่วยเหลือเร่งด่วน: <strong>สายด่วนสุขภาพจิต 1323</strong>
-                        </li>
-                      </ul>
+                    <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">คำแนะนำก่อนทำแบบสอบถาม</h4>
+                    <div class="text-sm text-blue-700 dark:text-blue-400 space-y-1">
+                      <p>• ตอบตามความรู้สึกจริงในช่วง 2 สัปดาห์ที่ผ่านมา</p>
+                      <p>• ผลลัพธ์เป็นเพียงแนวทางสำหรับการสังเกตตนเอง ไม่ใช่การวินิจฉัย</p>
+                      <p>• ข้อมูลถูกเก็บไว้ในอุปกรณ์เท่านั้น ไม่มีการส่งออกไปภายนอก</p>
+                      <p class="font-medium text-blue-600 dark:text-blue-300">🆘 ต้องการความช่วยเหลือเร่งด่วน: สายด่วนสุขภาพจิต 1323</p>
                     </div>
                   </div>
                 </div>
@@ -1437,7 +1439,7 @@
             <div class="flex justify-between">
               <button @click="prevQuestion()" :disabled="currentQuestionIndex === 0" :class="{ 'opacity-50 cursor-not-allowed': currentQuestionIndex === 0 }" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-500 font-medium py-3 px-6 rounded-lg transition-colors flex items-center" id="prevQuestionBtn" name="prevQuestionBtn">
                 <i class="fas fa-arrow-left mr-2"></i>ก่อนหน้า </button>
-              <button @click="nextQuestion()" :disabled="quizAnswers[currentQuestionIndex] === undefined" :class="{ 'opacity-50 cursor-not-allowed': quizAnswers[currentQuestionIndex] === undefined }" class="bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center" id="nextQuestionBtn" name="nextQuestionBtn">
+              <button @click="currentQuestionIndex === currentQuiz.questions.length - 1 ? submitQuiz() : nextQuestion()" :disabled="quizAnswers[currentQuestionIndex] === undefined" :class="{ 'opacity-50 cursor-not-allowed': quizAnswers[currentQuestionIndex] === undefined }" class="bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center" id="nextQuestionBtn" name="nextQuestionBtn">
                 <template x-if="currentQuestionIndex < currentQuiz.questions.length - 1">
                   <span>ถัดไป <i class="fas fa-arrow-right ml-2"></i>
                   </span>
@@ -1537,8 +1539,8 @@
             <div class="flex flex-col sm:flex-row gap-4">
               <button @click="retakeQuiz()" class="flex-1 bg-secondary hover:bg-pink-400 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center" id="retakeQuizBtn" name="retakeQuizBtn">
                 <i class="fas fa-redo mr-2"></i>ทำแบบทดสอบอีกครั้ง </button>
-              <button @click="saveAssessmentResult()" class="flex-1 bg-accent hover:bg-yellow-500 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center" id="saveResultBtn" name="saveResultBtn">
-                <i class="fas fa-save mr-2"></i>บันทึกผล </button>
+              <button onclick="window.location.href='history.html'" class="flex-1 bg-accent hover:bg-yellow-500 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center" id="historyBtn" name="historyBtn">
+                <i class="fas fa-history mr-2"></i>ไปหน้าประวัติผลการทดสอบ </button>
               <button @click="currentPage = 'assessments'" class="flex-1 bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center" id="backToassessmentsBtn" name="backToassessmentsBtn">
                 <i class="fas fa-list mr-2"></i>แบบทดสอบทั้งหมด </button>
             </div>
@@ -2132,7 +2134,9 @@
     <footer class="mt-12 bg-gradient-to-br from-primary/5 via-primary/3 to-primary-light/5 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-t border-primary/10 dark:border-gray-700">
         <!-- Floating Elements -->
         <div class="absolute top-0 left-0 w-32 h-32 opacity-5">
-            <div class="absolute top-4 left-4 text-6xl text-primary animate-float">🌸</div>
+            <div class="absolute top-4 left-4 text-6xl text-primary animate-float">
+                <div class="logo logo-cloudy-puk-jai-large"></div>
+            </div>
         </div>
         <div class="absolute bottom-0 right-0 w-24 h-24 opacity-5">
             <div class="absolute bottom-4 right-4 text-4xl text-primary-light animate-float" style="animation-delay: 3s;">💚</div>
@@ -2144,7 +2148,7 @@
                 <!-- Brand Section -->
                 <div class="text-center">
                     <div class="flex items-center justify-center gap-3 mb-4">
-                        <div class="text-3xl text-primary animate-pulse-slow">🌸</div>
+                        <div class="logo logo-cloudy-puk-jai-medium animate-pulse-slow"></div>
                         <h3 class="text-xl font-bold text-gray-800 dark:text-white">Cloudy-Puk-Jai</h3>
                     </div>
                     <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">

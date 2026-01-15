@@ -109,8 +109,7 @@
     function checkForTampering() {
         // Check if localStorage is available
         if (typeof Storage === 'undefined') {
-            alert('เบราว์เซอร์ของคุณไม่รองรับการเก็บข้อมูล กรุณาใช้เบราว์เซอร์ที่ทันสมัยกว่า');
-            window.location.href = 'login.html';
+            showBrowserWarningDialog();
             return false;
         }
         
@@ -127,6 +126,113 @@
         }
         
         return true;
+    }
+    
+    // Show browser warning dialog
+    function showBrowserWarningDialog() {
+        // สร้าง overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+        overlay.style.backdropFilter = 'blur(4px)';
+        
+        // สร้าง popup container
+        const popup = document.createElement('div');
+        popup.className = 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all duration-300 scale-95';
+        
+        popup.innerHTML = `
+            <div class="text-center">
+                <!-- Icon -->
+                <div class="mx-auto w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl text-orange-600 dark:text-orange-400"></i>
+                </div>
+                
+                <!-- Title -->
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">⚠️ เบราว์เซอร์ไม่รองรับ</h3>
+                
+                <!-- Message -->
+                <div class="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed">
+                    <p class="mb-3">เบราว์เซอร์ของคุณไม่รองรับการเก็บข้อมูล</p>
+                    <p class="mb-3">กรุณาใช้เบราว์เซอร์ที่ทันสมัยกว่า เช่น:</p>
+                    <div class="text-left space-y-2">
+                        <div class="flex items-center">
+                            <i class="fas fa-chrome text-blue-500 mr-2"></i>
+                            <span>Google Chrome (เวอร์ชัน 60+)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-firefox text-orange-500 mr-2"></i>
+                            <span>Mozilla Firefox (เวอร์ชัน 55+)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-safari text-blue-400 mr-2"></i>
+                            <span>Safari (เวอร์ชัน 11+)</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-edge text-blue-600 mr-2"></i>
+                            <span>Microsoft Edge (เวอร์ชัน 79+)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Buttons -->
+                <div class="flex gap-3 justify-center">
+                    <button id="redirectBtn" class="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-all duration-200 flex items-center">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        ไปหน้า Login
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // เพิ่ม popup ไปยัง overlay
+        overlay.appendChild(popup);
+        document.body.appendChild(overlay);
+        
+        // แสดง popup ด้วย animation
+        setTimeout(() => {
+            popup.classList.remove('scale-95');
+            popup.classList.add('scale-100');
+        }, 10);
+        
+        // Event listeners
+        const redirectBtn = document.getElementById('redirectBtn');
+        
+        redirectBtn.addEventListener('click', () => {
+            closeBrowserWarningDialog(overlay, () => {
+                window.location.href = 'login.html';
+            });
+        });
+        
+        // ปิด popup เมื่อคลิก overlay
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeBrowserWarningDialog(overlay, () => {
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+        
+        // ปิด popup เมื่อกด Escape
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                closeBrowserWarningDialog(overlay, () => {
+                    window.location.href = 'login.html';
+                });
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+    }
+    
+    // Close browser warning dialog
+    function closeBrowserWarningDialog(overlay, callback) {
+        const popup = overlay.querySelector('div');
+        popup.classList.remove('scale-100');
+        popup.classList.add('scale-95');
+        
+        setTimeout(() => {
+            document.body.removeChild(overlay);
+            if (callback) callback();
+        }, 300);
     }
     
     // Session timeout check

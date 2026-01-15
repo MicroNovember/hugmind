@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th" x-data="mindbloomApp()" x-init="init()" :class="{ 'dark': darkMode }">
+<html lang="th" x-data="mindbloomApp()">
 <head>
     <link rel="icon" type="image/png" href="image/favicon.png">
     <meta charset="UTF-8">
@@ -22,6 +22,10 @@
     
     <!-- Main Styles CSS -->
     <link rel="stylesheet" href="./css/styles.css">
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="assets/css/icons.css">
+    <!-- Logo CSS -->
+    <link rel="stylesheet" href="assets/css/logo.css">
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -66,11 +70,11 @@
         <div class="container mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                    <div class="text-2xl text-primary">🌸</div>
-                    <h1 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h1>
+                    <div class="logo logo-cloudy-puk-jai-small animate-pulse-slow"></div>
+                    <div>
+                        <h1 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h1>
+                    </div>
                 </div>
-
-
                 
                 <div class="flex items-center space-x-3">
 
@@ -78,7 +82,7 @@
                         <i class="fas fa-hands-helping text-lg text-primary"></i>
                     </button>
                     <button @click="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <i id="darkModeIcon" :class="darkMode ? 'fas fa-sun text-amber-500' : 'fas fa-moon text-indigo-500'" class="text-lg"></i>
+                        <i :class="darkMode ? 'fas fa-sun' : 'fas fa-moon'" class="text-lg fas fa-sun"></i>
                     </button>
                     <div class="relative" x-data="{ userMenuOpen: false }">
                         <button @click="userMenuOpen = !userMenuOpen" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -86,8 +90,8 @@
                         </button>
                         <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition="" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50" style="display: none;">
                             <div class="p-3 border-b border-gray-200 dark:border-gray-700">
-                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="getUserDisplayName()">Guest User</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400" x-text="isGuest ? 'Guest User' : 'Authenticated'">Guest User</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="userDisplayName"></p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400" x-text="userDisplayName"></p>
                             </div>
                             <button @click="logout()" class="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg">
                                 <i class="fas fa-sign-out-alt mr-2"></i>ออกจากระบบ
@@ -111,8 +115,10 @@
             <div class="p-4">
                 <div class="flex items-center justify-between mb-6">
                     <div class="flex items-center gap-3">
-                        <div class="text-3xl text-primary animate-pulse-slow">🌸</div>
-                        <h3 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h3>
+                        <div class="logo logo-cloudy-puk-jai-small animate-pulse-slow"></div>
+                        <div>
+                            <h3 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h3>
+                        </div>
                     </div>
                     <button @click="mobileMenuOpen = false" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
                         <i class="fas fa-times text-lg"></i>
@@ -155,13 +161,12 @@
                         <div class="relative" x-data="{ userMenuOpen: false }">
                             <button @click="userMenuOpen = !userMenuOpen" class="w-full flex items-center px-3 py-3 rounded-lg font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                 <i class="fas fa-user-circle mr-3 w-4 text-primary"></i>
-                                <span class="flex-1 text-left" x-text="getUserDisplayName()"></span>
+                                <span class="flex-1 text-left" x-text="userDisplayName"></span>
                                 <i class="fas fa-chevron-down text-xs"></i>
                             </button>
                             <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition class="absolute left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                                 <div class="p-3 border-b border-gray-200 dark:border-gray-700">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="getUserDisplayName()"></p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400" x-text="isGuest ? 'Guest User • Local Storage' : 'Authenticated • Firebase'"></p>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="userDisplayName"></p>
                                 </div>
                                 <button @click="logout(); mobileMenuOpen = false" class="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg">
                                     <i class="fas fa-sign-out-alt mr-2"></i>ออกจากระบบ
@@ -183,8 +188,8 @@
           <!-- Desktop Sidebar Navigation -->
           <nav class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sticky top-6 h-fit">
             <!-- Logo Section -->
-            <div class="flex items-center justify-center gap-3 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-              <div class="text-3xl text-primary animate-pulse-slow">🌸</div>
+            <div class="text-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+              <div class="logo logo-cloudy-puk-jai-medium animate-pulse-slow mb-2"></div>
               <h3 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h3>
             </div>
             
@@ -224,13 +229,13 @@
                 <div class="relative" x-data="{ userMenuOpen: false }">
                     <button @click="userMenuOpen = !userMenuOpen" class="w-full flex items-center px-3 py-2 rounded-lg font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <i class="fas fa-user-circle mr-3 w-4 text-primary"></i>
-                        <span class="flex-1 text-left" x-text="getUserDisplayName()"></span>
+                        <span class="flex-1 text-left" x-text="userDisplayName"></span>
                         <i class="fas fa-chevron-down text-xs"></i>
                     </button>
                     <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition class="absolute left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                         <div class="p-3 border-b border-gray-200 dark:border-gray-700">
-                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="getUserDisplayName()"></p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400" x-text="isGuest ? 'Guest User • Local Storage' : 'Authenticated • Firebase'"></p>
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="userDisplayName"></p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400" x-text="userDisplayName"></p>
                         </div>
                         <button @click="logout()" class="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-b-lg">
                             <i class="fas fa-sign-out-alt mr-2"></i>ออกจากระบบ
@@ -463,9 +468,7 @@
         
         <div class="container mx-auto px-4 py-8 relative z-10">
             <!-- Main Footer Content -->
-
-
-            <div class="flex flex-col items-center space-y-6">
+                                    <div class="flex flex-col items-center space-y-6">
                 <!-- Brand Section -->
                 <div class="text-center">
                     <div class="flex items-center justify-center gap-3 mb-4">

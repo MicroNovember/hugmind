@@ -1,0 +1,8 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- โล่ -->
+  <path d="M20 5C20 5 5 10 5 15C5 25 20 35 20 35C20 35 35 25 35 15C35 10 20 5 20 5Z" fill="currentColor" opacity="0.9"/>
+  <!-- กากบาท -->
+  <path d="M20 10C20 10 10 13 10 17C10 22 20 30 20 30C20 30 30 22 30 17C30 13 20 10 20 10Z" fill="white" opacity="0.8"/>
+  <!-- เครื่องหมาย -->
+  <path d="M20 15C20 15 15 17 15 19C15 21 20 25 20 25C20 25 25 21 25 19C25 17 20 15 20 15Z" fill="currentColor" opacity="0.7"/>
+</svg>

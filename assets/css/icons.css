@@ -1,0 +1,135 @@
+/* Icons CSS - Cloudy・Puk・Jai */
+
+/* Base icon styles */
+.icon {
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+}
+
+/* Icon classes */
+.flower-icon { background-image: url('../icons/flower-icon.svg'); }
+.sparkles-icon { background-image: url('../icons/sparkles-icon.svg'); }
+.heart-icon { background-image: url('../icons/heart-icon.svg'); }
+.sprout-icon { background-image: url('../icons/sprout-icon.svg'); }
+.fire-icon { background-image: url('../icons/fire-icon.svg'); }
+.star-icon { background-image: url('../icons/star-icon.svg'); }
+.journal-icon { background-image: url('../icons/journal-icon.svg'); }
+.trophy-icon { background-image: url('../icons/trophy-icon.svg'); }
+.chart-icon { background-image: url('../icons/chart-icon.svg'); }
+.lightbulb-icon { background-image: url('../icons/lightbulb-icon.svg'); }
+.shield-icon { background-image: url('../icons/shield-icon.svg'); }
+.check-icon { background-image: url('../icons/check-icon.svg'); }
+.cross-icon { background-image: url('../icons/cross-icon.svg'); }
+.help-icon { background-image: url('../icons/help-icon.svg'); }
+.lock-icon { background-image: url('../icons/lock-icon.svg'); }
+.wind-in-icon { background-image: url('../icons/wind-in-icon.svg'); }
+.wind-out-icon { background-image: url('../icons/wind-out-icon.svg'); }
+.heart-green-icon { background-image: url('../icons/heart-green-icon.svg'); }
+
+/* Size variations */
+.icon-small { width: 16px; height: 16px; }
+.icon-medium { width: 24px; height: 24px; }
+.icon-large { width: 32px; height: 32px; }
+.icon-xlarge { width: 48px; height: 48px; }
+.icon-xxlarge { width: 64px; height: 64px; }
+.icon-xxxlarge { width: 96px; height: 96px; }
+
+/* Text size equivalents */
+.icon-text-xs { width: 12px; height: 12px; }
+.icon-text-sm { width: 14px; height: 14px; }
+.icon-text-base { width: 16px; height: 16px; }
+.icon-text-lg { width: 18px; height: 18px; }
+.icon-text-xl { width: 20px; height: 20px; }
+.icon-text-2xl { width: 24px; height: 24px; }
+.icon-text-3xl { width: 30px; height: 30px; }
+.icon-text-4xl { width: 36px; height: 36px; }
+.icon-text-5xl { width: 48px; height: 48px; }
+.icon-text-6xl { width: 60px; height: 60px; }
+.icon-text-7xl { width: 72px; height: 72px; }
+
+/* Dark mode adjustments */
+.dark .icon {
+  filter: brightness(1.2);
+}
+
+/* Hover effects */
+.icon:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+/* Animation classes */
+.icon.animate-pulse-slow {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.icon.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.icon.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.icon.animate-spin {
+  animation: spin 2s linear infinite;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Specific icon adjustments */
+.flower-icon {
+  color: #059467; /* primary color */
+}
+
+.heart-icon {
+  color: #ef4444; /* red */
+}
+
+.heart-green-icon {
+  color: #10b981; /* green */
+}
+
+.fire-icon {
+  color: #f59e0b; /* orange */
+}
+
+.star-icon {
+  color: #fbbf24; /* yellow */
+}
+
+.sparkles-icon {
+  color: #fbbf24; /* yellow */
+}
+
+.lightbulb-icon {
+  color: #fbbf24; /* yellow */
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .icon-text-6xl { width: 48px; height: 48px; }
+  .icon-text-7xl { width: 60px; height: 60px; }
+}

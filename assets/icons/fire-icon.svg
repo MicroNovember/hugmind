@@ -1,0 +1,7 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- ไฟ -->
+  <path d="M20 35C20 35 10 30 10 20C10 15 15 10 20 10C25 10 30 15 30 20C30 30 20 35 20 35Z" fill="currentColor" opacity="0.9"/>
+  <!-- เปลวไฟ -->
+  <path d="M20 25C20 25 15 22 15 18C15 16 17 14 19 14C21 14 23 16 23 18C23 22 20 25 20 25Z" fill="currentColor" opacity="0.7"/>
+  <path d="M20 20C20 20 18 18 18 16C18 15 19 14 20 14C21 14 22 15 22 16C22 18 20 20 20 20Z" fill="currentColor" opacity="0.5"/>
+</svg>

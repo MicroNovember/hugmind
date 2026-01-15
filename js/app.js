@@ -1,0 +1,1696 @@
+// MindBloom App - Alpine.js Component
+// Cloudy・Puk・Jai Mental Health Application
+// Version 2.0 - Organized Code Structure
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('mindbloomApp', () => ({
+        // ============================================
+        // APP STATE & CONFIGURATION
+        // ============================================
+        
+        // Navigation State
+        currentPage: 'home',
+        mobileMenuOpen: false,
+        
+        // UI State
+        darkMode: false,
+        mobileMenuOpen: false,
+        loading: false,
+        error: '',
+        success: '',
+        
+        // Modal State
+        modalOpen: null,
+        
+        // Login Form State
+        form: {
+            email: '',
+            password: '',
+            remember: false
+        },
+        showPassword: false,
+        
+        // Guest Mode State
+        showGuestModal: false,
+        guestAgreed: false,
+        
+        // Feature States
+        assessmentTab: 'mental',
+        musicTab: 'music',
+        
+        // Tips & Help States
+        musicTipsOpen: false,
+        articleTipsOpen: false,
+        assessmentTipsOpen: true,
+        journalTipsOpen: true,
+        growthTipsOpen: false,
+        
+        // User Agreement
+        agreedToTerms: false,
+        
+        // Active States
+        selectedMood: null,
+        activeEntryMenu: null,
+        
+        // ============================================
+        // USER DATA & AUTHENTICATION
+        // ============================================
+        
+        // User Authentication State
+        user: null,
+        isGuest: false,
+        isAuthenticated: false,
+        
+        // ============================================
+        // USER DATA
+        // ============================================
+        
+        // Journal Data
+        journalEntries: [],
+        journalForm: {
+            date: new Date().toISOString().split('T')[0],
+            mood: 'neutral',
+            entry: '',
+            gratitude: ['', '', ''],
+            dailyGoal: ''
+        },
+        
+        // Growth Tree Data
+        tree: {
+            level: 1,
+            progress: 1,
+            streak: 2,
+            points: 150,
+            badges: 3,
+            icon: '🌱',
+            name: 'เมล็ดพันธุ์แห่งการเริ่มต้น',
+            animation: ''
+        },
+
+        // Personal Growth Tracking
+        personalGrowth: {
+            moodHistory: [],
+            moodStreak: 0,
+            lastMoodDate: null,
+            weeklyMoodStats: {},
+            monthlyInsights: [],
+            achievements: [],
+            goals: [],
+            journalConsistency: 0,
+            assessmentProgress: {},
+            growthMilestones: []
+        },
+        
+        // Assessment Data
+        assessmentHistory: [],
+        resultAutoSaved: false,
+
+        // Music Data
+        currentTrack: {},
+        audioPlaying: false,
+        musicData: {
+            music: [],
+            podcasts: [],
+            playlists: []
+        },
+
+        // Articles
+        articlesData: [],
+        currentArticle: {},
+        
+        // Initialization flag
+        _initialized: false,
+
+        // Assessments
+        assessmentsData: [],
+        currentQuiz: {
+            id: '',
+            title: '',
+            desc: '',
+            type: '', // เพิ่ม
+            questions: [],
+            results: [],
+            timeNeeded: 0 // เพิ่ม
+        },
+
+        currentQuestionIndex: 0,
+        quizAnswers: [],
+        quizScore: 0,
+        quizResult: {},
+
+        // ============================================
+        // STATIC DATA & CONFIGURATION
+        // ============================================
+
+        // Moods Configuration
+        moods: [
+            { id: 'happy', emoji: '😊', label: 'มีความสุข', color: '#FFF7D6' },
+            { id: 'calm', emoji: '😌', label: 'สงบสุข', color: '#E6F4FF' },
+            { id: 'sad', emoji: '😢', label: 'เศร้า', color: '#F0E6FF' },
+            { id: 'anxious', emoji: '😰', label: 'กังวล', color: '#FFE6E6' },
+            { id: 'energetic', emoji: '⚡', label: 'มีพลัง', color: '#E6FFE6' },
+            { id: 'neutral', emoji: '😐', label: 'ปกติ', color: '#F5F5F5' }
+        ],
+
+        // Mood Responses
+        moodResponses: {
+            happy: {
+                message: 'ยินดีด้วยที่คุณมีความสุข! ความสุขของคุณส่องแสงไปถึงใครบ้างมั้ยคะ',
+                suggestion: 'ลองแชร์ความสุขนี้กับคนรอบข้าง หรือจดบันทึกไว้เพื่อความทรงจำที่ดี'
+            },
+            calm: {
+                message: 'ความสงบเป็นของขวัญอันล้ำค่า ชื่นชมใจที่คุณรู้สึกสงบสุขใจ',
+                suggestion: 'ลองหายใจลึกๆ และสัมผัสความสงบนี้ หรือทำกิจกรรมที่ทำให้ใจเย็น'
+            },
+            sad: {
+                message: 'เข้าใจเลยค่ะ บางวันก็มีวันที่เศร้า อย่าลืมว่าคุณไม่ได้อยู่คนเดียวนะคะ',
+                suggestion: 'ลองปล่อยวางหรือพูดคุยกับใครสักคน หรือทำกิจกรรมที่ชอบเพื่อผ่อนคลาย'
+            },
+            anxious: {
+                message: 'ความกังวลเป็นเรื่องปกติ แต่อย่าลืมดูแลตัวเองด้วยนะคะ',
+                suggestion: 'ลองหายใจเข้าลึกๆ 3 ครั้ง หรือทำกิจกรรมเบาๆ เช่นฟังเพลงผ่อนคลาย'
+            },
+            energetic: {
+                message: 'พลังงานแบบนี้เยี่ยมเลย! จะนำพลังบวกนี้ไปทำอะไรดีคะ',
+                suggestion: 'เหมาะกับการทำกิจกรรมใหม่ๆ หรือออกกำลังกายเพื่อรักษาพลังงานไว้'
+            },
+            neutral: {
+                message: 'วันที่ปกติๆ ก็เป็นวันที่ดีนะคะ',
+                suggestion: 'ลองหากิจกรรมเล็กๆ ที่ทำให้ยิ้มได้ หรือพักผ่อนให้ร่างกายสดชื่น'
+            }
+        },
+
+        // Daily Quote
+        dailyQuote: {
+            text: "การเดินทางที่ยิ่งใหญ่ที่สุด เริ่มต้นจากก้าวเล็กๆ ก้าวแรกเสมอ",
+            author: "ผู้ไม่ประสงค์ออกนาม"
+        },
+
+        // ============================================
+        // NAVIGATION & ROUTING METHODS
+        // ============================================
+        
+        // Navigation Methods
+        navigateTo(page) {
+            if (page === 'tools') {
+                window.location.href = 'tools.html';
+                return;
+            }
+            
+            if (page === 'guide') {
+                this.modalOpen = 'welcome';
+                return;
+            }
+
+            this.currentPage = page;
+
+            const url = page === 'home' ? '' : page;
+            window.history.pushState({
+                page: page
+            }, '', `#${url}`);
+
+            this.mobileMenuOpen = false;
+        },
+
+        navigateToFeature(feature) {
+            this.navigateTo(feature.page);
+        },
+        
+        // Router System
+        routes: {
+            '': 'home',
+            'journal': 'journal',
+            'music': 'music',
+            'articles': 'articles',
+            'assessments': 'assessments',
+            'quiz': 'quiz',
+            'results': 'results',
+            'growth': 'growth'
+        },
+
+        initRouter() {
+            window.addEventListener('popstate', (event) => {
+                const hash = window.location.hash.substring(1);
+                const page = this.routes[hash] || 'home';
+
+                if (page !== this.currentPage) {
+                    this.currentPage = page;
+                }
+            });
+
+            window.addEventListener('hashchange', () => {
+                const hash = window.location.hash.substring(1);
+                const page = this.routes[hash] || 'home';
+
+                if (page !== this.currentPage) {
+                    this.currentPage = page;
+                }
+            });
+
+            const initialHash = window.location.hash.substring(1);
+            if (this.routes[initialHash]) {
+                this.currentPage = this.routes[initialHash];
+            }
+        },
+        
+        // ============================================
+        // JOURNAL METHODS
+        // ============================================
+        
+        // Journal Entry Management
+        toggleEntryMenu(entryId) {
+            // this.activeEntryMenu = this.activeEntryMenu === entryId ? null : entryId;
+        },
+
+        getMoodLabel(moodId) {
+            const mood = this.moods.find(m => m.id === moodId);
+            return mood ? mood.label : 'ไม่ระบุ';
+        },
+
+        deleteJournalEntry(entryId) {
+            this.activeEntryMenu = null;
+
+            const entry = this.journalEntries.find(e => e.id === entryId);
+            const date = entry ? this.formatDate(entry.date) : '';
+
+            this.showConfirmModal(
+                'ยืนยันการลบบันทึก',
+                `คุณต้องการลบบันทึกวันที่ ${date} จริงหรือไม่?\n\nการกระทำนี้ไม่สามารถย้อนกลับได้`,
+                () => {
+                    const index = this.journalEntries.findIndex(e => e.id === entryId);
+
+                    if (index !== -1) {
+                        this.journalEntries.splice(index, 1);
+                        this.tree.points = Math.max(0, this.tree.points - 20);
+                        this.tree.progress = Math.max(1, this.tree.progress - 1);
+                        this.updateTreeAnimation();
+                        this.saveData();
+                        this.showNotification('ลบบันทึกเรียบร้อยแล้ว ✓', 'success');
+                    }
+                },
+                () => {
+                    this.showNotification('ยกเลิกการลบบันทึกแล้ว', 'info');
+                }
+            );
+        },
+
+        openEntryDetail(entry) {
+            this.currentJournalEntry = entry;
+            this.modalOpen = 'journalDetail';
+        },
+
+        currentJournalEntry: null,
+        
+        // ============================================
+        // FEATURE CONFIGURATION
+        // ============================================
+        
+        features: [{
+            id: 1,
+            icon: '📖',
+            title: 'บันทึกความรู้สึก',
+            description: 'บันทึกความรู้สึกและสิ่งดีๆ ในแต่ละวัน',
+            page: 'journal'
+        }, {
+            id: 2,
+            icon: '🎵',
+            title: 'ผ่อนคลายด้วยเพลง',
+            description: 'ฟังเพลงและพอดแคสต์เพื่อผ่อนคลาย',
+            page: 'music'
+        }, {
+            id: 3,
+            icon: '📚',
+            title: 'ความรู้เพื่อสุขภาพจิต',
+            description: 'บทความและเทคนิคดูแลสุขภาพจิต',
+            page: 'articles'
+        }, {
+            id: 4,
+            icon: '📝',
+            title: 'แบบทดสอบ',
+            description: 'ประเมินสุขภาพจิตและบุคลิกภาพ',
+            page: 'assessments'
+        }, {
+            id: 5,
+            icon: '🧘‍♀️',
+            title: 'Breathing Buddy',
+            description: 'ฝึกหายใจและสร้างสมาธิในเวลาสั้นๆ',
+            page: 'tools'
+        }, {
+            id: 6,
+            icon: '💗',
+            title: 'คำแนะนำใจ',
+            description: 'อ่านคำแนะนำใจ อีกครั้ง',
+            page: 'guide'
+        }],
+
+        badges: [{
+            id: 1,
+            icon: 'fas fa-seedling',
+            earned: true
+        }, {
+            id: 2,
+            icon: 'fas fa-heart',
+            earned: false
+        }, {
+            id: 3,
+            icon: 'fas fa-star',
+            earned: false
+        }, {
+            id: 4,
+            icon: 'fas fa-trophy',
+            earned: false
+        }, {
+            id: 5,
+            icon: 'fas fa-medal',
+            earned: false
+        }, {
+            id: 6,
+            icon: 'fas fa-crown',
+            earned: false
+        }],
+
+        // ============================================
+        // UTILITY METHODS
+        // ============================================
+        
+        // Time-based greeting system
+        getTimeBasedGreeting() {
+            const hour = new Date().getHours();
+            let timeGreeting = '';
+            
+            if (hour >= 5 && hour < 12) {
+                timeGreeting = 'สวัสดีตอนเช้า';
+            } else if (hour >= 12 && hour < 17) {
+                timeGreeting = 'สวัสดีตอนบ่าย';
+            } else if (hour >= 17 && hour < 21) {
+                timeGreeting = 'สวัสดีตอนเย็น';
+            } else {
+                timeGreeting = 'สวัสดีตอนดึก';
+            }
+            
+            return timeGreeting;
+        },
+
+        getMoodBasedGreeting(moodId) {
+            const greetings = {
+                happy: [
+                    'ยินดีด้วยที่คุณมีความสุข! ความสุขของคุณส่องแสงไปถึงใครบ้างมั้ยคะ 🌟',
+                    'ว้าว! ความสุขแบบนี้ต้องแชร์! วันนี้มีเรื่องดีๆ อะไรเกิดขึ้นบ้างคะ ✨',
+                    'ความสุขของคุณคือพลังงานบวกที่ล้ำค่า! ขอให้มีความสุขต่อไปนะคะ 🌈'
+                ],
+                calm: [
+                    'ความสงบเป็นของขวัญอันล้ำค่า ลองหายใจลึกๆ แล้วสัมผัสความสงบนี้นะคะ 🍃',
+                    'ชื่นชมใจที่คุณรู้สึกสงบสุขใจ ความสงบแบบนี้ช่วยให้ใจเราแข็งแรงค่ะ 💚',
+                    'วันที่สงบๆ แบบนี้คือวันที่ดีที่สุด ขอให้ความสงบคู่กับคุณเสมอนะคะ 🌿'
+                ],
+                sad: [
+                    'เข้าใจเลยค่ะ บางวันก็มีวันที่เศร้า อย่าลืมว่าคุณไม่ได้อยู่คนเดียวนะคะ 🤗',
+                    'ความรู้สึกเศร้าเป็นเรื่องปกติ อยากให้ลองปล่อยวางหรือพูดคุยกับใครสักคนดูไหมคะ 💕',
+                    'ไม่เป็นไรค่ะ ทุกอารมณ์มีค่า ถ้าอยากระบาย เราพร้อมฟังเสมอนะคะ 💕'
+                ],
+                anxious: [
+                    'ลมหายใจคือเพื่อนที่ดีที่สุดตอนนี้ ลองหายใจเข้าลึกๆ 3 ครั้งดูไหมคะ 🌬️',
+                    'ความกังวลเป็นเรื่องปกติ แต่อย่าลืมดูแลตัวเองด้วยนะคะ คุณทำได้แน่นอน 💪',
+                    'เข้าใจเลยค่ะ ถ้ารู้สึกกังวล ลองทำกิจกรรมเบาๆ หรือฟังเพลงผ่อนคลายดูไหมคะ 🎵'
+                ],
+                energetic: [
+                    'พลังงานแบบนี้เยี่ยมเลย! จะนำพลังบวกนี้ไปทำอะไรดีคะ 🚀',
+                    'ว้าว! พลังเต็มร้อย! วันนี้เหมาะกับการทำสิ่งใหม่ๆ มากๆ เลยค่ะ ⭐',
+                    'พลังงานดีๆ แบบนี้ต้องเก็บไว้! ขอให้วันนี้เป็นวันที่สุดยอดค่ะ 🔥'
+                ],
+                neutral: [
+                    'วันที่ปกติๆ ก็เป็นวันที่ดีนะคะ ลองหากิจกรรมเล็กๆ ที่ทำให้ยิ้มได้ดูไหมคะ 😊',
+                    'บางวันที่เรียบง่ายก็คือความสุขแบบนึง ขอให้วันนี้ผ่านไปอย่างสบายๆ นะคะ 🌤️',
+                    'วันปกติๆ แบบนี้เหมาะกับการพักผ่อนและชาร์จพลังบ้างคะ 🔋'
+                ]
+            };
+            
+            const moodGreetings = greetings[moodId] || greetings.neutral;
+            return moodGreetings[Math.floor(Math.random() * moodGreetings.length)];
+        },
+
+        // Mood selection
+        selectMood(mood) {
+            this.selectedMood = mood.id;
+            
+            // Track mood progress for personal growth
+            this.trackMoodProgress(mood.id);
+            
+            const greeting = this.getMoodBasedGreeting(mood.id);
+            this.showNotification(greeting, 'info', 5000);
+        },
+
+        // Computed Properties
+        get timeGreeting() {
+            return this.getTimeBasedGreeting();
+        },
+
+        // Modal and notification methods
+        showNotification(message, type = 'info', duration = 3000) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+            
+            const colors = {
+                success: 'bg-green-100 text-green-800 border-green-200',
+                error: 'bg-red-100 text-red-800 border-red-200',
+                warning: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                info: 'bg-blue-100 text-blue-800 border-blue-200'
+            };
+            
+            notification.className += ` ${colors[type] || colors.info}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2">${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, duration);
+        },
+
+        showConfirmModal(title, message, onConfirm, onCancel = null) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-[9999]';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-exclamation-triangle text-4xl text-yellow-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-center text-gray-800 dark:text-white mb-2">
+                            ${title}
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-center mb-6">
+                            ${message}
+                        </p>
+                        <div class="flex gap-3">
+                            <button id="confirmCancelBtn" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors">
+                                ยกเลิก
+                            </button>
+                            <button id="confirmOkBtn" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-6 rounded-lg transition-colors">
+                                ลบเลย
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            const cancelBtn = modal.querySelector('#confirmCancelBtn');
+            const okBtn = modal.querySelector('#confirmOkBtn');
+
+            cancelBtn.addEventListener('click', () => {
+                document.body.removeChild(modal);
+                if (onCancel) onCancel();
+            });
+
+            okBtn.addEventListener('click', () => {
+                document.body.removeChild(modal);
+                onConfirm();
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                    if (onCancel) onCancel();
+                }
+            });
+        },
+
+        // Data management
+        saveData() {
+            const data = {
+                journalEntries: this.journalEntries,
+                assessmentHistory: this.assessmentHistory,
+                tree: this.tree
+            };
+            const userStorageKey = this.getUserStorageKey();
+            
+            // เข้ารหัสข้อมูลก่อนบันทึก
+            const encryptedData = this.encryptData(JSON.stringify(data));
+            localStorage.setItem(userStorageKey, encryptedData);
+        },
+
+        // Tree animation
+        updateTreeAnimation() {
+            this.tree.animation = 'bounce';
+            setTimeout(() => {
+                this.tree.animation = '';
+            }, 1000);
+        },
+
+        // Quote management
+        quotes: [
+            { text: "การเดินทางที่ยิ่งใหญ่ที่สุด เริ่มต้นจากก้าวเล็กๆ ก้าวแรกเสมอ", author: "ผู้ไม่ประสงค์ออกนาม" },
+            { text: "ขอให้วันนี้เป็นวันที่ดีนะ เพราะทุกวันคือโอกาสใหม่ของเธอ 🌈", author: "Anonymous" },
+            { text: "ทุกเช้าวันใหม่คือโอกาสของการเริ่มต้นที่ดี ✨", author: "Cloudy・Puk・Jai" }
+        ],
+
+        randomQuote: null,
+
+        showRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * this.quotes.length);
+            this.randomQuote = this.quotes[randomIndex];
+        },
+
+        setDailyQuote() {
+            this.randomQuote = this.dailyQuote;
+        },
+
+        // Data loading
+        async loadData() {
+            try {
+                // ตรวจสอบว่าข้อมูลถูกโหลดแล้วหรือไม่
+                if (this.articlesData && this.articlesData.length > 0) {
+                    return;
+                }
+                
+                const [musicResponse, articlesResponse, assessmentsResponse] = await Promise.all([
+                    fetch('data/music.json'),
+                    fetch('data/articles.json'),
+                    fetch('data/assessments.json')
+                ]);
+
+                const musicJson = await musicResponse.json();
+                const articlesJson = await articlesResponse.json();
+                const assessmentsJson = await assessmentsResponse.json();
+
+                this.musicData = musicJson;
+                this.articlesData = articlesJson.articles || articlesJson;
+                this.assessmentsData = assessmentsJson;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                // ตั้งค่าเริ่มต้นกรณีเกิด error
+                this.articlesData = [];
+                this.musicData = { music: [], podcasts: [], playlists: [] };
+                this.assessmentsData = [];
+            }
+        },
+
+        // Date formatting
+        formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('th-TH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        },
+
+        // Theme toggle
+        toggleDarkMode() {
+            this.darkMode = !this.darkMode;
+            localStorage.setItem('darkMode', this.darkMode.toString());
+        },
+
+        // Terms acceptance
+        acceptTerms() {
+            if (this.agreedToTerms) {
+                localStorage.setItem('agreedToTerms', 'true');
+                this.modalOpen = null;
+                this.showNotification('ยินดีต้อนรับ 💕', 'success', 2000);
+            } else {
+                this.showNotification('กรุณายอมรับข้อตกลง', 'warning', 2000);
+            }
+        },
+
+        // Assessment computed properties
+        get mentalAssessments() {
+            return this.assessmentsData.filter(a => a.type === 'mental');
+        },
+
+        get personalityAssessments() {
+            return this.assessmentsData.filter(a => a.type === 'personality');
+        },
+
+        // Journal entry saving
+        saveJournalEntry() {
+            if (!this.journalForm.entry.trim()) {
+                this.showNotification('กรุณาเขียนบันทึกก่อนบันทึก', 'warning');
+                return;
+            }
+
+            const newEntry = {
+                id: Date.now().toString(),
+                date: this.journalForm.date,
+                mood: this.journalForm.mood,
+                entry: this.journalForm.entry,
+                gratitude: this.journalForm.gratitude.filter(g => g.trim()),
+                dailyGoal: this.journalForm.dailyGoal,
+                createdAt: new Date().toISOString()
+            };
+
+            this.journalEntries.unshift(newEntry);
+
+            // Update tree progress
+            this.tree.points += 10;
+            this.tree.progress += 1;
+            this.updateTreeAnimation();
+
+            // Save to localStorage
+            this.saveData();
+
+            // Reset form
+            this.journalForm = {
+                date: new Date().toISOString().split('T')[0],
+                mood: 'neutral',
+                entry: '',
+                gratitude: ['', '', ''],
+                dailyGoal: ''
+            };
+
+            this.showNotification('บันทึกเรียบร้อยแล้ว! 💕', 'success');
+        },
+
+        // Logout user
+        async logout() {
+            try {
+                if (typeof window.AuthUtils !== 'undefined') {
+                    await window.AuthUtils.logout();
+                } else {
+                    // Fallback logout
+                    localStorage.removeItem('guestMode');
+                    localStorage.removeItem('guestData');
+                    localStorage.removeItem('userType');
+                    localStorage.removeItem('guestLoginTime');
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = 'login.html';
+            }
+        },
+        
+        // Redirect to login
+        redirectToLogin() {
+            window.location.href = 'login.html';
+        },
+        
+        // Refresh user data from Firebase
+        refreshUserData() {
+            
+            if (typeof window.AuthUtils !== 'undefined') {
+                const user = window.AuthUtils.getCurrentUser();
+                
+                if (user && !user.isGuest) {
+                    // รีเฟรชชข้อมูลจาก Firebase
+                    
+                    this.user = user;
+                    this.isGuest = false;
+                    this.isAuthenticated = true;
+                    
+                    // โหลดข้อมูลจาก localStorage สำหรับ Firebase user
+                    const userStorageKey = this.getUserStorageKey();
+                    const encryptedData = localStorage.getItem(userStorageKey);
+                    
+                    if (encryptedData) {
+                        try {
+                            const decryptedData = this.decryptData(encryptedData);
+                            const savedData = JSON.parse(decryptedData);
+                            this.journalEntries = savedData.journalEntries || [];
+                            this.assessmentHistory = savedData.assessmentHistory || [];
+                            this.tree = savedData.tree || this.tree;
+                        } catch (error) {
+                            console.error('Failed to decrypt Firebase user data:', error);
+                            this.journalEntries = [];
+                            this.assessmentHistory = [];
+                            this.tree = this.tree;
+                        }
+                    } else {
+                        this.journalEntries = [];
+                        this.assessmentHistory = [];
+                        this.tree = this.tree;
+                    }
+                    
+                    // แสดงชื่อที่อัปเดต
+                } else if (user && user.isGuest) {
+                    // Guest user found, setting up guest state
+                    this.user = user;
+                    this.isGuest = true;
+                    this.isAuthenticated = true;
+                    
+                    // ไม่ต้องโหลดข้อมูลจาก localStorage สำหรับ guest
+                } else {
+                    // No valid user found
+                    this.user = null;
+                    this.isGuest = false;
+                    this.isAuthenticated = false;
+                    this.journalEntries = [];
+                    this.assessmentHistory = [];
+                    this.tree = this.tree;
+                }
+            } else {
+                // AuthUtils not available
+                this.user = null;
+                this.isGuest = false;
+                this.isAuthenticated = false;
+            }
+        },
+
+        // ============================================
+        // LOGIN METHODS
+        // ============================================
+
+        // Login with Email/Password
+        async login() {
+            
+            // Clear previous messages
+            this.error = '';
+            this.success = '';
+            
+            // Validate form
+            if (!this.form.email || !this.form.password) {
+                this.error = 'กรุณากรอกอีเมลและรหัสผ่าน';
+                return;
+            }
+            
+            this.loading = true;
+            
+            try {
+                // Check if AuthUtils is available
+                if (typeof window.AuthUtils !== 'undefined') {
+                    
+                    // Use AuthUtils to login
+                    const result = await window.AuthUtils.login(this.form.email, this.form.password);
+                    
+                    if (result.success) {
+                        this.success = 'เข้าสู่ระบบสำเร็จ! กำลังนำคุณไปยังหน้าหลัก...';
+                        
+                        // Redirect after successful login
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    } else {
+                        this.error = result.error || 'เข้าสู่ระบบล้มเหลว กรุณาลองใหม่';
+                    }
+                } else {
+                    this.error = 'ระบบไม่พร้อมใช้งาน กรุณาลองใหม่';
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                this.error = 'เกิดข้อผิดพลาด: ' + error.message;
+            } finally {
+                this.loading = false;
+            }
+        },
+        
+        // Get user display name (computed property)
+        get userDisplayName() {
+            
+            if (!this.user) {
+                return 'ผู้ใช้';
+            }
+            
+            if (this.user.isGuest) {
+                return 'Guest User';
+            }
+            
+            // สำหรับผู้ใช้ Firebase ให้ความสำคัญกับ email มากกว่า
+            if (this.user.email) {
+                const email = this.user.email;
+                
+                // แสดงแค่ชื่อผู้ใช้ส่วนหน้า (ก่อน @)
+                const username = email.split('@')[0];
+                return username;
+            }
+            
+            // ถ้าไม่มี email ให้ใช้ displayName เป็น fallback
+            if (this.user.displayName) {
+                return this.user.displayName;
+            }
+            
+            return 'ผู้ใช้';
+        },
+        
+        // Get user authentication info
+        getUserAuthInfo() {
+            
+            if (!this.user) {
+                return 'ผู้ใช้';
+            }
+            
+            if (this.user.isGuest) {
+                return 'Guest User • Local Storage';
+            }
+            
+            // สำหรับผู้ใช้ Firebase แสดง email เต็มแทน domain
+            if (this.user.email) {
+                const email = this.user.email;
+                return email; // แสดง email เต็มแทน email • domain
+            }
+            
+            return 'Authenticated • Firebase';
+        },
+        
+        // Get user storage key
+        getUserStorageKey() {
+            if (!this.user) return 'mindbloomData';
+            const userId = this.user.isGuest ? this.user.sessionId : this.user.uid;
+            return `mindbloomData_${userId}`;
+        },
+        
+        // สร้าง secret key สำหรับการเข้ารหัส
+        getSecretKey() {
+            // ใช้ข้อมูลผู้ใช้ + ข้อมูลเบราว์เซอร์ + วันที่ปัจจุบัน
+            const userId = this.user ? (this.user.isGuest ? this.user.sessionId : this.user.uid) : 'default';
+            const browserInfo = navigator.userAgent;
+            const today = new Date().toDateString();
+            
+            // สร้าง key จากข้อมูลที่ไม่ง่ายเดา
+            const keySource = `${userId}_${browserInfo}_${today}`;
+            return btoa(keySource).slice(0, 32); // ตัดให้เหลือ 32 ตัวอักษร
+        },
+        
+        // เข้ารหัสข้อมูล
+        encryptData(data) {
+            try {
+                // แปลงข้อมูลเป็น JSON string ก่อน
+                const jsonString = JSON.stringify(data);
+                
+                // ใช้ encodeURIComponent เพื่อรองรับภาษาไทย
+                const encoded = encodeURIComponent(jsonString);
+                
+                // ใช้ Base64 แบบง่าย (สำหรับ demo)
+                // ในอนาคตควรใช้ CryptoJS หรือ Web Crypto API
+                const secretKey = this.getSecretKey();
+                
+                // เพิ่มการสับเปลี่ยนตัวอักษร
+                let encrypted = '';
+                for (let i = 0; i < encoded.length; i++) {
+                    const charCode = encoded.charCodeAt(i);
+                    const keyChar = secretKey.charCodeAt(i % secretKey.length);
+                    encrypted += String.fromCharCode(charCode ^ keyChar);
+                }
+                
+                return btoa(encrypted);
+            } catch (error) {
+                console.error('Encryption failed:', error);
+                // fallback: ใช้ JSON.stringify และ btoa ตรงๆ
+                try {
+                    return btoa(JSON.stringify(data));
+                } catch (fallbackError) {
+                    console.error('Fallback encryption failed:', fallbackError);
+                    return JSON.stringify(data);
+                }
+            }
+        },
+        
+        // ถอดรหัสข้อมูล
+        decryptData(encryptedData) {
+            try {
+                const secretKey = this.getSecretKey();
+                const decoded = atob(encryptedData);
+                
+                // ย้อนกลับการสับเปลี่ยนตัวอักษร
+                let decrypted = '';
+                for (let i = 0; i < decoded.length; i++) {
+                    const charCode = decoded.charCodeAt(i);
+                    const keyChar = secretKey.charCodeAt(i % secretKey.length);
+                    decrypted += String.fromCharCode(charCode ^ keyChar);
+                }
+                
+                // ใช้ decodeURIComponent เพื่อรองรับภาษาไทย
+                const decodedString = decodeURIComponent(decrypted);
+                
+                // แปลงกลับเป็น object
+                return JSON.parse(decodedString);
+            } catch (error) {
+                console.error('Decryption failed:', error);
+                // fallback: ลองแปลงตรงๆ
+                try {
+                    return JSON.parse(atob(encryptedData));
+                } catch (fallbackError) {
+                    console.error('Fallback decryption failed:', fallbackError);
+                    return {};
+                }
+            }
+        },
+
+        // ============================================
+        // GUEST MODE METHODS
+        // ============================================
+        
+        // Show Guest Agreement Modal
+        showGuestAgreement() {
+            console.log('showGuestAgreement called');
+            this.showGuestModal = true;
+            this.guestAgreed = false;
+        },
+        
+        // Login as Guest
+        async loginAsGuest() {
+            console.log('loginAsGuest called');
+            
+            if (!this.guestAgreed) {
+                this.error = 'กรุณายอมรับเงื่อนไขการใช้งาน Guest Mode';
+                return;
+            }
+            
+            this.loading = true;
+            this.error = '';
+            
+            try {
+                // Create guest user data
+                const guestUser = {
+                    uid: this.generateGuestId(),
+                    email: 'guest@local',
+                    displayName: 'Guest User',
+                    photoURL: null,
+                    isGuest: true,
+                    sessionId: this.generateGuestId(),
+                    loginTime: new Date().toISOString()
+                };
+                
+                console.log('Creating guest user:', guestUser);
+                
+                // Save guest data to localStorage
+                localStorage.setItem('guestMode', 'true');
+                localStorage.setItem('guestData', JSON.stringify(guestUser));
+                localStorage.setItem('guestLoginTime', guestUser.loginTime);
+                localStorage.setItem('userType', 'guest');
+                
+                // Set user state
+                this.user = guestUser;
+                this.isGuest = true;
+                this.isAuthenticated = true;
+                
+                // Close modal
+                this.showGuestModal = false;
+                this.guestAgreed = false;
+                
+                console.log('Guest login successful, redirecting to index...');
+                
+                // Redirect to index.html
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Guest login error:', error);
+                this.error = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ Guest: ' + error.message;
+            } finally {
+                this.loading = false;
+            }
+        },
+        
+        // Generate Guest ID
+        generateGuestId() {
+            return 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        },
+        
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        async init() {
+            // ป้องกันการเรียก init() ซ้ำ
+            if (this._initialized) {
+                return;
+            }
+            
+            this._initialized = true;
+            
+            // Check if we're on login page
+            const isLoginPage = window.location.pathname.includes('login.html');
+            
+            // If on login page, don't check auth state immediately
+            if (isLoginPage) {
+                return;
+            }
+            
+            // ตรวจสอบ user จาก AuthUtils โดยตรง (ไม่ต้องเรียก checkAuthState)
+            const user = window.AuthUtils?.getCurrentUser();
+            
+            if (user) {
+                this.user = user;
+                
+                if (user.isGuest) {
+                    this.isGuest = true;
+                    this.isAuthenticated = true;
+                } else {
+                    this.isGuest = false;
+                    this.isAuthenticated = true;
+                }
+                
+                // รีเฟรชชข้อมูลผู้ใช้จาก Firebase เพื่อให้แน่ใจว่ามีการเปลี่ยนแปลง
+                this.refreshUserData();
+                
+                // โหลดข้อมูล (music, articles, assessments)
+                this.loadData();
+                
+                this.initRouter();
+                this.showRandomQuote();
+                
+                // Dark mode setup and listeners...
+                this.initDarkMode();
+                this.setupDarkModeListener();
+                this.setupStorageListener();
+                this.setupAuthListener();
+                
+                // ตั้งค่าการอัปเดตข้อมูลอัตโนมัติ (แต่ไม่ใช่ refreshUserData)
+                this.setupAutoUpdate();
+                
+                // App initialization complete
+            } else {
+                this.redirectToLogin();
+                return;
+            }
+        },
+
+        // Music functions
+        playTrack(track) {
+            if (this.currentTrack.id === track.id) {
+                this.togglePlayPause();
+                return;
+            }
+            
+            this.currentTrack = track;
+            this.audioPlaying = true;
+            this.showNotification(`กำลังเล่น: ${track.title}`, 'info');
+        },
+
+        togglePlayPause() {
+            this.audioPlaying = !this.audioPlaying;
+            if (this.audioPlaying) {
+                this.showNotification('เล่นเพลง', 'success');
+            } else {
+                this.showNotification('หยุดเพลง', 'info');
+            }
+        },
+
+        stopMusic() {
+            this.audioPlaying = false;
+            this.currentTrack = {};
+            this.showNotification('หยุดเพลง', 'info');
+        },
+
+        // Audio event handlers
+        onAudioPlay() {
+            console.log('Audio play event triggered');
+            this.audioPlaying = true;
+        },
+
+        onAudioPause() {
+            console.log('Audio pause event triggered');
+            this.audioPlaying = false;
+        },
+
+        // Get direct audio URL for Pixabay
+        getDirectAudioUrl(pixabayUrl) {
+            console.log('Getting direct audio URL for:', pixabayUrl);
+            
+            // ถ้าเป็น URL โดยตรง (MP3/WAV/OGG) ให้ใช้เลย
+            if (pixabayUrl.match(/\.(mp3|wav|ogg)$/i)) {
+                return pixabayUrl;
+            }
+            
+            // ถ้าเป็น Pixabay URL ให้แปลงเป็น direct download
+            if (pixabayUrl.includes('pixabay.com')) {
+                // ดึง ID จาก URL
+                const match = pixabayUrl.match(/\/music\/[^\/]+\/(\d+)\//);
+                if (match) {
+                    const audioId = match[1];
+                    // สร้าง direct download URL
+                    return `https://cdn.pixabay.com/download/audio-${Date.now()}-${audioId}.mp3`;
+                }
+            }
+            
+            // ถ้าไม่สามารถแปลงได้ ให้ใช้ URL เดิม
+            return pixabayUrl;
+        },
+
+        // Get YouTube embed URL
+        getYouTubeEmbedUrl(youtubeUrl) {
+            console.log('Getting YouTube embed URL for:', youtubeUrl);
+            
+            const videoId = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+            if (videoId) {
+                // ใช้ youtube-nocookie.com เพื่อหลีกเลี่ยง X-Frame-Options
+                // เพิ่ม parameters สำหรับ accessibility และ performance
+                return `https://www.youtube-nocookie.com/embed/${videoId[1]}?rel=0&showinfo=0&modestbranding=1&disablekb=1&cc_load_policy=1&cc_lang_pref=th&hl=th&iv_load_policy=3`;
+            }
+            return youtubeUrl;
+        },
+
+        // Get source type for display
+        getSourceType(url) {
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                return 'YouTube';
+            } else if (url.includes('pixabay.com')) {
+                return 'Pixabay';
+            } else if (url.includes('open.spotify.com')) {
+                return 'Spotify';
+            } else if (url.match(/\.(mp3|wav|ogg)$/i)) {
+                return 'Direct Audio';
+            } else {
+                return 'Unknown';
+            }
+        },
+
+        // Assessment functions
+        startQuiz(quiz) {
+            this.currentQuiz = quiz;
+            this.currentQuestionIndex = 0;
+            this.quizAnswers = [];
+            this.quizScore = 0;
+            this.quizResult = {};
+            this.navigateTo('quiz');
+        },
+
+        answerQuestion(answer) {
+            this.quizAnswers[this.currentQuestionIndex] = answer;
+        },
+
+        calculateQuizResult() {
+            console.log('calculateQuizResult() called');
+            console.log('Current quiz:', this.currentQuiz);
+            console.log('Quiz answers:', this.quizAnswers);
+            console.log('Current question index:', this.currentQuestionIndex);
+            console.log('Total questions:', this.currentQuiz.questions?.length);
+            
+            try {
+                // ตรวจสอบว่าตอบคำถามครบทุกข้อหรือไม่
+                if (!this.quizAnswers || this.quizAnswers.length !== this.currentQuiz.questions.length) {
+                    console.error('Quiz answers incomplete');
+                    this.showNotification('กรุณาตอบคำถามให้ครบทุกข้อ', 'warning');
+                    return;
+                }
+                
+                // ตรวจสอบว่าทุกข้อมีคำตอบหรือไม่
+                const hasUnanswered = this.quizAnswers.some(answer => answer === undefined || answer === null || answer === '');
+                if (hasUnanswered) {
+                    console.error('Some questions are unanswered');
+                    this.showNotification('กรุณาตอบคำถามให้ครบทุกข้อ', 'warning');
+                    return;
+                }
+                
+                // คำนวณคะแนนโดยรวมค่า val ของคำตอบทั้งหมด
+                let totalScore = 0;
+                this.quizAnswers.forEach(answer => {
+                    totalScore += answer || 0;
+                });
+                console.log('Total score:', totalScore);
+
+                // แปลงเป็นเปอร์เซ็นต์ (สูงสุดคือคะแนนเต็ม)
+                const maxScore = this.currentQuiz.questions.length * 5; // สมมติว่าคะแนนสูงสุดต่อข้อคือ 5
+                this.quizScore = Math.round((totalScore / maxScore) * 100);
+                console.log('Quiz score percentage:', this.quizScore);
+
+                // หาผลลัพธ์จาก assessments.json
+                this.quizResult = this.currentQuiz.results.find(result => {
+                    return this.quizScore >= result.min && this.quizScore <= result.max;
+                }) || this.currentQuiz.results[0];
+                console.log('Quiz result:', this.quizResult);
+
+                // บันทึกประวัติ
+                const assessmentEntry = {
+                    id: Date.now().toString(),
+                    quizId: this.currentQuiz.id,
+                    quizTitle: this.currentQuiz.title,
+                    score: this.quizScore,
+                    result: this.quizResult,
+                    date: new Date().toISOString(),
+                    answers: this.quizAnswers
+                };
+                
+                console.log('Adding to assessment history:', assessmentEntry);
+                this.assessmentHistory.unshift(assessmentEntry);
+
+                // อัพเดทต้นไม้
+                this.tree.points += 5;
+                this.tree.progress += 1;
+                this.updateTreeAnimation();
+                console.log('Tree updated:', this.tree);
+
+                // บันทึกข้อมูล
+                console.log('Saving data...');
+                this.saveData();
+
+                // แสดง notification
+                this.showNotification('คำนวณผลลัพธ์เรียบร้อย! กำลังนำไปยังหน้าผลลัพธ์...', 'success');
+
+                // ไปหน้าผลลัพธ์
+                setTimeout(() => {
+                    this.navigateTo('results');
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error in calculateQuizResult:', error);
+                this.showNotification('เกิดข้อผิดพลาดในการคำนวณผลลัพธ์: ' + error.message, 'error');
+            }
+        },
+
+        resetQuiz() {
+            this.currentQuestionIndex = 0;
+            this.quizAnswers = [];
+            this.quizScore = 0;
+            this.quizResult = {};
+            this.currentQuiz = {
+                id: '',
+                title: '',
+                desc: '',
+                type: '',
+                questions: [],
+                results: [],
+                timeNeeded: 0
+            };
+        },
+
+        saveAssessmentResult() {
+            // ผลลัพธ์ถูกบันทึกไว้แล้วใน calculateQuizResult()
+            this.showNotification('บันทึกผลลัพธ์แล้ว', 'success');
+        },
+
+        // Utility functions
+        getMoodEmoji(moodId) {
+            const mood = this.moods.find(m => m.id === moodId);
+            return mood ? mood.emoji : '😐';
+        },
+
+        getAssessmentIcon(assessmentId) {
+            const icons = {
+                'who5': '🧠',
+                'pss10': '💭',
+                'stress1': '😰',
+                'anxiety1': '😟',
+                'depression1': '😔',
+                'personality1': '🎭',
+                'personality2': '🌟'
+            };
+            return icons[assessmentId] || '📝';
+        },
+
+        getRelatedTopic(assessmentId) {
+            const topics = {
+                'who5': 'สุขภาพจิตทั่วไป',
+                'pss10': 'ความเครียดในชีวิตประจำวัน',
+                'stress1': 'การจัดการความเครียด',
+                'anxiety1': 'ความกังวล',
+                'depression1': 'อารมณ์เศร้า',
+                'personality1': 'บุคลิกภาพ',
+                'personality2': 'นิสัยในตัวเอง'
+            };
+            return topics[assessmentId] || 'การประเมินตน';
+        },
+
+        getMusicRecommendation(assessmentId) {
+            const recommendations = {
+                'who5': 'เพลงผ่อนคลายสำหรับความสุข',
+                'pss10': 'เพลงสมาธิสำหรับความเครียด',
+                'stress1': 'เพลงลดความเครียด',
+                'anxiety1': 'เพลงสงบสุข',
+                'depression1': 'เพลงเปิดใจ',
+                'personality1': 'เพลงบำรุงตัวตน',
+                'personality2': 'เพลงเพื่อการพัฒนาตน'
+            };
+            return recommendations[assessmentId] || 'เพลงผ่อนคลายทั่วไป';
+        },
+
+        getYouTubeEmbedUrl(url) {
+            if (url.includes('youtube.com/watch?v=')) {
+                const videoId = url.split('v=')[1]?.split('&')[0];
+                return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&showinfo=0&modestbranding=1&disablekb=1&cc_load_policy=1&cc_lang_pref=th&hl=th&iv_load_policy=3`;
+            }
+            return url;
+        },
+
+        getAssessmentCategory(type) {
+            const categories = {
+                'mental': 'สุขภาพจิต',
+                'personality': 'บุคลิกภาพ'
+            };
+            return categories[type] || 'ทั่วไป';
+        },
+
+        // Dark mode functions
+        initDarkMode() {
+            console.log('initDarkMode called');
+            
+            // ตรวจสอบว่ามีการตั้งค่า darkMode ใน localStorage หรือไม่
+            const savedDarkMode = localStorage.getItem('darkMode');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            this.darkMode = savedDarkMode === 'true' || prefersDark;
+            
+            console.log('Dark mode initialized:', this.darkMode);
+        },
+
+        setupDarkModeListener() {
+            console.log('setupDarkModeListener called');
+            
+            // ฟังการเปลี่ยนแปลงจาก localStorage
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'darkMode' && e.oldValue !== e.newValue) {
+                    this.darkMode = e.newValue === 'true';
+                    console.log('Dark mode updated from storage event');
+                }
+            });
+        },
+
+        setupStorageListener() {
+            console.log('setupStorageListener called');
+            // สำหรับฟังการเปลี่ยนแปลงข้อมูลอื่นๆ ถ้าจำเป็น
+        },
+
+        setupAuthListener() {
+            console.log('setupAuthListener called');
+            
+            // ฟังการเปลี่ยนแปลง auth state
+            if (typeof window.AuthUtils !== 'undefined' && typeof window.AuthUtils.onAuthStateChanged === 'function') {
+                window.AuthUtils.onAuthStateChanged((user) => {
+                    console.log('Auth state changed:', user);
+                    if (user) {
+                        this.user = user;
+                        this.isAuthenticated = true;
+                        this.isGuest = user.isGuest || false;
+                    } else {
+                        this.user = null;
+                        this.isAuthenticated = false;
+                        this.isGuest = false;
+                    }
+                });
+            } else {
+                console.log('onAuthStateChanged not available in AuthUtils');
+            }
+        },
+
+        setupAutoUpdate() {
+            console.log('setupAutoUpdate called');
+            // สำหรับการอัปเดตอัตโนมัติอื่นๆ ถ้าจำเป็น
+        },
+        openArticleModal(article) {
+            this.currentArticle = article;
+            if (article.type === 'external') {
+                this.modalOpen = 'externalArticle';
+            } else {
+                this.modalOpen = 'article';
+            }
+        },
+
+        closeArticleModal() {
+            this.modalOpen = null;
+            this.currentArticle = {};
+        },
+
+        closeModal() {
+            this.modalOpen = null;
+        },
+
+        openModal(modalType) {
+            this.modalOpen = modalType;
+        },
+
+        openExternalArticle(url) {
+            if (url) {
+                window.open(url, '_blank');
+            }
+        },
+
+        // Result color function
+        getResultColor(result) {
+            const colors = {
+                'ดีมาก': 'bg-green-500',
+                'ดี': 'bg-blue-500', 
+                'ปานกลาง': 'bg-yellow-500',
+                'ต้องปรับปรุง': 'bg-orange-500',
+                'ต้องรับคำปรึกษา': 'bg-red-500',
+                'พลังใจอ่อนล้า': 'bg-red-500',
+                'ใจเบิกบานดีมาก': 'bg-green-500'
+            };
+            return colors[result] || 'bg-gray-500';
+        },
+
+        // Quiz functions
+        selectQuizAnswer(value) {
+            console.log('selectQuizAnswer called with value:', value);
+            this.quizAnswers[this.currentQuestionIndex] = value;
+        },
+
+        // ฟังก์ชันสำหรับส่งคำตอบ (ปุ่มส่งคำตอบ)
+        submitQuiz() {
+            console.log('submitQuiz() called');
+            console.log('Current question index:', this.currentQuestionIndex);
+            console.log('Total questions:', this.currentQuiz.questions?.length);
+            
+            // ตรวจสอบว่าตอบคำถามปัจจุบันหรือยัง
+            if (this.quizAnswers[this.currentQuestionIndex] === undefined || this.quizAnswers[this.currentQuestionIndex] === null || this.quizAnswers[this.currentQuestionIndex] === '') {
+                console.log('Current question not answered, showing warning');
+                this.showNotification('กรุณาเลือกคำตอบก่อนส่ง', 'warning');
+                return;
+            }
+            
+            // ตรวจสอบว่าตอบครบทุกข้อหรือไม่
+            const hasUnanswered = this.quizAnswers.some((answer, index) => {
+                return answer === undefined || answer === null || answer === '';
+            });
+            
+            if (hasUnanswered) {
+                console.log('Some questions are unanswered');
+                this.showNotification('กรุณาตอบคำถามให้ครบทุกข้อ', 'warning');
+                return;
+            }
+            
+            console.log('All questions answered, calculating result');
+            this.calculateQuizResult();
+        },
+
+        nextQuestion() {
+            console.log('nextQuestion() called');
+            console.log('Current question index:', this.currentQuestionIndex);
+            console.log('Total questions:', this.currentQuiz.questions?.length);
+            
+            // ตรวจสอบว่าตอบคำถามปัจจุบันหรือยัง
+            if (this.quizAnswers[this.currentQuestionIndex] === undefined || this.quizAnswers[this.currentQuestionIndex] === null || this.quizAnswers[this.currentQuestionIndex] === '') {
+                console.log('Current question not answered, showing warning');
+                this.showNotification('กรุณาเลือกคำตอบก่อนไปข้อถัดไป', 'warning');
+                return;
+            }
+            
+            // ตรวจสอบว่าเป็นข้อสุดท้ายหรือไม่
+            if (this.currentQuestionIndex < this.currentQuiz.questions.length - 1) {
+                console.log('Moving to next question');
+                this.currentQuestionIndex++;
+            } else {
+                console.log('Last question reached, calculating result');
+                this.calculateQuizResult();
+            }
+        },
+
+        prevQuestion() {
+            if (this.currentQuestionIndex > 0) {
+                this.currentQuestionIndex--;
+            }
+        },
+
+        // Assessment functions
+        startAssessment(assessment) {
+            this.startQuiz(assessment);
+        },
+
+        viewHistoryDetail(history) {
+            this.currentQuiz = {
+                id: history.quizId,
+                title: history.quizTitle,
+                questions: [],
+                results: [history.result]
+            };
+            this.quizAnswers = history.answers;
+            this.quizScore = history.score;
+            this.quizResult = history.result;
+            this.navigateTo('results');
+        },
+
+        // Music functions
+        getSourceType(url) {
+            if (!url) return 'local';
+            if (url.includes('spotify')) return 'spotify';
+            if (url.includes('youtube')) return 'youtube';
+            if (url.includes('soundcloud')) return 'soundcloud';
+            return 'local';
+        },
+
+        playTrack(track) {
+            this.currentTrack = track;
+            this.isPlaying = true;
+        },
+
+        pauseTrack() {
+            this.isPlaying = false;
+        },
+
+        nextTrack() {
+            const currentIndex = this.currentPlaylist.findIndex(t => t.id === this.currentTrack.id);
+            const nextIndex = (currentIndex + 1) % this.currentPlaylist.length;
+            this.playTrack(this.currentPlaylist[nextIndex]);
+        },
+
+        prevTrack() {
+            const currentIndex = this.currentPlaylist.findIndex(t => t.id === this.currentTrack.id);
+            const prevIndex = currentIndex === 0 ? this.currentPlaylist.length - 1 : currentIndex - 1;
+            this.playTrack(this.currentPlaylist[prevIndex]);
+        },
+
+        // Personal Growth Functions
+        trackMoodProgress(mood) {
+            const today = new Date().toDateString();
+            
+            // Add to mood history
+            this.personalGrowth.moodHistory.push({
+                date: today,
+                mood: mood,
+                timestamp: Date.now()
+            });
+            
+            // Update mood streak
+            if (this.personalGrowth.lastMoodDate) {
+                const lastDate = new Date(this.personalGrowth.lastMoodDate);
+                const todayDate = new Date(today);
+                const daysDiff = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff === 1) {
+                    this.personalGrowth.moodStreak++;
+                } else if (daysDiff > 1) {
+                    this.personalGrowth.moodStreak = 1;
+                }
+            } else {
+                this.personalGrowth.moodStreak = 1;
+            }
+            
+            this.personalGrowth.lastMoodDate = today;
+            
+            // Update weekly stats
+            this.updateWeeklyMoodStats(mood);
+            
+            // Check for achievements
+            this.checkMoodAchievements(mood);
+            
+            // Generate insights
+            this.generateMoodInsights();
+            
+            this.saveData();
+        },
+
+        updateWeeklyMoodStats(mood) {
+            const weekStart = this.getWeekStart(new Date());
+            const weekKey = weekStart.toDateString();
+            
+            if (!this.personalGrowth.weeklyMoodStats[weekKey]) {
+                this.personalGrowth.weeklyMoodStats[weekKey] = {};
+            }
+            
+            this.personalGrowth.weeklyMoodStats[weekKey][mood] = 
+                (this.personalGrowth.weeklyMoodStats[weekKey][mood] || 0) + 1;
+        },
+
+        checkMoodAchievements(mood) {
+            const achievements = this.personalGrowth.achievements;
+            
+            // First mood tracking
+            if (this.personalGrowth.moodHistory.length === 1) {
+                achievements.push({
+                    id: 'first_mood',
+                    title: '🌟 เริ่มติดตามอารมณ์',
+                    description: 'บันทึกอารมณ์ครั้งแรก',
+                    date: new Date().toISOString(),
+                    icon: '🌟'
+                });
+            }
+            
+            // Mood streak achievements
+            if (this.personalGrowth.moodStreak === 7) {
+                achievements.push({
+                    id: 'week_streak',
+                    title: '🔥 ติดตามติดต่อ 7 วัน',
+                    description: 'บันทึกอารมณ์มา 7 วันติดต่อ',
+                    date: new Date().toISOString(),
+                    icon: '🔥'
+                });
+            }
+            
+            if (this.personalGrowth.moodStreak === 30) {
+                achievements.push({
+                    id: 'month_streak',
+                    title: '💎 ติดตามติดต่อ 30 วัน',
+                    description: 'บันทึกอารมณ์มาเดือนเต็ม',
+                    date: new Date().toISOString(),
+                    icon: '💎'
+                });
+            }
+            
+            // Mood variety achievements
+            const uniqueMoods = [...new Set(this.personalGrowth.moodHistory.map(h => h.mood))];
+            if (uniqueMoods.length === 5) {
+                achievements.push({
+                    id: 'all_moods',
+                    title: '🌈 สำรวจอารมณ์ทั้งหมด',
+                    description: 'ลองอารมณ์ทั้ง 5 แบบ',
+                    date: new Date().toISOString(),
+                    icon: '🌈'
+                });
+            }
+        },
+
+        generateMoodInsights() {
+            const recentMoods = this.personalGrowth.moodHistory.slice(-7);
+            if (recentMoods.length < 3) return;
+            
+            const moodCounts = {};
+            recentMoods.forEach(entry => {
+                moodCounts[entry.mood] = (moodCounts[entry.mood] || 0) + 1;
+            });
+            
+            const dominantMood = Object.keys(moodCounts).reduce((a, b) => 
+                moodCounts[a] > moodCounts[b] ? a : b
+            );
+            
+            const insight = {
+                date: new Date().toISOString(),
+                type: 'mood_pattern',
+                title: '🧠 รูปแบบอารมณ์ของคุณ',
+                description: `ใน 7 วันล่าสุด คุณรู้สึก${dominantMood}มากที่สุด`,
+                dominantMood: dominantMood,
+                moodDistribution: moodCounts
+            };
+            
+            // Add to insights (keep last 10)
+            this.personalGrowth.monthlyInsights.unshift(insight);
+            if (this.personalGrowth.monthlyInsights.length > 10) {
+                this.personalGrowth.monthlyInsights = this.personalGrowth.monthlyInsights.slice(0, 10);
+            }
+        },
+
+        getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day;
+            return new Date(d.setDate(diff));
+        },
+
+        getMoodInsights() {
+            return this.personalGrowth.monthlyInsights.slice(0, 3);
+        },
+
+        getMoodStreak() {
+            return this.personalGrowth.moodStreak;
+        },
+
+        getWeeklyMoodStats() {
+            const weekStart = this.getWeekStart(new Date());
+            const weekKey = weekStart.toDateString();
+            return this.personalGrowth.weeklyMoodStats[weekKey] || {};
+        }
+    }))
+});

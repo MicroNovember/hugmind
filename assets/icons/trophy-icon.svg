@@ -1,0 +1,10 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- ถ้วยรางวัล -->
+  <path d="M20 5C15 5 10 8 10 12C10 15 12 17 15 18C15 18 15 20 15 20C15 20 15 22 15 22C12 23 10 25 10 28C10 30 12 32 15 32H25C28 32 30 30 30 28C30 25 28 23 25 22C25 22 25 20 25 20C25 20 25 18 25 18C28 17 30 15 30 12C30 8 25 5 20 5Z" fill="currentColor" opacity="0.9"/>
+  <!-- ด้ามจับ -->
+  <rect x="18" y="32" width="4" height="5" fill="currentColor" opacity="0.8"/>
+  <!-- ฐาน -->
+  <rect x="15" y="37" width="10" height="2" fill="currentColor" opacity="0.7"/>
+  <!-- ขอบ -->
+  <rect x="10" y="10" width="20" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+</svg>

@@ -31,6 +31,25 @@
         })();
     </script>
     
+    <!-- Authentication Guard -->
+    <script>
+        // Check authentication and redirect to login if not authenticated
+        (function() {
+            // Check if user is logged in
+            const isGuest = localStorage.getItem('guestMode') === 'true';
+            const hasGuestData = localStorage.getItem('guestData') !== null;
+            const hasFirebaseUser = sessionStorage.getItem('firebaseUser') !== null;
+            
+            // Redirect to login if not authenticated (not guest and no Firebase user)
+            if (!isGuest && !hasGuestData && !hasFirebaseUser) {
+                // Check if we're not already on login page to prevent redirect loop
+                if (window.location.pathname !== '/login.html' && !window.location.pathname.endsWith('login.html')) {
+                    window.location.href = 'login.html';
+                }
+            }
+        })();
+    </script>
+    
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XGTHRX1XR2"></script>
 <script>
@@ -223,6 +242,8 @@
                                 <span class="flex-1 text-left" x-text="userDisplayName"></span>
                                 <i class="fas fa-chevron-down text-xs"></i>
                             </button>
+
+                            
                             <div x-show="userMenuOpen" @click.away="userMenuOpen = false" x-transition class="absolute left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 z-50">
                                 <div class="p-3 border-b border-gray-200 dark:border-gray-700">
                                     <p class="text-sm font-medium text-gray-900 dark:text-gray-100" x-text="userDisplayName"></p>
@@ -232,8 +253,12 @@
                                     <i class="fas fa-sign-out-alt mr-2"></i>ออกจากระบบ
                                 </button>
                             </div>
+                            
                         </div>
                     </div>
+
+
+                    
                 </div>
             </div>
         </div>

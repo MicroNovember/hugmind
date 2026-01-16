@@ -392,16 +392,16 @@ document.addEventListener('alpine:init', () => {
             let timeGreeting = '';
             
             if (hour >= 5 && hour < 12) {
-                timeGreeting = 'สวัสดีตอนเช้า';
+                timeGreeting = 'สวัสดีตอนเช้า 🌅';
             } else if (hour >= 12 && hour < 17) {
-                timeGreeting = 'สวัสดีตอนบ่าย';
+                timeGreeting = 'สวัสดีตอนบ่าย  🌅';
             } else if (hour >= 17 && hour < 21) {
-                timeGreeting = 'สวัสดีตอนเย็น';
+                timeGreeting = 'สวัสดีตอนเย็น 🌅';
             } else {
-                timeGreeting = 'สวัสดีตอนดึก';
+                timeGreeting = 'ทักทายยามดึก 🌃';
             }
             
-            return timeGreeting + ' 💖  ';
+            return timeGreeting + '   💖  ';
         },
 
         getMoodBasedGreeting(moodId) {
@@ -700,17 +700,17 @@ document.addEventListener('alpine:init', () => {
                     localStorage.removeItem('guestData');
                     localStorage.removeItem('userType');
                     localStorage.removeItem('guestLoginTime');
-                    window.location.href = 'login.html';
+                    window.location.href = 'index.html';
                 }
             } catch (error) {
                 console.error('Logout error:', error);
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }
         },
         
         // Redirect to login
         redirectToLogin() {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         },
         
         // Refresh user data from Firebase
@@ -805,7 +805,7 @@ document.addEventListener('alpine:init', () => {
                         
                         // Redirect after successful login
                         setTimeout(() => {
-                            window.location.href = 'index.html';
+                            window.location.href = 'main-menu.html';
                         }, 2000);
                     } else {
                         this.error = result.error || 'เข้าสู่ระบบล้มเหลว กรุณาลองใหม่';
@@ -868,7 +868,7 @@ document.addEventListener('alpine:init', () => {
                         
                         // Redirect after successful registration
                         setTimeout(() => {
-                            window.location.href = 'index.html';
+                            window.location.href = 'main-menu.html';
                         }, 2000);
                     } else {
                         this.error = 'ระบบไม่พร้อมใช้งาน กรุณาลองใหม่';
@@ -901,7 +901,7 @@ document.addEventListener('alpine:init', () => {
             }
             
             if (this.user.isGuest) {
-                return 'Guest User';
+                return 'ทดลองใช้งาน';
             }
             
             // สำหรับผู้ใช้ Firebase ให้ความสำคัญกับ email มากกว่า
@@ -1106,24 +1106,54 @@ document.addEventListener('alpine:init', () => {
             
             this._initialized = true;
             
-            // Check if we're on login page
-            const isLoginPage = window.location.pathname.includes('login.html');
+            // Check if we're on login page (exact match)
+            const currentPath = window.location.pathname;
+            const isLoginPage = currentPath.endsWith('index.html') || 
+                               currentPath.includes('/index.html') || 
+                               currentPath === '/' || 
+                               currentPath.endsWith('/');
             
-            // If on login page, don't check auth state immediately
-            if (isLoginPage) {
+            // Also check if we're on main-menu page and stop auth checking
+            const isMainMenuPage = currentPath.endsWith('main-menu.html') || 
+                                currentPath.includes('/main-menu.html');
+            
+            // If on login page OR main-menu page, don't check auth state immediately
+            if (isLoginPage || isMainMenuPage) {
+                // แต่ยังต้องโหลดคำคมและตรวจสอบ user
+                this.loadData();
+                this.showRandomQuote();
+                
+                // ตรวจสอบ user แบบง่ายสำหรับแสดงชื่อ
+                const quickUserCheck = () => {
+                    const user = window.AuthUtils?.getCurrentUser();
+                    if (user) {
+                        this.user = user;
+                        this.isAuthenticated = true;
+                        this.isGuest = user.isGuest || false;
+                    }
+                };
+                
+                // รอสักครู่แล้วตรวจสอบ
+                setTimeout(quickUserCheck, 1000);
+                
                 return;
             }
             
             // ตรวจสอบ user จาก AuthUtils โดยตรง (ไม่ต้องเรียก checkAuthState)
             // NOTE: Firebase user may take a moment to restore on page load.
             const getUserWithRetry = async () => {
-                const MAX_WAIT_MS = 5000;
-                const STEP_MS = 200;
+                const MAX_WAIT_MS = 3000;
+                const STEP_MS = 1000;
                 const start = Date.now();
+                let attempts = 0;
+                const MAX_ATTEMPTS = 3;
 
-                while (Date.now() - start < MAX_WAIT_MS) {
+                while (Date.now() - start < MAX_WAIT_MS && attempts < MAX_ATTEMPTS) {
                     const u = window.AuthUtils?.getCurrentUser();
-                    if (u) return u;
+                    if (u) {
+                        return u;
+                    }
+                    attempts++;
                     await new Promise((resolve) => setTimeout(resolve, STEP_MS));
                 }
 

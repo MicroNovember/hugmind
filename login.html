@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="th" x-data="authApp()" x-init="init()" :class="{ 'dark': darkMode }">
 <head>
+    <!-- Immediate Dark Mode Script -->
+    <script>
+        // Set dark mode immediately to prevent flash
+        (function() {
+            const savedDarkMode = localStorage.getItem('darkMode');
+            // Default to dark mode if no preference saved
+            if (savedDarkMode === null) {
+                localStorage.setItem('darkMode', 'true');
+                document.documentElement.classList.add('dark');
+            } else if (savedDarkMode === 'true') {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 
     <link rel="icon" type="image/png" href="image/favicon.png">
     <meta charset="UTF-8">

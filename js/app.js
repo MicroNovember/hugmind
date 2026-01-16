@@ -13,11 +13,14 @@ document.addEventListener('alpine:init', () => {
         mobileMenuOpen: false,
         
         // UI State
-        darkMode: false,
+        darkMode: true,
         mobileMenuOpen: false,
         loading: false,
         error: '',
         success: '',
+        
+        // Tab State
+        activeTab: 'login',
         
         // Modal State
         modalOpen: null,
@@ -29,6 +32,16 @@ document.addEventListener('alpine:init', () => {
             remember: false
         },
         showPassword: false,
+        
+        // Register Form State
+        registerForm: {
+            email: '',
+            password: '',
+            confirmPassword: '',
+            agreedToTerms: false
+        },
+        showRegisterPassword: false,
+        showConfirmPassword: false,
         
         // Guest Mode State
         showGuestModal: false,
@@ -388,7 +401,7 @@ document.addEventListener('alpine:init', () => {
                 timeGreeting = 'สวัสดีตอนดึก';
             }
             
-            return timeGreeting;
+            return timeGreeting + ' 💖  ';
         },
 
         getMoodBasedGreeting(moodId) {
@@ -809,6 +822,77 @@ document.addEventListener('alpine:init', () => {
             }
         },
         
+        // Register new user
+        async register() {
+            // Clear previous messages
+            this.error = '';
+            this.success = '';
+            
+            // Validate form
+            if (!this.registerForm.email || !this.registerForm.password || !this.registerForm.confirmPassword) {
+                this.error = 'กรุณากรอกข้อมูลให้ครบถ้วน';
+                return;
+            }
+            
+            if (this.registerForm.password !== this.registerForm.confirmPassword) {
+                this.error = 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน';
+                return;
+            }
+            
+            if (this.registerForm.password.length < 6) {
+                this.error = 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
+                return;
+            }
+            
+            if (!this.registerForm.agreedToTerms) {
+                this.error = 'กรุณายอมรับเงื่อนไขการใช้งาน';
+                return;
+            }
+            
+            this.loading = true;
+            
+            try {
+                // Check if authApp is available (from auth.js)
+                if (window.authApp && typeof window.authApp.register === 'function') {
+                    // Call the register function from auth.js
+                    await window.authApp.register();
+                } else {
+                    // Fallback: Create user with Firebase directly
+                    if (typeof auth !== 'undefined') {
+                        const userCredential = await auth.createUserWithEmailAndPassword(
+                            this.registerForm.email, 
+                            this.registerForm.password
+                        );
+                        
+                        this.success = 'สมัครสมาชิกสำเร็จ! กำลังนำคุณไปยังหน้าหลัก...';
+                        
+                        // Redirect after successful registration
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    } else {
+                        this.error = 'ระบบไม่พร้อมใช้งาน กรุณาลองใหม่';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Register error:', error);
+                
+                // Handle specific Firebase errors
+                if (error.code === 'auth/email-already-in-use') {
+                    this.error = 'อีเมลนี้ถูกใช้งานแล้ว กรุณาใช้อีเมลอื่น';
+                } else if (error.code === 'auth/invalid-email') {
+                    this.error = 'อีเมลไม่ถูกต้อง กรุณาตรวจสอบรูปแบบ';
+                } else if (error.code === 'auth/weak-password') {
+                    this.error = 'รหัสผ่านไม่ปลอดภัย กรุณาใช้รหัสผ่านที่ซับซ้อนกว่านี้';
+                } else {
+                    this.error = 'เกิดข้อผิดพลาด: ' + error.message;
+                }
+            } finally {
+                this.loading = false;
+            }
+        },
+        
         // Get user display name (computed property)
         get userDisplayName() {
             
@@ -1031,7 +1115,22 @@ document.addEventListener('alpine:init', () => {
             }
             
             // ตรวจสอบ user จาก AuthUtils โดยตรง (ไม่ต้องเรียก checkAuthState)
-            const user = window.AuthUtils?.getCurrentUser();
+            // NOTE: Firebase user may take a moment to restore on page load.
+            const getUserWithRetry = async () => {
+                const MAX_WAIT_MS = 5000;
+                const STEP_MS = 200;
+                const start = Date.now();
+
+                while (Date.now() - start < MAX_WAIT_MS) {
+                    const u = window.AuthUtils?.getCurrentUser();
+                    if (u) return u;
+                    await new Promise((resolve) => setTimeout(resolve, STEP_MS));
+                }
+
+                return null;
+            };
+
+            const user = await getUserWithRetry();
             
             if (user) {
                 this.user = user;
@@ -1324,9 +1423,20 @@ document.addEventListener('alpine:init', () => {
             // ตรวจสอบว่ามีการตั้งค่า darkMode ใน localStorage หรือไม่
             const savedDarkMode = localStorage.getItem('darkMode');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const hasHtmlClass = document.documentElement.classList.contains('dark');
             
-            this.darkMode = savedDarkMode === 'true' || prefersDark;
-            this.applyDarkMode();
+            // ถ้ามีคลาส dark ใน HTML อยู่แล้ว ให้ใช้ค่านั้น มิฉะนั้นให้เริ่มต้นด้วย dark mode
+            if (hasHtmlClass) {
+                this.darkMode = true;
+                // บันทึกค่าเริ่มต้นไว้ใน localStorage
+                if (savedDarkMode === null) {
+                    localStorage.setItem('darkMode', 'true');
+                }
+            } else {
+                // เริ่มต้นด้วย dark mode เสมอ ถ้าไม่มีการบันทึกไว้
+                this.darkMode = savedDarkMode === 'true' || savedDarkMode === null ? true : prefersDark;
+                this.applyDarkMode();
+            }
         },
 
         applyDarkMode() {

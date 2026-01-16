@@ -35,13 +35,16 @@
     <script>
         // Check authentication and redirect to login if not authenticated
         (function() {
-            // Check if user is logged in
+            // Check if user is logged in (either Firebase user OR guest mode)
             const isGuest = localStorage.getItem('guestMode') === 'true';
             const hasGuestData = localStorage.getItem('guestData') !== null;
             const hasFirebaseUser = sessionStorage.getItem('firebaseUser') !== null;
             
-            // Redirect to login if not authenticated (not guest and no Firebase user)
-            if (!isGuest && !hasGuestData && !hasFirebaseUser) {
+            // User is considered authenticated if they have Firebase user OR guest data
+            const isAuthenticated = hasFirebaseUser || (isGuest && hasGuestData);
+            
+            // Redirect to login only if NOT authenticated
+            if (!isAuthenticated) {
                 // Check if we're not already on login page to prevent redirect loop
                 if (window.location.pathname !== '/login.html' && !window.location.pathname.endsWith('login.html')) {
                     window.location.href = 'login.html';

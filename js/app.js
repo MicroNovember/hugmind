@@ -939,7 +939,7 @@ const greetings = {
             }
             
             if (this.user.isGuest) {
-                return 'ทดลองใช้งาน';
+                return 'ทดลองใช้';
             }
             
             // สำหรับผู้ใช้ Firebase ให้ความสำคัญกับ email มากกว่า

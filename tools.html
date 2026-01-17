@@ -291,8 +291,8 @@
     <aside class="fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-800 shadow-lg z-30 hidden lg:block transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
       <div class="p-4 h-full overflow-y-auto">
         <!-- Logo Section -->
-        <div class="text-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-          <div class="flex items-center justify-center space-x-2">
+        <div class="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex flex-col items-center space-y-2">
             <div class="logo logo-cloudy-puk-jai-medium animate-pulse-slow"></div>
             <h3 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h3>
           </div>
@@ -328,6 +328,43 @@
               <i class="fas fa-hands-helping mr-3 w-4 text-primary"></i>
               <span>หน่วยงานช่วยเหลือ</span>
             </button>
+          </div>
+          
+          <!-- Footer Section -->
+          <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-3 py-2">
+              <!-- Brand -->
+              <div class="flex items-center justify-center gap-2 mb-2">
+                <div class="logo logo-cloudy-puk-jai-small animate-pulse-slow"></div>
+                <h4 class="text-sm font-bold text-primary">Cloudy・Puk・Jai</h4>
+              </div>
+              
+              <!-- Tagline -->
+              <p class="text-xs text-gray-500 dark:text-gray-400 italic text-center mb-2">
+                "พื้นที่พักใจที่คนอยากกลับมาใช้ทุกวัน"
+              </p>
+              
+              <!-- Divider -->
+              <div class="w-full h-px bg-primary/20 rounded-full mb-2"></div>
+              
+              <!-- Links -->
+              <div class="flex flex-col gap-1 mb-2">
+                <button @click="openModal('about')" class="text-xs text-gray-600 dark:text-gray-400 hover:text-primary transition-colors text-left">
+                  เกี่ยวกับเรา
+                </button>
+                <button @click="openModal('privacy')" class="text-xs text-gray-600 dark:text-gray-400 hover:text-primary transition-colors text-left">
+                  ความเป็นส่วนตัว
+                </button>
+                <a href="https://forms.gle/XSqb8nqh2gWgLKwu6" target="_blank" class="text-xs text-gray-600 dark:text-gray-400 hover:text-primary transition-colors text-left">
+                  บอกความรู้สึกกับเรา
+                </a>
+              </div>
+              
+              <!-- Copyright -->
+              <p class="text-[9px] text-gray-400 dark:text-gray-500 text-center tracking-widest uppercase">
+                2026 Cloudy・Puk・Jai
+              </p>
+            </div>
           </div>
           
           <!-- User Section -->
@@ -674,62 +711,7 @@
           </div>
         </div>
       </div>
-    </main>
-    <!-- Footer -->
-    <footer class="relative mt-12 mb-10 overflow-hidden border-t border-primary/10 dark:border-gray-800 bg-gradient-to-b from-transparent to-primary/5 dark:to-gray-900/50 z-60">
-        <!-- Background Blur Elements -->
-        <div class="absolute top-0 left-0 w-32 h-32 opacity-5 pointer-events-none">
-            <div class="absolute top-4 left-4 text-6xl text-primary animate-float">
-                <div class="logo logo-cloudy-puk-jai-medium"></div>
-            </div>
-        </div>
-        <div class="absolute bottom-0 right-0 w-24 h-24 opacity-5 pointer-events-none">
-            <div class="absolute bottom-4 right-4 text-4xl animate-float" style="animation-delay: 3s;">💚</div>
-        </div>
-        
-        <div class="max-w-7xl mx-auto px-4 py-6 relative z-10 lg:ml-64">
-            <div class="flex flex-col items-center">
-                
-                <!-- Brand Section -->
-                <div class="text-center mb-5">
-                    <div class="flex items-center justify-center gap-3 mb-2">
-                        <div class="logo logo-cloudy-puk-jai-medium animate-pulse-slow scale-90"></div>
-                        <h3 class="text-lg font-bold text-gray-800 dark:text-white tracking-tight">Cloudy・Puk・Jai</h3>
-                    </div>
-                    <p class="text-gray-500 dark:text-gray-400 text-[13px] italic">
-                        "พื้นที่พักใจที่คนอยากกลับมาใช้ทุกวัน"
-                    </p>
-                </div>
-
-                <!-- Divider -->
-                <div class="w-12 h-[2px] bg-primary/20 rounded-full mb-5"></div>
-
-                <!-- Navigation Links -->
-                <div class="flex flex-wrap justify-center items-center gap-x-5 gap-y-4 mb-5">
-                    <button @click="openModal('about')" class="text-[12px] text-gray-600 dark:text-gray-400 hover:text-primary transition-colors flex items-center gap-2">
-                        เกี่ยวกับเรา
-                    </button>
-                    <button @click="openModal('privacy')" class="text-[12px] text-gray-600 dark:text-gray-400 hover:text-primary transition-colors flex items-center gap-2">
-                        ความเป็นส่วนตัว
-                    </button>
-                     
-                    
-                    <a href="https://forms.gle/XSqb8nqh2gWgLKwu6" target="_blank" class="text-[12px] text-gray-600 dark:text-gray-400 hover:text-primary transition-colors flex items-center gap-2 sm:border-l border-gray-200 dark:border-gray-700 pl-8">
-                        บอกความรู้สึกกับเรา
-                    </a>
-                </div>
-
-                <!-- Copyright-->
-                <div class="mb-5">
-                    <p class="text-gray-400 dark:text-gray-500 text-[10px] tracking-widest uppercase">
-                        2026 Cloudy・Puk・Jai. พัฒนาด้วยความห่วงใย
-                    </p>
-                </div>
-            
-             </div>   
-            </div>
-        </div>
-    </footer>
+    </div>
 
     <!-- Notification System -->
     <div class="notification-container">

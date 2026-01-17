@@ -39,6 +39,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>Cloudy・Puk・Jai - ดูแลสุขภาพจิตของคุณ</title>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio"></script>
     <!-- Alpine.js -->
@@ -98,11 +101,11 @@
   </head>
   <body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
     <!-- Mobile Header -->
-    <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md">
-        <div class="container mx-auto px-4 py-3">
+    <header class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md lg:hidden">
+        <div class="max-w-7xl mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2">
-                    <div class="feature-icon logo-cloudy-puk-jai-small"></div>
+                    <div class="logo logo-cloudy-puk-jai-small animate-pulse-slow"></div>
                     <div>
                         <h1 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h1>
                     </div>
@@ -138,29 +141,29 @@
         <!-- Logo Section -->
         <div class="text-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center justify-center space-x-2">
-            <i class="fas fa-cloud text-3xl text-primary"></i>
+            <div class="logo logo-cloudy-puk-jai-medium animate-pulse-slow"></div>
             <h3 class="text-xl font-bold text-primary">Cloudy・Puk・Jai</h3>
           </div>
         </div>
         
         <!-- Navigation Links -->
         <div class="space-y-2">
-          <a href="#home" @click="navigateTo('home')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <a href="main-menu.html" @click="navigateTo('home')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             <i class="fas fa-home-alt mr-3 w-4"></i>หน้าหลัก
           </a>
-          <a href="#journal" @click="navigateTo('journal')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <a href="main-menu.html#journal" @click="navigateTo('journal')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             <i class="fas fa-journal-whills mr-3 w-4"></i>บันทึกความรู้สึก
           </a>
-          <a href="#articles" @click="navigateTo('articles')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <a href="main-menu.html#articles" @click="navigateTo('articles')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             <i class="fas fa-book-open mr-3 w-4"></i>ความรู้เพื่อสุขภาพจิต
           </a>
-          <a href="#music" @click="navigateTo('music')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <a href="main-menu.html#music" @click="navigateTo('music')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             <i class="fas fa-headphones mr-3 w-4"></i>ผ่อนคลายด้วยเพลง
           </a>
-          <a href="#tools" @click="navigateTo('tools')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <a href="tools.html" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             <i class="fas fa-lungs mr-3 w-4"></i>Breathing Buddy
           </a>
-          <a href="#assessments" @click="navigateTo('assessments')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <a href="main-menu.html#assessments" @click="navigateTo('assessments')" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             <i class="fas fa-clipboard-list mr-3 w-4"></i>แบบทดสอบ
           </a>
           <a href="history.html" class="flex items-center px-3 py-3 rounded-2xl font-medium text-gray-600 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
@@ -228,7 +231,7 @@
           <div x-show="mobileMoreMenuOpen" @click.away="mobileMoreMenuOpen = false" x-transition class="absolute bottom-full right-0 mb-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 z-50" style="display: none;">
             <div class="p-2">
               <!-- Tools -->
-              <a href="#tools" @click="navigateTo('tools'); mobileMoreMenuOpen = false;" class="flex items-center px-3 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              <a href="tools.html" @click="mobileMoreMenuOpen = false;" class="flex items-center px-3 py-2 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                 <i class="fas fa-lungs mr-3 w-4 text-primary"></i>
                 <span>เครื่องมือฝึกลมหายใจ</span>
               </a>
@@ -278,7 +281,7 @@
     <!-- Main Content (with padding for desktop sidebar and mobile bottom nav) -->
     <main class="container mx-auto px-4 pt-4 pb-24 lg:pb-12 lg:ml-64">
       <!-- Main Content Area -->
-      <div class="flex flex-col gap-6">
+      <div class="max-w-7xl mx-auto">
         <!-- Home Page -->
         <div x-show="currentPage === 'home'" x-transition class="space-y-8">
         <!-- Welcome Card -->
@@ -2369,7 +2372,7 @@
             <div class="absolute bottom-4 right-4 text-4xl animate-float" style="animation-delay: 3s;">💚</div>
         </div>
         
-        <div class="container mx-auto px-4 py-6 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 py-6 relative z-10 lg:ml-64">
             <div class="flex flex-col items-center">
                 
                 <!-- Brand Section -->

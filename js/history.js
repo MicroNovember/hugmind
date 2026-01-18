@@ -1,6 +1,39 @@
 // history.js - เวอร์ชันแก้ไขปัญหา
 console.log('history.js กำลังโหลด...');
 
+// ฟังก์ชันคำนวณระดับดาวจากคะแนน
+function calculateStars(score, maxScore) {
+    // ถ้าไม่มี maxScore ให้ใช้ค่าเริ่มต้นที่เหมาะสม
+    if (!maxScore) {
+        maxScore = 25; // fallback ค่าเริ่มต้น
+    }
+    
+    // คำนวณคะแนนเป็นเปอร์เซ็นต์ (0-100)
+    const percentage = Math.min(100, Math.max(0, (score / maxScore) * 100));
+    
+    // แปลงเปอร์เซ็นต์เป็นดาว (1-5 ดาว)
+    const stars = Math.ceil((percentage / 100) * 5);
+    
+    return {
+        stars: stars,
+        starsHTML: generateStarsHTML(stars),
+        percentage: Math.round(percentage)
+    };
+}
+
+// ฟังก์ชันสร้าง HTML สำหรับแสดงดาว
+function generateStarsHTML(stars) {
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= stars) {
+            html += '<span class="text-yellow-500 text-lg">★</span>';
+        } else {
+            html += '<span class="text-gray-300 text-lg">☆</span>';
+        }
+    }
+    return html;
+}
+
 // ตัวแปร global
 let historyData = [];
 let isExportingPDF = false;
@@ -24,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.printReport = printReport;
     window.clearAllHistory = clearAllHistory;
     window.clearCorruptedData = clearCorruptedData;
+    window.refreshHistoryData = refreshHistoryData;
     
     console.log('History page fully loaded');
 });
@@ -42,6 +76,10 @@ function viewDetails(index) {
     
     console.log('Viewing details for:', item);
     
+    // คำนวณระดับดาว
+    const maxScore = getMaxScoreFromTestTitle(getTestTitle(item));
+    const starRating = calculateStars(item.score, maxScore);
+    
     // สร้าง modal สำหรับแสดงรายละเอียด
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
@@ -57,7 +95,7 @@ function viewDetails(index) {
             <div class="space-y-4">
                 <div>
                     <label class="font-semibold text-gray-700 dark:text-gray-300">ชื่อแบบทดสอบ:</label>
-                    <p class="text-gray-600 dark:text-gray-400">${item.quizTitle || 'ไม่มีข้อมูล'}</p>
+                    <p class="text-gray-600 dark:text-gray-400">${getTestTitle(item)}</p>
                 </div>
                 
                 <div>
@@ -67,12 +105,20 @@ function viewDetails(index) {
                 
                 <div>
                     <label class="font-semibold text-gray-700 dark:text-gray-300">คะแนน:</label>
-                    <p class="text-gray-600 dark:text-gray-400">${item.score || 'ไม่มีข้อมูล'}%</p>
+                    <p class="text-gray-600 dark:text-gray-400">${item.score || 'ไม่มีข้อมูล'}${maxScore ? '/' + maxScore : ''}</p>
+                </div>
+                
+                <div>
+                    <label class="font-semibold text-gray-700 dark:text-gray-300">ระดับ:</label>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <div>${starRating.starsHTML}</div>
+                        <span class="text-sm text-gray-500">(${starRating.percentage}%)</span>
+                    </div>
                 </div>
                 
                 <div>
                     <label class="font-semibold text-gray-700 dark:text-gray-300">ผลลัพธ์:</label>
-                    <p class="text-gray-600 dark:text-gray-400">${item.result || 'ไม่มีข้อมูล'}</p>
+                    <p class="text-gray-600 dark:text-gray-400">${item.result?.title || item.result || 'ไม่มีข้อมูล'}</p>
                 </div>
                 
                 <div>
@@ -160,23 +206,24 @@ function saveHistoryData() {
         const user = window.AuthUtils ? window.AuthUtils.getCurrentUser() : null;
         
         if (user && user.isGuest) {
-            // Guest user - บันทึกลง localStorage สำหรับ guest
-            const storageKey = 'mindbloomData_guest';
+            // Guest user - บันทึกลง localStorage สำหรับ guest (dynamic key)
+            const guestId = user.sessionId || user.uid || 'guest_default';
+            const storageKey = `mindbloomData_guest_${guestId}`;
             const data = {
                 assessmentHistory: guestHistoryData,
                 lastUpdated: new Date().toISOString()
             };
             localStorage.setItem(storageKey, JSON.stringify(data));
-            console.log('บันทึกข้อมูล guest ลง localStorage เรียบร้อย');
+            console.log('บันทึกข้อมูล guest ลง localStorage เรียบร้อย (key:', storageKey, ')');
         } else {
             // Logged in user - บันทึกลง localStorage สำหรับ user (backup)
-            const storageKey = 'mindbloomData_user';
+            const storageKey = user ? `mindbloomData_user_${user.uid}` : 'mindbloomData_user';
             const data = {
                 assessmentHistory: userHistoryData,
                 lastUpdated: new Date().toISOString()
             };
             localStorage.setItem(storageKey, JSON.stringify(data));
-            console.log('บันทึกข้อมูล user ลง localStorage เรียบร้อย');
+            console.log('บันทึกข้อมูล user ลง localStorage เรียบร้อย (key:', storageKey, ')');
         }
         
         return true;
@@ -192,6 +239,99 @@ let decryptFunction = null;
 // Set decryption function when app.js is ready
 function setDecryptFunction(fn) {
     decryptFunction = fn;
+}
+
+// Helper function to get the correct title from data structure
+function getTestTitle(item) {
+    // ลำดับความสำคัญของ field ที่เป็นไปได้
+    return item.quizTitle || item.title || item.assessmentTitle || 'ไม่ระบุชื่อแบบทดสอบ';
+}
+
+// Helper function to refresh history data
+async function refreshHistoryData() {
+    try {
+        console.log('🔄 Refreshing history data...');
+        
+        // แสดง loading
+        Swal.fire({
+            title: 'กำลังรีเฟร็ชข้อมูล...',
+            html: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>',
+            allowOutsideClick: false,
+            showConfirmButton: false
+        });
+        
+        // โหลดข้อมูลใหม่
+        await loadHistoryData();
+        
+        // อัปเดต UI ทั้งหมด
+        updateUI();
+        
+        // อัปเดตเวลาล่าสุด
+        updateLastUpdateTime();
+        
+        // ปิด loading และแสดงผลลัพธ์
+        Swal.fire({
+            title: 'รีเฟร็ชสำเร็จ!',
+            text: 'ข้อมูลประวัติได้รับการอัปเดตแล้ว',
+            icon: 'success',
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+        
+        console.log('✅ History data refreshed successfully');
+        
+    } catch (error) {
+        console.error('❌ Error refreshing history data:', error);
+        Swal.fire({
+            title: 'รีเฟร็ชไม่สำเร็จ',
+            text: 'ไม่สามารถรีเฟร็ชข้อมูลได้: ' + error.message,
+            icon: 'error',
+            confirmButtonText: 'ตกลง'
+        });
+    }
+}
+
+// Helper function to get storage key (consistent with app.js)
+function getStorageKey(user) {
+    if (!user) return 'mindbloomData_guest';
+    if (user.isGuest) {
+        const guestId = user.sessionId || user.uid || 'guest_default';
+        return `mindbloomData_guest_${guestId}`;
+    } else {
+        return `mindbloomData_user_${user.uid}`;
+    }
+}
+
+// Helper function to decrypt data (consistent with app.js)
+function decryptData(encryptedData) {
+    try {
+        // Check if data is encrypted (starts with specific pattern)
+        if (encryptedData.startsWith('Q') || encryptedData.match(/^[A-Za-z0-9+/=]+$/)) {
+            console.log('🔐 Attempting to decrypt data...');
+            // Try to decrypt using global decrypt function
+            if (decryptFunction && typeof decryptFunction === 'function') {
+                const data = decryptFunction(encryptedData);
+                console.log('✅ Decryption successful, data type:', typeof data);
+                // After decryption, data might still be a string, so parse it
+                if (typeof data === 'string') {
+                    console.log('🔄 Parsing decrypted string to object...');
+                    return JSON.parse(data);
+                }
+                return data;
+            } else {
+                console.log('⚠️ No decrypt function available, trying direct parse');
+                // Fallback: try direct parse
+                return JSON.parse(encryptedData);
+            }
+        } else {
+            console.log('📄 Data appears to be plain JSON, parsing directly...');
+            return JSON.parse(encryptedData);
+        }
+    } catch (decryptError) {
+        console.warn('❌ Decryption failed, trying direct parse:', decryptError);
+        return JSON.parse(encryptedData);
+    }
 }
 
 // โหลดข้อมูลประวัติ
@@ -271,7 +411,9 @@ async function loadHistoryData() {
 function loadHistoryFromLocalStorage() {
     try {
         const user = window.AuthUtils ? window.AuthUtils.getCurrentUser() : null;
-        const storageKey = 'mindbloomData_guest'; // ใช้เฉพาะ key สำหรับ guest
+        
+        // ใช้ helper function สำหรับ storage key
+        const storageKey = getStorageKey(user);
         
         console.log('กำลังโหลดข้อมูล guest จาก localStorage...', 'storageKey:', storageKey);
         const savedData = localStorage.getItem(storageKey);
@@ -282,35 +424,8 @@ function loadHistoryFromLocalStorage() {
             console.log('🔍 savedData matches base64 pattern:', savedData.match(/^[A-Za-z0-9+/=]+$/));
             
             try {
-                // Try to decrypt data first (from app.js encryption)
-                let data;
-                try {
-                    // Check if data is encrypted (starts with specific pattern)
-                    if (savedData.startsWith('Q') || savedData.match(/^[A-Za-z0-9+/=]+$/)) {
-                        console.log('🔐 Attempting to decrypt data...');
-                        // Try to decrypt using global decrypt function
-                        if (decryptFunction && typeof decryptFunction === 'function') {
-                            data = decryptFunction(savedData);
-                            console.log('✅ Decryption successful, data type:', typeof data);
-                            // After decryption, data might still be a string, so parse it
-                            if (typeof data === 'string') {
-                                console.log('🔄 Parsing decrypted string to object...');
-                                data = JSON.parse(data);
-                                console.log('✅ Parsed decrypted data, type:', typeof data);
-                            }
-                        } else {
-                            console.log('⚠️ No decrypt function available, trying direct parse');
-                            // Fallback: try direct parse
-                            data = JSON.parse(savedData);
-                        }
-                    } else {
-                        console.log('📄 Data appears to be plain JSON, parsing directly...');
-                        data = JSON.parse(savedData);
-                    }
-                } catch (decryptError) {
-                    console.warn('❌ Decryption failed, trying direct parse:', decryptError);
-                    data = JSON.parse(savedData);
-                }
+                // ใช้ helper function สำหรับการถอดรหัส
+                const data = decryptData(savedData);
                 
                 console.log('ข้อมูล guest ที่โหลดได้จาก localStorage:', data);
                 
@@ -462,7 +577,15 @@ async function loadHistoryFromFirebase() {
 function clearCorruptedData() {
     try {
         const user = window.AuthUtils ? window.AuthUtils.getCurrentUser() : null;
-        const storageKey = user && user.isGuest ? 'mindbloomData_guest' : 'mindbloomData_user';
+        
+        // ใช้ storage key แบบ dynamic เหมือนฟังก์ชันอื่นๆ
+        let storageKey;
+        if (user && user.isGuest) {
+            const guestId = user.sessionId || user.uid || 'guest_default';
+            storageKey = `mindbloomData_guest_${guestId}`;
+        } else {
+            storageKey = user ? `mindbloomData_user_${user.uid}` : 'mindbloomData_user';
+        }
         
         localStorage.removeItem(storageKey);
         
@@ -473,7 +596,7 @@ function clearCorruptedData() {
             userHistoryData = [];
         }
         
-        console.log('Cleared corrupted data from localStorage');
+        console.log('Cleared corrupted data from localStorage (key:', storageKey, ')');
         showNotification('ล้างข้อมูลที่เสียหายเรียบร้อยแล้ว', 'success');
         
         // โหลดข้อมูลใหม่
@@ -841,7 +964,7 @@ function updateTestTypeSummary() {
         
         historyData.forEach((item, index) => {
             try {
-                const title = item.title || 'ไม่มีชื่อ';
+                const title = getTestTitle(item) || 'ไม่มีชื่อ';
                 console.log(`📌 รายการที่ ${index + 1}: ${title} (คะแนน: ${item.score || 'ไม่มี'}, วันที่: ${item.date || 'ไม่มี'})`);
                 
                 if (!testGroups[title]) {
@@ -887,8 +1010,8 @@ function updateTestTypeSummary() {
                 ? Math.round(test.scores.reduce((a, b) => a + b, 0) / test.scores.length)
                 : 0;
             
-            const maxScore = getMaxScoreFromTestTitle(test.title);
-            const { icon, color } = getTestInfo(test.title);
+            const maxScore = getMaxScoreFromTestTitle(getTestTitle(test));
+            const { icon, color } = getTestInfo(getTestTitle(test));
             
             html += `
                 <div class="mb-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
@@ -896,7 +1019,7 @@ function updateTestTypeSummary() {
                         <div class="flex items-center">
                             <span class="text-xl mr-2">${icon}</span>
                             <div>
-                                <div class="font-medium text-sm">${getShortTitle(test.title)}</div>
+                                <div class="font-medium text-sm">${getShortTitle(getTestTitle(test))}</div>
                                 <div class="text-xs text-gray-500">ทำแล้ว ${test.count} ครั้ง</div>
                             </div>
                         </div>
@@ -964,9 +1087,12 @@ function updateHistoryTable() {
         
         let html = '';
         historyData.forEach((item, index) => {
-            const { icon, color } = getTestInfo(item.title);
-            const maxScore = getMaxScoreFromTestTitle(item.title);
+            const { icon, color } = getTestInfo(getTestTitle(item));
+            const maxScore = getMaxScoreFromTestTitle(getTestTitle(item));
             const dateFormatted = formatDate(item.date);
+            
+            // คำนวณระดับดาว
+            const starRating = calculateStars(item.score, maxScore);
             
             html += `
                 <tr class="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
@@ -974,11 +1100,17 @@ function updateHistoryTable() {
                     <td class="py-2 px-3">
                         <div class="flex items-center">
                             <span class="mr-2">${icon}</span>
-                            <span class="text-sm">${getShortTitle(item.title)}</span>
+                            <span class="text-sm">${getShortTitle(getTestTitle(item))}</span>
                         </div>
                     </td>
                     <td class="py-2 px-3">
                         <div class="font-bold text-sm" style="color: ${color}">${item.score}${maxScore ? '/' + maxScore : ''}</div>
+                    </td>
+                    <td class="py-2 px-3">
+                        <div class="flex items-center space-x-1">
+                            <div>${starRating.starsHTML}</div>
+                            <span class="text-xs text-gray-500 hidden sm:inline">(${starRating.percentage}%)</span>
+                        </div>
                     </td>
                     <td class="py-2 px-3 text-sm">${item.result?.title || item.result || 'ไม่มีข้อมูล'}</td>
                     <td class="py-2 px-3">
@@ -997,7 +1129,7 @@ function updateHistoryTable() {
         console.log('updateHistoryTable: สำเร็จ');
     } catch (error) {
         console.error('updateHistoryTable error:', error);
-        tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-red-500">เกิดข้อผิดพลาดในการแสดงตาราง</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500">เกิดข้อผิดพลาดในการแสดงตาราง</td></tr>`;
     }
 }
 
@@ -1083,9 +1215,9 @@ function getMaxScoreFromTestTitle(title) {
     
     const titleLower = title.toLowerCase();
     if (titleLower.includes('who-5') || titleLower.includes('ความสุข')) return 25;
-    if (titleLower.includes('pss-10') || titleLower.includes('ความเครียด')) return 40;
-    if (titleLower.includes('gad-7') || titleLower.includes('วิตกกังวล')) return 21;
-    if (titleLower.includes('phq-9') || titleLower.includes('ซึมเศร้า')) return 27;
+    if (titleLower.includes('pss-10') || titleLower.includes('ความเครียด')) return 16;
+    if (titleLower.includes('gad-7') || titleLower.includes('วิตกกังวล')) return 9;
+    if (titleLower.includes('phq-9') || titleLower.includes('ซึมเศร้า')) return 9;
     if (titleLower.includes('หมดไฟ') || titleLower.includes('burnout')) return 12;
     if (titleLower.includes('ใจดีกับตัวเอง')) return 10;
     if (titleLower.includes('พลังแห่งการฟื้นตัว')) return 10;
@@ -1216,7 +1348,7 @@ function deleteItem(index) {
             html: `
                 <p class="text-gray-600 mb-3">คุณต้องการลบรายการนี้หรือไม่?</p>
                 <div class="bg-gray-50 p-3 rounded-lg text-left">
-                    <p class="font-semibold">${getShortTitle(historyItem.title)}</p>
+                    <p class="font-semibold">${getShortTitle(getTestTitle(historyItem))}</p>
                     <p class="text-sm text-gray-500">${formatDate(historyItem.date)}</p>
                     <p class="text-sm">คะแนน: ${historyItem.score}</p>
                 </div>
@@ -1248,26 +1380,33 @@ function deleteItem(index) {
                         return;
                     }
                 } else {
-                    // Guest user - ลบจาก localStorage
+                    // Guest user - ลบจาก localStorage (ใช้ storage key แบบ dynamic)
                     try {
-                        const savedData = localStorage.getItem('mindbloomData_guest');
+                        const user = window.AuthUtils ? window.AuthUtils.getCurrentUser() : null;
+                        const storageKey = getStorageKey(user);
+                        const savedData = localStorage.getItem(storageKey);
+                        
                         if (savedData) {
-                            const data = JSON.parse(savedData);
+                            const data = decryptData(savedData);
                             const history = data.assessmentHistory || [];
                             
                             // หา index ที่ตรงกันใน localStorage
                             const localIndex = history.findIndex(item => 
                                 item.date === historyItem.date && 
-                                item.title === historyItem.title
+                                getTestTitle(item) === getTestTitle(historyItem)
                             );
                             
                             if (localIndex !== -1) {
                                 history.splice(localIndex, 1);
                                 data.assessmentHistory = history;
-                                localStorage.setItem('mindbloomData_guest', JSON.stringify(data));
+                                
+                                // เข้ารหัสข้อมูลใหม่ (ถ้ามีฟังก์ชัน encrypt)
+                                const encryptedData = window.encryptData ? window.encryptData(JSON.stringify(data)) : JSON.stringify(data);
+                                localStorage.setItem(storageKey, encryptedData);
+                                
                                 // อัปเดต guestHistoryData ด้วย
                                 guestHistoryData = history;
-                                console.log('✅ ลบข้อมูล guest จาก localStorage สำเร็จ');
+                                console.log('✅ ลบข้อมูล guest จาก localStorage สำเร็จ (key:', storageKey, ')');
                             }
                         }
                     } catch (error) {
@@ -1277,17 +1416,30 @@ function deleteItem(index) {
                     }
                 }
                 
-                // โหลดข้อมูลใหม่
-                loadHistoryData();
+                // โหลดข้อมูลใหม่และรีเฟร็ช UI
+                await loadHistoryData();
+                updateUI();
                 
-                // แสดง SweetAlert2 สำเร็จ
+                // แสดง SweetAlert2 สำเร็จพร้อมปุ่ม refresh
                 Swal.fire({
                     title: 'ลบสำเร็จ!',
                     text: 'ลบรายการที่เลือกเรียบร้อยแล้ว',
                     icon: 'success',
                     timer: 2000,
                     timerProgressBar: true,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'รีเฟร็ชข้อมูล',
+                    cancelButtonColor: '#3b82f6',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.cancel) {
+                        // ผู้ใช้คลิกปุ่มรีเฟร็ช
+                        console.log('🔄 User chose to refresh data');
+                        refreshHistoryData();
+                    } else {
+                        console.log('✅ Deletion completed without refresh');
+                    }
                 });
                 
                 console.log('Item deleted successfully');
@@ -1349,13 +1501,19 @@ function clearAllHistory() {
                         return;
                     }
                 } else {
-                    // Guest user - ลบทั้งหมดจาก localStorage
+                    // Guest user - ลบทั้งหมดจาก localStorage (ใช้ storage key แบบ dynamic)
                     try {
-                        const storageKey = 'mindbloomData_guest';
-                        localStorage.setItem(storageKey, JSON.stringify({ assessmentHistory: [] }));
+                        const storageKey = getStorageKey(user);
+                        
+                        // สร้างข้อมูลว่างและเข้ารหัส
+                        const emptyData = { assessmentHistory: [] };
+                        const encryptedData = window.encryptData ? window.encryptData(JSON.stringify(emptyData)) : JSON.stringify(emptyData);
+                        
+                        localStorage.setItem(storageKey, encryptedData);
+                        
                         // ล้าง guestHistoryData ด้วย
                         guestHistoryData = [];
-                        console.log('✅ ลบข้อมูล guest ทั้งหมดจาก localStorage สำเร็จ');
+                        console.log('✅ ลบข้อมูล guest ทั้งหมดจาก localStorage สำเร็จ (key:', storageKey, ')');
                     } catch (error) {
                         console.error('❌ ลบจาก localStorage ไม่สำเร็จ:', error);
                         showNotification('ลบข้อมูลไม่สำเร็จ: ' + error.message, 'error');
@@ -1371,8 +1529,9 @@ function clearAllHistory() {
                 }
                 historyData = [];
                 
-                // โหลดข้อมูลใหม่
-                loadHistoryData();
+                // โหลดข้อมูลใหม่และอัปเดต UI
+                await loadHistoryData();
+                updateUI();
                 
                 // แสดง SweetAlert2 สำเร็จ
                 Swal.fire({
@@ -1752,11 +1911,11 @@ function createSimplePDFContent() {
         // แสดงเฉพาะ 20 รายการแรก
         const itemsToShow = historyData.slice(0, 20);
         itemsToShow.forEach(item => {
-            const maxScore = getMaxScoreFromTestTitle(item.title);
+            const maxScore = getMaxScoreFromTestTitle(getTestTitle(item));
             content += `
                 <tr style="border-bottom: 1px solid #eee;">
                     <td style="padding: 6px; border: 1px solid #ddd;">${formatDate(item.date)}</td>
-                    <td style="padding: 6px; border: 1px solid #ddd;">${getShortTitle(item.title)}</td>
+                    <td style="padding: 6px; border: 1px solid #ddd;">${getShortTitle(getTestTitle(item))}</td>
                     <td style="padding: 6px; border: 1px solid #ddd; font-weight: bold;">${item.score}${maxScore ? '/' + maxScore : ''}</td>
                     <td style="padding: 6px; border: 1px solid #ddd;">${item.result?.title || item.result || ''}</td>
                 </tr>
